@@ -1,0 +1,120 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: radial-gradient(circle, #7a567c, #550565);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.container {
+  width: 900px;
+  height: 450px;
+}
+
+.card {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(20, 4, 19, 0.781);
+}
+
+/* LADO ESQUERDO */
+.left {
+  width: 45%;
+  background: #180b1881;
+  padding: 50px;
+  color: #ffffff;
+  position: relative;
+}
+
+.left h2 {
+  margin-bottom: 40px;
+}
+
+.input-box {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.input-box input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid #aaa;
+  padding: 10px 0;
+  color: #fff;
+  outline: none;
+}
+
+.input-box label {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  color: #aaa;
+  font-size: 14px;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.input-box input:focus + label,
+.input-box input:valid + label {
+  top: -10px;
+  font-size: 12px;
+  color: #c5b0e6;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(45deg, #5d1552bd, #653778);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.left p {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.left span {
+  color: #ad95d5;
+  cursor: pointer;
+}
+
+/* LADO DIREITO */
+.right {
+  width: 55%;
+  background: linear-gradient(135deg, #532b7a,);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.right h1 {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.right p {
+  width: 70%;
+  opacity: 0.9;
+}
