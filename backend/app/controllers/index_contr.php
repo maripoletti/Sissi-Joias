@@ -13,25 +13,21 @@ function is_empty(string $email, string $pwd) {
 function is_bigger_than_expected(string $email, string $pwd) {
     if (mb_strlen($email) > 70 || mb_strlen($pwd) > 30) {
         return true;
+    } else {
         return false;
     }
 }
 
-function is_email_wrong(object $pdo, string $email) {
-    if(!get_email($pdo, $email)) {
+function is_email_wrong(bool|array $result) {
+    if(!$result) {
         return true;
     } else {
         return false;
     }
 }
 
-function is_password_wrong(object $pdo, string $pwd) {
-    $options = [
-        'cost' => 12,
-    ];
-    $hashedPwd = password_hash($pwd, PASSWORD_DEFAULT, $options);
-
-    if(!get_password($pdo, $hashedPwd)) {
+function is_password_wrong(string $pwd, string $hashedPwd) {
+    if(!password_verify($pwd, $hashedPwd)) {
         return true;
     } else {
         return false;
