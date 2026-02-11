@@ -1,3 +1,8 @@
+<?php
+require_once '../config/session.config.php';
+require_once '../app/views/index_view.php';
+
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -16,7 +21,7 @@
         <form action="login.php" method="post">
 
           <div class="input-box">
-            <input type="text" name="email" required>
+            <input type="email" name="email" required>
             <label>E-mail</label>
           </div>
 
@@ -30,6 +35,9 @@
         </form>
 
         <p>Não tem uma conta?<span> Cadastrar-se</span></p>
+        <?php 
+        check_login_errors(); 
+        ?>
       </div>
 
       <div class="right">

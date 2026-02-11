@@ -40,16 +40,12 @@ if($_SERVER["REQUEST_METHOD"] === 'POST') {
             die();
         }
 
-        /* $newSessionId = session_create_id();
-        $sessionId = $newSessionId . "_" . $result["UserID"];
-        session_id($sessionId); */
-
         $_SESSION["user_id"] = $result["UserID"];
         $_SESSION["user_email"] = htmlspecialchars($result["Email"]);
 
         $_SESSION["last_regeneration"] = time();
 
-        header("Location: index.php?login=success");
+        header("Location: dashboard.php");
         $pdo = null;
         $stmt = null;
 
