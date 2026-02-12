@@ -1,6 +1,7 @@
 <?php
-require_once '../config/session.config.php';
-require_once '../app/views/index_view.php';
+require_once __DIR__ . '/../config/session.config.php';
+require_once __DIR__ . '/../app/views/index_view.php';
+
 
 ?>
 <!DOCTYPE html>
