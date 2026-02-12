@@ -33,8 +33,6 @@ if($_SERVER["REQUEST_METHOD"] === 'POST') {
 
         if($errors) {
             $_SESSION['errors_login'] = $errors;
-            print_r($errors);
-
 
             header('Location: index.php');
             die();
