@@ -9,7 +9,7 @@ require_once __DIR__ . '/../app/views/index_view.php';
 <head>
   <meta charset="UTF-8" />
   <title>Sissi Joias e Acessórios</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
 
@@ -19,23 +19,23 @@ require_once __DIR__ . '/../app/views/index_view.php';
       <div class="left">
         <h2>LOGIN</h2>
 
-        <form action="login.php" method="post">
+        <form id="loginForm">
 
           <div class="input-box">
-            <input type="email" name="email" required>
+            <input type="text" id="email" required>
             <label>E-mail</label>
           </div>
 
           <div class="input-box">
-            <input type="password" name="pwd" required>
+            <input type="password" id="senha" required>
             <label>Senha</label>
           </div>
 
-          <button>LOGIN</button>
+          <button type="submit">ENTRAR</button>
 
         </form>
 
-        <p>Não tem uma conta?<span> Cadastrar-se</span></p>
+        <p>Não tem uma conta?<a href="cadastro.php"><span> Cadastrar-se</span></a></p>
         <?php 
         check_login_errors(); 
         ?>
@@ -49,5 +49,6 @@ require_once __DIR__ . '/../app/views/index_view.php';
     </div>
   </div>
 
+  <script src="script.js"></script>
 </body>
 </html>

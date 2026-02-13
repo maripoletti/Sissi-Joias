@@ -2,8 +2,8 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard - Sissi Joias e Acessórios</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Sissi Semi Joias e Acessórios</title>
+  <link rel="stylesheet" href="styles/dashboard.css">
 </head>
 <body>
 
@@ -11,21 +11,25 @@
     <div class="card dashboard">
 
       <aside class="sidebar">
-        <h2>Sissi Joias e Acessórios</h2>
+        <h2>Sissi Semi Joias e Acessórios</h2>
 
         <nav>
-          <a class="active">Dashboard</a>
+          <a class="active">Painel de Controle</a>
           <a>Produtos</a>
-          <a>Nova Venda</a>
+          <a>Vendas</a>
           <a>Relatórios</a>
+          <a>Estoque</a>
+          <a>Dar Baixa em Produtos</a>
+          <a>Cadastro</a>
+          <a>Controle de Usuários</a>
         </nav>
       </aside>
 
       <main class="main">
         <header class="top">
           <div>
-            <h1>Dashboard</h1>
-            <span>quinta-feira, 05 de fevereiro</span>
+            <h1>Painel de Controle</h1>
+            <span id="data-atual"></span>
           </div>
           <button class="btn">Nova Venda</button>
         </header>
@@ -33,7 +37,7 @@
         <section class="cards">
           <div class="box">Vendas Hoje<br><strong>R$ 0,00</strong></div>
           <div class="box">Vendas do Mês<br><strong>R$ 0,00</strong></div>
-          <div class="box">Pedidos Hoje<br><strong>0</strong></div>
+          <div class="box">Produtos em Estoque<br><strong>0</strong></div>
           <div class="box">Produtos Ativos<br><strong>0</strong></div>
         </section>
 
@@ -45,6 +49,8 @@
 
     </div>
   </div>
+
+  <script src="script.js"></script>
 
 </body>
 </html>
