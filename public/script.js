@@ -13,7 +13,7 @@ if (form) {
     }
 
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("https://www.sissisemijoiaseacessorios.com.br/index.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -24,7 +24,7 @@ if (form) {
       const data = await response.json();
 
       if (response.ok) {
-        window.location.href = "dashboard.html";
+        window.location.href = "dashboard.php";
       } else {
         alert(data.message || "Email ou senha inválidos!");
       }

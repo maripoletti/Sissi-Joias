@@ -1,17 +1,21 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
 body {
   min-height: 100vh;
-  background: radial-gradient(circle, #7a567c, #550565);
-  margin: 0%;
+  background: radial-gradient(circle, #76217a, #401a47);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .container {
   width: 900px;
   height: 450px;
-  width: 100vw;
-  height: 100vh;
-  max-width: none;
-  margin: 0;
-  border-radius: 0;
 }
 
 .card {
@@ -20,15 +24,15 @@ body {
   display: flex;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 0 40px rgba(20, 4, 19, 0.781);
+  box-shadow: 0 0 40px rgba(49, 12, 47, 0.781);
 }
 
 /* LADO ESQUERDO */
 .left {
   width: 45%;
-  background: #180b1881;
+  background: #a98715;
   padding: 50px;
-  color: #ffffff;
+  color: #620059;
   position: relative;
 }
 
@@ -45,7 +49,7 @@ body {
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid #aaa;
+  border-bottom: 1px solid #48065c86;
   padding: 10px 0;
   color: #fff;
   outline: none;
@@ -55,15 +59,49 @@ body {
   position: absolute;
   top: 10px;
   left: 0;
-  color: #aaa;
+  color: #670974;
   font-size: 14px;
+  pointer-events: none;
+  transition: 0.3s;
+}
+
+.input-box input:focus + label,
+.input-box input:valid + label {
+  top: -10px;
+  font-size: 12px;
+  color: #57055d;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(45deg, #5d1552bd, #6c3883);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.left p {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.left span {
+  color: #3c0549;
+  cursor: pointer;
 }
 
 /* LADO DIREITO */
 .right {
   width: 55%;
-  background: linear-gradient(135deg, #532b7a,);
-  color: #ffffff;
+  background: linear-gradient(135deg, #5d0055,);
+  color: #a58318;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -80,4 +118,3 @@ body {
   width: 70%;
   opacity: 0.9;
 }
-

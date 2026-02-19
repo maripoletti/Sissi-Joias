@@ -35,7 +35,7 @@ require_once __DIR__ . '/../app/views/index_view.php';
 
         </form>
 
-        <p>Não tem uma conta?<a href="cadastro.php"><span> Cadastrar-se</span></a></p>
+        <p>Não tem uma conta? <a href="cadastro.php">Cadastrar-se</a></p>
         <?php 
         check_login_errors(); 
         ?>
