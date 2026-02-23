@@ -12,8 +12,8 @@ if (form) {
       return;
     }
 
-    try {
-      const response = await fetch("https://www.sissisemijoiaseacessorios.com.br/", {
+    /* try {
+      const response = await fetch("https://www.sissisemijoiaseacessorios.com.br", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -32,7 +32,7 @@ if (form) {
     } catch (error) {
       console.error("Erro ao conectar com o servidor:", error);
       alert("Erro no servidor. Tente novamente.");
-    }
+    } */
   });
 }
 

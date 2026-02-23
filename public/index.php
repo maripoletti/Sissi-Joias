@@ -1,6 +1,7 @@
 <?php
-require_once __DIR__ . '/../config/session.config.php';
-require_once __DIR__ . '/../app/views/index_view.php';
+require_once '../config/session.config.php';
+require_once '../app/views/index_view.php';
+
 
 
 ?>
@@ -19,23 +20,23 @@ require_once __DIR__ . '/../app/views/index_view.php';
       <div class="left">
         <h2>LOGIN</h2>
 
-        <form id="loginForm">
+        <form action="login.php" method="post">
 
           <div class="input-box">
-            <input type="text" id="email" required>
+            <input type="email" name="email" id="email" required>
             <label>E-mail</label>
           </div>
 
           <div class="input-box">
-            <input type="password" id="senha" required>
+            <input type="password" name="pwd" id="senha" required>
             <label>Senha</label>
           </div>
 
-          <button type="submit">ENTRAR</button>
+          <button>ENTRAR</button>
 
         </form>
 
-        <p>Não tem uma conta?<a href="cadastro.php"><span> Cadastrar-se</span></a></p>
+        <p>Não tem uma conta? <span>Cadastrar-se</span></p>
         <?php 
         check_login_errors(); 
         ?>
@@ -49,6 +50,5 @@ require_once __DIR__ . '/../app/views/index_view.php';
     </div>
   </div>
 
-  <script src="script.js"></script>
 </body>
 </html>
