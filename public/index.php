@@ -9,7 +9,7 @@ require_once __DIR__ . '/../app/views/index_view.php';
 <head>
   <meta charset="UTF-8" />
   <title>Sissi Joias e Acessórios</title>
-  <link rel="stylesheet" href="styles/style.css">
+  <link rel="stylesheet" href="styles/login.css">
 </head>
 <body>
 
