@@ -32,7 +32,7 @@ if (form) {
     } catch (error) {
       console.error("Erro ao conectar com o servidor:", error);
       alert("Erro no servidor. Tente novamente.");
-    }
+    } */
   });
 }
 
