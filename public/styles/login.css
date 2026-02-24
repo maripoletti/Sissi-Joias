@@ -7,7 +7,7 @@
 
 body {
   min-height: 100vh;
-  background: radial-gradient(circle, #7a567c, #550565);
+  background: radial-gradient(circle, #76217a, #401a47);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -24,15 +24,15 @@ body {
   display: flex;
   border-radius: 20px;
   overflow: hidden;
-  box-shadow: 0 0 40px rgba(20, 4, 19, 0.781);
+  box-shadow: 0 0 40px rgba(49, 12, 47, 0.781);
 }
 
 /* LADO ESQUERDO */
 .left {
   width: 45%;
-  background: #180b1881;
+  background: #a98715;
   padding: 50px;
-  color: #ffffff;
+  color: #620059;
   position: relative;
 }
 
@@ -49,7 +49,7 @@ body {
   width: 100%;
   background: transparent;
   border: none;
-  border-bottom: 1px solid #aaa;
+  border-bottom: 1px solid #48065c86;
   padding: 10px 0;
   color: #fff;
   outline: none;
@@ -59,7 +59,7 @@ body {
   position: absolute;
   top: 10px;
   left: 0;
-  color: #aaa;
+  color: #670974;
   font-size: 14px;
   pointer-events: none;
   transition: 0.3s;
@@ -69,7 +69,7 @@ body {
 .input-box input:valid + label {
   top: -10px;
   font-size: 12px;
-  color: #c5b0e6;
+  color: #57055d;
 }
 
 button {
@@ -77,7 +77,7 @@ button {
   padding: 12px;
   border: none;
   border-radius: 30px;
-  background: linear-gradient(45deg, #5d1552bd, #653778);
+  background: linear-gradient(45deg, #5d1552bd, #6c3883);
   color: #fff;
   font-size: 16px;
   cursor: pointer;
@@ -93,15 +93,15 @@ button:hover {
 }
 
 .left span {
-  color: #ad95d5;
+  color: #3c0549;
   cursor: pointer;
 }
 
 /* LADO DIREITO */
 .right {
   width: 55%;
-  background: linear-gradient(135deg, #532b7a,);
-  color: #ffffff;
+  background: linear-gradient(135deg, #5d0055,);
+  color: #a58318;
   display: flex;
   flex-direction: column;
   justify-content: center;

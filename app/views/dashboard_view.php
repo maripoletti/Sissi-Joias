@@ -19,7 +19,6 @@
           <a>Vendas</a>
           <a>Relatórios</a>
           <a>Estoque</a>
-          <a>Dar Baixa em Produtos</a>
           <a>Cadastro</a>
           <a>Controle de Usuários</a>
         </nav>
@@ -33,13 +32,6 @@
           </div>
           <button class="btn">Nova Venda</button>
         </header>
-
-        <section class="cards">
-          <div class="box">Vendas Hoje<br><strong>R$ 0,00</strong></div>
-          <div class="box">Vendas do Mês<br><strong>R$ 0,00</strong></div>
-          <div class="box">Produtos em Estoque<br><strong>0</strong></div>
-          <div class="box">Produtos Ativos<br><strong>0</strong></div>
-        </section>
 
         <section class="table">
           <h3>Vendas Recentes</h3>

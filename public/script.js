@@ -11,28 +11,6 @@ if (form) {
       alert("Preencha todos os campos!");
       return;
     }
-
-    /* try {
-      const response = await fetch("https://www.sissisemijoiaseacessorios.com.br", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ email, senha })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        window.location.href = "dashboard.php";
-      } else {
-        alert(data.message || "Email ou senha inválidos!");
-      }
-
-    } catch (error) {
-      console.error("Erro ao conectar com o servidor:", error);
-      alert("Erro no servidor. Tente novamente.");
-    } */
   });
 }
 
