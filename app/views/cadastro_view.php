@@ -19,16 +19,16 @@
         <form action="" method="POST">
 
             <label>Nome completo</label>
-            <input type="text" name="nome" placeholder="Seu nome completo" required>
+            <input type="text" name="name" placeholder="Seu nome completo" required>
 
             <label>E-mail</label>
             <input type="email" name="email" placeholder="seu@email.com" required>
 
             <label>Senha</label>
-            <input type="password" name="senha" placeholder="Crie uma senha forte" required>
+            <input type="password" name="pwd" placeholder="Crie uma senha forte" required>
 
             <label>Telefone</label>
-            <input type="text" name="telefone" inputmode="numeric" placeholder="(00) 00000-0000" required>
+            <input type="text" name="phone" inputmode="numeric" placeholder="(00) 00000-0000" required>
 
             <button type="submit">Criar minha conta →</button>
 

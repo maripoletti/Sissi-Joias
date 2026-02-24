@@ -29,7 +29,7 @@ class AuthValidator {
         return $errors;
     }
 
-    public static function validateSignup(string $name, string $email, string $pwd, string $phone): array {
+    public static function validateSignup(string $name, string $email, string $pwd, string $phone, string $pwdRepeat): array {
         $errors = [];
 
         $clean = [
@@ -56,16 +56,24 @@ class AuthValidator {
             $errors['is_bigger'] = 'Limite máximo de caracteres excedido!';
         }
 
-        if (!in_array(strlen($clean['phone']), [10, 11], true)) {
-            $errors['phone_wrong'] = 'Telefone inválido. Informe o número com DDD.';
-        }
-
-        if (mb_strlen($clean['pwd']) < 8) {
-            $errors['pwd_wrong'] = 'Use no mínimo 8 caracteres para criar sua senha!';
+        if (mb_strlen($clean['name']) < 2) {
+            $errors['pwd_wrong'] = 'Nome inválido.';
         }
 
         if (!filter_var($clean['email'], FILTER_VALIDATE_EMAIL)) {
             $errors['email_wrong'] = 'Use um email válido!';
+        }
+
+        if (mb_strlen($clean['pwd']) < 8) {
+            $errors['pwd_wrong'] = 'Use no mínimo 8 caracteres para criar sua senha.';
+        }
+        
+        if ($clean['pwd'] !== $pwdRepeat) {
+            $errors['pwd_match'] = 'Senhas diferentes.';
+        }
+
+        if (!in_array(strlen($clean['phone']), [10, 11], true)) {
+            $errors['phone_wrong'] = 'Telefone inválido. Informe o número com DDD.';
         }
 
         return [
