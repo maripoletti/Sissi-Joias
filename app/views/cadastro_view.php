@@ -19,23 +19,23 @@
         <form action="" method="POST">
 
             <label>Nome completo</label>
-            <input type="text" name="nome" placeholder="Seu nome completo">
+            <input type="text" name="nome" placeholder="Seu nome completo" required>
 
             <label>E-mail</label>
-            <input type="email" name="email" placeholder="seu@email.com">
+            <input type="email" name="email" placeholder="seu@email.com" required>
 
             <label>Senha</label>
-            <input type="password" name="senha" placeholder="Crie uma senha forte">
+            <input type="password" name="senha" placeholder="Crie uma senha forte" required>
 
             <label>Telefone</label>
-            <input type="text" name="telefone" placeholder="(00) 00000-0000">
+            <input type="text" name="telefone" inputmode="numeric" placeholder="(00) 00000-0000" required>
 
             <button type="submit">Criar minha conta →</button>
 
         </form>
 
         <div class="login-link">
-            Já possui uma conta? <a href="login.php">Entrar</a>
+            Já possui uma conta? <a href="/">Entrar</a>
         </div>
     </div>
 

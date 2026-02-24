@@ -9,12 +9,28 @@ switch ($uri) {
     require_once '../app/views/login_view.php';
     break;
   case '/login':
-    if ($method === 'post') {
+    if ($method === 'GET') {
+      require_once '../app/views/login_view.php';
+      break;
+    }
+
+    if ($method === 'POST') {
       require_once '../app/controllers/login_contr.php';
     }
-  case '/dashboard': 
-    require_once '../app/views/dashboard_view.php';
     break;
+  case '/dashboard': 
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/views/dashboard_view.php';
+      break;
+    } else {
+      require_once '../app/views/login_view.php';
+      break;
+    }
+  case '/cadastro':
+    if ($method === 'GET') {
+      require_once '../app/views/cadastro_view.php';
+      break;
+    }
   
   default:
     require_once '../app/views/404.html';

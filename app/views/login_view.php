@@ -18,7 +18,7 @@ declare(strict_types= 1);
       <div class="left">
         <h2>LOGIN</h2>
 
-        <form action="login.php" method="post">
+        <form action="login" method="post">
 
           <div class="input-box">
             <input type="email" name="email" id="email" required>
@@ -34,8 +34,18 @@ declare(strict_types= 1);
 
         </form>
 
-        <p>Não tem uma conta? <span>Cadastrar-se</span></p>
+        <p>Não tem uma conta? <a href="/cadastro">Cadastrar-se</a></p>
         
+
+        <?php
+          if(isset($_SESSION['errors_login'])) {
+            $errors = $_SESSION['errors_login'];
+            foreach($errors as $error) {
+              echo '<p>'. $error .'</p><br>';
+            }
+            unset($_SESSION['errors_login']);
+          }
+        ?>
       </div>
 
       <div class="right">
