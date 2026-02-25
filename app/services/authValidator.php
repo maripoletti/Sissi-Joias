@@ -57,7 +57,7 @@ class AuthValidator {
         }
 
         if (mb_strlen($clean['name']) < 2) {
-            $errors['pwd_wrong'] = 'Nome inválido.';
+            $errors['name_wrong'] = 'Nome inválido.';
         }
 
         if (!filter_var($clean['email'], FILTER_VALIDATE_EMAIL)) {

@@ -7,12 +7,12 @@ $pwd = $_POST["pwd"];
 
 require_once __DIR__ . '/../models/login_model.php';
 require_once __DIR__ . '/../services/authValidator.php';
-$dbh = new Login_model();
+$login = new Login_model();
 
 $errors = AuthValidator::validateLoginInput($email, $pwd);
 
 if(!$errors) {
-    $user = $dbh->get_user_by_email($email);
+    $user = $login->get_user_by_email($email);
 
     $errors = AuthValidator::validateCredentials($user, $pwd);
 }
@@ -22,6 +22,7 @@ if($errors) {
     exit;
 } else {
     $_SESSION['user_id'] = $user['UserID'];
+    $_SESSION[]
     header('Location: /dashboard');
     exit;
 }
