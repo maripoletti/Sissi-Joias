@@ -6,8 +6,13 @@ $method = $_SERVER['REQUEST_METHOD'];
 
 switch ($uri) {
   case '/':
-    require_once '../app/views/login_view.php';
-    break;
+    if(isset($_SESSION['user_id'])) {
+      header('Location: /dashboard');
+      break;
+    } else {
+      require_once '../app/views/login_view.php';
+      break;
+    }
   case '/login':
     if ($method === 'GET') {
       require_once '../app/views/login_view.php';
@@ -28,7 +33,11 @@ switch ($uri) {
     }
   case '/cadastro':
     if ($method === 'GET') {
-      require_once '../app/views/cadastro_view.php';
+      require_once '../app/views/signup_view.php';
+      break;
+    }
+    if ($method === 'POST') {
+      require_once '../app/controllers/signup_contr.php';
       break;
     }
   
