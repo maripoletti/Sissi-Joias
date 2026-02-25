@@ -10,7 +10,6 @@ class Signup_model extends Dbh {
         $pdo->beginTransaction();
 
         try {
-            $query = "INSERT INTO Auth_Users"
             $query = "INSERT INTO Auth_Users (Pwd, Email) VALUES (:pwd, :email);";
             $stmt = $pdo->prepare($query);
             $stmt-> bindParam(":pwd", $pwd);
