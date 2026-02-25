@@ -1,54 +1,37 @@
 <?php
 require_once '../config/session.config.php';
-require_once '../app/views/index_view.php';
 
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$method = $_SERVER['REQUEST_METHOD'];
 
+switch ($uri) {
+  case '/':
+    require_once '../app/views/login_view.php';
+    break;
+  case '/login':
+    if ($method === 'GET') {
+      require_once '../app/views/login_view.php';
+      break;
+    }
 
-?>
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <title>Sissi Joias e Acessórios</title>
-  <link rel="stylesheet" href="styles/login.css">
-</head>
-<body>
-
-  <div class="container">
-    <div class="card">
-
-      <div class="left">
-        <h2>LOGIN</h2>
-
-        <form action="login.php" method="post">
-
-          <div class="input-box">
-            <input type="email" name="email" id="email" required>
-            <label>E-mail</label>
-          </div>
-
-          <div class="input-box">
-            <input type="password" name="pwd" id="senha" required>
-            <label>Senha</label>
-          </div>
-
-          <button>ENTRAR</button>
-
-        </form>
-
-        <p>Não tem uma conta? <a href="cadastro.php">Cadastrar-se</a></p>
-        <?php 
-        check_login_errors(); 
-        ?>
-      </div>
-
-      <div class="right">
-        <h1>Bem-vinda, vendedora!</h1>
-        <p>Organize. Controle. Evolua.</p>
-      </div>
-
-    </div>
-  </div>
-
-</body>
-</html>
+    if ($method === 'POST') {
+      require_once '../app/controllers/login_contr.php';
+    }
+    break;
+  case '/dashboard': 
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/views/dashboard_view.php';
+      break;
+    } else {
+      require_once '../app/views/login_view.php';
+      break;
+    }
+  case '/cadastro':
+    if ($method === 'GET') {
+      require_once '../app/views/cadastro_view.php';
+      break;
+    }
+  
+  default:
+    require_once '../app/views/404.html';
+}

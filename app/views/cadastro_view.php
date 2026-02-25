@@ -19,10 +19,10 @@
         <form id="cadastroForm" action="" method="POST">
 
             <label>Nome completo</label>
-            <input type="text" name="nome" placeholder="Seu nome completo">
+            <input type="text" name="name" placeholder="Seu nome completo" required>
 
             <label>E-mail</label>
-            <input type="email" name="email" placeholder="seu@email.com">
+            <input type="email" name="email" placeholder="seu@email.com" required>
 
             <label>Senha</label>
             <input type="password" name="senha" placeholder="Crie uma senha forte">
@@ -38,7 +38,7 @@
         </form>
 
         <div class="login-link">
-            Já possui uma conta? <a href="login.php">Entrar</a>
+            Já possui uma conta? <a href="/">Entrar</a>
         </div>
     </div>
 
