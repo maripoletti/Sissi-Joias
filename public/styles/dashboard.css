@@ -32,7 +32,7 @@ body {
 .sidebar {
   width: 240px;
   min-width: 15px;
-  background: #2b092bb6;
+  background: #4e134eb6;
   padding: 30px;
   color: #f1ecec;
 }
@@ -50,7 +50,7 @@ body {
 
 .sidebar nav a.active,
 .sidebar nav a:hover {
-  color: #fdbb05;
+  color: #d7c02a;
 }
 
 .main {
@@ -60,7 +60,6 @@ body {
   color: #333;
 }
 
-/* TOPO */
 .top {
   display: flex;
   justify-content: space-between;
@@ -91,7 +90,6 @@ body {
   box-shadow: 0 0 15px rgba(0,0,0,0.05);
 }
 
-/* TABELA */
 .table {
   background: #fff;
   padding: 25px;

@@ -16,7 +16,7 @@
     <p class="subtitle">Preencha os dados abaixo para se cadastrar</p>
 
     <div class="card">
-        <form action="" method="POST">
+        <form id="cadastroForm" action="" method="POST">
 
             <label>Nome completo</label>
             <input type="text" name="nome" placeholder="Seu nome completo">
@@ -26,9 +26,12 @@
 
             <label>Senha</label>
             <input type="password" name="senha" placeholder="Crie uma senha forte">
+ 
+            <label>Confirmar Senha</label>
+            <input type="password" name="confirmar_senha" placeholder="Confirme sua senha">
 
             <label>Telefone</label>
-            <input type="text" name="telefone" placeholder="(00) 00000-0000">
+            <input  type= "text" name="telefone" placeholder="(XX) XXXXX-XXXX" maxlength="11" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
 
             <button type="submit">Criar minha conta →</button>
 
@@ -41,5 +44,6 @@
 
 </div>
 
+<script src="script.js"></script>
 </body>
 </html>
