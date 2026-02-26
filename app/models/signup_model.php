@@ -32,7 +32,7 @@ class Signup_model extends Dbh {
             echo "Erro na conexão: ". $e->getMessage();
         }
     }
-    public function create_user(string $email, string $pwd, string $name, string $phone) {
+    public function create_user(string $email, string $pwd, string $name, string $phone, int $tempId) {
         $pdo = $this->connect();
 
         $pdo->beginTransaction();
@@ -56,6 +56,11 @@ class Signup_model extends Dbh {
             $query = "INSERT INTO Auth_UserRoles (UserID, RoleID) VALUES (:userid, 1)";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(":userid", $UserID);
+            $stmt->execute();
+
+            $query = "DELETE FROM Temp_PendingUsers WHERE PendUserID = :userid";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":userid", $tempId);
             $stmt->execute();
 
             $pdo->commit();

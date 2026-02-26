@@ -7,6 +7,7 @@ $pwd = $_POST["pwd"];
 
 require_once __DIR__ . '/../models/login_model.php';
 require_once __DIR__ . '/../services/authValidator.php';
+require_once __DIR__ . '/../middleware/authMiddleware.php';
 $login = new Login_model();
 
 $errors = AuthValidator::validateLoginInput($email, $pwd);
@@ -18,11 +19,12 @@ if(!$errors) {
 }
 if($errors) {
     $_SESSION['errors_login'] = $errors;
-    header('Location: /');
+    header('Location: /login');
     exit;
 } else {
     $_SESSION['user_id'] = $user['UserID'];
-    $_SESSION[]
+    $role = AuthMiddleware::user()['RoleID'];
+    $_SESSION['role'] = $role;
     header('Location: /dashboard');
     exit;
 }

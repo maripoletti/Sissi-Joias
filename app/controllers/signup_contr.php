@@ -20,7 +20,7 @@ if ($errors) {
     header('Location: /cadastro');
     exit();
 } else {
-    $signup->send_request($name, $email, $pwd, $phone);
+    $signup->send_request($email, $pwd, $name, $phone);
     $_SESSION['signup_submitted'] = "Seu cadastro foi enviado e está aguardando aprovação";
     header('Location: /cadastro?status=approved');
     exit();
