@@ -47,13 +47,15 @@ switch ($uri) {
     }
     
   case '/novavenda':
-    if ($method === 'GET') {
-      require_once '../app/views/novavenda_view.php';
-      break;
-    }
-    if ($method === 'POST') {
-      require_once '';
-      break;
+    if (isset($_SESSION['user_id'])) {
+      if ($method === 'GET') {
+        require_once '../app/views/novavenda_view.php';
+        break;
+      }
+      if ($method === 'POST') {
+        require_once '';
+        break;
+      }
     }
 
   /* case '/a':
