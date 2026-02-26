@@ -30,7 +30,7 @@ body {
 /* LADO ESQUERDO */
 .left {
   width: 45%;
-  background: #a98715;
+  background: #d0b00e;
   padding: 50px;
   color: #620059;
   position: relative;
@@ -101,7 +101,7 @@ button:hover {
 .right {
   width: 55%;
   background: linear-gradient(135deg, #5d0055,);
-  color: #a58318;
+  color: #d0b00e;
   display: flex;
   flex-direction: column;
   justify-content: center;

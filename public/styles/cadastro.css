@@ -10,7 +10,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background: radial-gradient(circle at top, #691f7b, #1a001f);
+  background: radial-gradient(circle at top, #76217a, #260b2a);
 }
 
 .container {
@@ -57,7 +57,7 @@ h1 {
   display: block;
   margin: 15px 0 6px;
   font-size: 14px;
-  color: #cd71f8;
+  color: #a831ae;
 }
 
 .card input {

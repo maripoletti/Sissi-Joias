@@ -19,8 +19,8 @@
           <a>Vendas</a>
           <a>Relatórios</a>
           <a>Estoque</a>
-          <a>Cadastro</a>
           <a>Controle de Usuários</a>
+          <a>Impressoras</a>
         </nav>
       </aside>
 
@@ -30,7 +30,7 @@
             <h1>Painel de Controle</h1>
             <span id="data-atual"></span>
           </div>
-          <button class="btn">Nova Venda</button>
+          <a href="novavenda.php" class="btn-nova-venda">Nova Venda</a>
         </header>
 
         <section class="table">
