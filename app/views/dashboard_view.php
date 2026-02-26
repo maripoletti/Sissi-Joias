@@ -30,7 +30,7 @@
             <h1>Painel de Controle</h1>
             <span id="data-atual"></span>
           </div>
-          <a href="novavenda.php" class="btn-nova-venda">Nova Venda</a>
+          <a href="/novavenda" class="btn-nova-venda">Nova Venda</a>
         </header>
 
         <section class="table">

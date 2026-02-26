@@ -35,18 +35,26 @@ switch ($uri) {
     }
 
   case '/cadastro':
+    if (isset($_SESSION['user_id'])) {
+      if ($method === 'GET') {
+        require_once '../app/views/signup_view.php';
+        break;
+      }
+      if ($method === 'POST') {
+        require_once '../app/controllers/signup_contr.php';
+        break;
+      }
+    }
+    
+  case '/novavenda':
     if ($method === 'GET') {
-      require_once '../app/views/signup_view.php';
+      require_once '../app/views/novavenda_view.php';
       break;
     }
     if ($method === 'POST') {
-      require_once '../app/controllers/signup_contr.php';
+      require_once '';
       break;
     }
-
-  case '/admin':
-    require_once '../app/views/admin_view.php';
-    break;
 
   /* case '/a':
     require_once __DIR__ . '/../app/models/signup_model.php';

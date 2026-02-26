@@ -32,16 +32,26 @@ class Signup_model extends Dbh {
             echo "Erro na conexão: ". $e->getMessage();
         }
     }
-    public function create_user(string $email, string $pwd, string $name, string $phone, int $tempId) {
+    public function create_user_from_pending(int $PendUserID) {
         $pdo = $this->connect();
 
         $pdo->beginTransaction();
 
         try {
+            $query = "SELECT * FROM Temp_PendingUser WHERE PendUserID = :id;";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":id", $PendUserID);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if(!$user) {
+                throw new Exception("Usuário não encontrado");
+            };
+
             $query = "INSERT INTO Auth_Users (Pwd, Email) VALUES (:pwd, :email);";
             $stmt = $pdo->prepare($query);
-            $stmt-> bindParam(":pwd", $pwd);
-            $stmt-> bindParam(":email", $email);
+            $stmt-> bindParam(":pwd", $user['Pwd']);
+            $stmt-> bindParam(":email", $user['Email']);
             $stmt-> execute();
 
             $UserID = $pdo->lastInsertId();
@@ -49,8 +59,8 @@ class Signup_model extends Dbh {
             $query = "INSERT INTO Sales_Employees (UserID, FullName, Phone) VALUES (:userid, :fullname, :phone);";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(":userid", $UserID);
-            $stmt->bindParam(":fullname", $name);
-            $stmt->bindParam(":phone", $phone);
+            $stmt->bindParam(":fullname", $user['FullName']);
+            $stmt->bindParam(":phone", $user['Phone']);
             $stmt-> execute();
 
             $query = "INSERT INTO Auth_UserRoles (UserID, RoleID) VALUES (:userid, 1)";
@@ -60,7 +70,7 @@ class Signup_model extends Dbh {
 
             $query = "DELETE FROM Temp_PendingUsers WHERE PendUserID = :userid";
             $stmt = $pdo->prepare($query);
-            $stmt->bindParam(":userid", $tempId);
+            $stmt->bindParam(":userid", $PendUserID);
             $stmt->execute();
 
             $pdo->commit();
