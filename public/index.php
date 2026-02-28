@@ -58,39 +58,6 @@ switch ($uri) {
       }
     }
 
-  /* case '/a':
-    require_once __DIR__ . '/../app/models/signup_model.php';
-
-          require_once __DIR__ ."/../config/dbh.config.php";
-          $dbh = new Dbh();
-          $pdo = $dbh->connect();
-
-          $query = "SELECT * FROM Temp_PendingUsers;";
-          $stmt = $pdo->prepare($query);
-          $stmt->execute();
-
-          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $signup = new Signup_model();
-    $signup->create_user($result[0]["Email"], $result[0]["Pwd"], $result[0]["FullName"], $result[0]["Phone"], $result[0]["PendUserID"]);
-    break;
-  
-  case '/b':
-    require_once __DIR__ . '/../models/signup_model.php';
-          require_once __DIR__ ."/../../config/dbh.config.php";
-          $dbh = new Dbh();
-          $pdo = $dbh->connect();
-
-          $query = "SELECT * FROM Temp_PendingUsers;";
-          $stmt = $pdo->prepare($query);
-          $stmt->execute();
-
-          $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    $signup = new Signup_model();
-    $signup->reject_user($result[0]['PendUserID']);
-    break; */
-
   default:
     require_once '../app/views/404.html';
 }

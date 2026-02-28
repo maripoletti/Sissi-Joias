@@ -1,9 +1,5 @@
 <?php
 
-/////////////////////////////
-//MUDAR NOME DO BANCO ANTES DE SUBIR
-/////////////////////////////
-
 class Dbh {
     
     protected function connect() {
