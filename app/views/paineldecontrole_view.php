@@ -3,20 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Sissi Semi Joias e Acessórios</title>
-  <link rel="stylesheet" href="styles/dashboard.css">
+  <link rel="stylesheet" href="styles/global.css">
+  <link rel="stylesheet" href="styles/paineldecontrole.css">
 </head>
 <body>
 
   <div class="container">
-    <div class="card dashboard">
+    <div class="card paineldecontrole">
 
       <aside class="sidebar">
         <h2>Sissi Semi Joias e Acessórios</h2>
 
         <nav>
-          <a class="active">Painel de Controle</a>
-          <a>Produtos</a>
-          <a>Vendas</a>
+          <a href="/paineldecontrole" class="active">Painel de Controle</a>
+          <a href="produtos.php">Produtos</a>
+          <a href="vendas.php">Vendas</a>
           <a>Relatórios</a>
           <a>Estoque</a>
           <a>Controle de Usuários</a>
@@ -30,7 +31,6 @@
             <h1>Painel de Controle</h1>
             <span id="data-atual"></span>
           </div>
-          <a href="novavenda.php" class="btn-nova-venda">Nova Venda</a>
         </header>
 
         <section class="table">

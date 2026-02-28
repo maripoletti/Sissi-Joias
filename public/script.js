@@ -1,4 +1,3 @@
-
 const form = document.querySelector("#loginForm");
 
 if (form) {
@@ -12,6 +11,8 @@ if (form) {
       alert("Preencha todos os campos!");
       return;
     }
+
+    // Aqui depois liga no backend
   });
 }
 
@@ -70,13 +71,17 @@ if (cadastroForm) {
   });
 }
 
-const inputBuscar = document.getElementById("buscar");
-const lista = document.getElementById("lista-produtos");
-const mensagemVazia = document.getElementById("mensagem-vazia");
+// =====================
+// BUSCA (API) 
+// =====================
+(function initBuscaProdutos() {
+  const inputBuscar = document.getElementById("buscar");
+  const lista = document.getElementById("lista-produtos");
+  const mensagemVazia = document.getElementById("mensagem-vazia");
+  const produtosUrl = document.querySelector("[data-produtos-url]")?.dataset?.produtosUrl;
 
-const produtosUrl = document.querySelector("[data-produtos-url]")?.dataset.produtosUrl;
+  if (!inputBuscar || !lista || !mensagemVazia || !produtosUrl) return;
 
-if (inputBuscar && lista && mensagemVazia && produtosUrl) {
   function renderizarProdutos(produtos) {
     lista.innerHTML = "";
 
@@ -101,7 +106,6 @@ if (inputBuscar && lista && mensagemVazia && produtosUrl) {
   async function buscarProdutos(termo) {
     try {
       const resp = await fetch(`${produtosUrl}?search=${encodeURIComponent(termo)}`);
-
       if (!resp.ok) throw new Error(`Falha ao buscar produtos (HTTP ${resp.status})`);
 
       const produtos = await resp.json();
@@ -120,4 +124,4 @@ if (inputBuscar && lista && mensagemVazia && produtosUrl) {
   });
 
   buscarProdutos("");
-}
+})();

@@ -120,3 +120,19 @@ input {
   font-weight: bold;
   color: #D4AF37;
 }
+
+.btn-voltar {
+  background: transparent;
+  border: 1px solid #D4AF37;
+  color: #D4AF37;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: 0.3s;
+}
+
+.btn-voltar:hover {
+  background: #D4AF37;
+  color: #3b0145;
+}

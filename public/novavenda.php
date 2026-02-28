@@ -16,6 +16,8 @@
         </div>
     </header>
 
+    <button class="btn-voltar" onclick="history.back()">← Voltar</button>
+
     <div class="progress">
         <div class="step active">Produtos</div>
         <div class="step">Cliente</div>
@@ -110,4 +112,4 @@ atualizarBarra(0);
 <script src="scripts/script.js" defer></script>
 
 </body>
-</html>
+</html> 
