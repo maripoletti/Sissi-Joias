@@ -24,10 +24,9 @@ switch ($uri) {
       require_once '../app/controllers/login_contr.php';
     }
     break;
-
-  case '/dashboard': 
-    if (isset($_SESSION['user_id'])) {
-      require_once '../app/views/dashboard_view.php';
+  case '/paineldecontrole': 
+    if (!isset($_SESSION['user_id'])) {
+      require_once '../app/views/paineldecontrole_view.php';
       break;
     } else {
       header('Location: /login');
@@ -61,3 +60,4 @@ switch ($uri) {
   default:
     require_once '../app/views/404.html';
 }
+

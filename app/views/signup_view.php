@@ -28,7 +28,7 @@ declare(strict_types= 1);
         }
         ?>
 
-        <form action="" method="POST">
+        <form id="cadastroForm" action="/cadastro" method="POST">
 
             <label>Nome completo</label>
             <input type="text" name="name" placeholder="Seu nome completo" required>
@@ -54,8 +54,15 @@ declare(strict_types= 1);
             <?php endif; ?>
 
 
+            <label>Confirmar Senha</label>
+            <input type="password" name="pwdRepeat" placeholder="Confirme sua senha">
+
+            <?php if (isset($errors["pwd_match"])): ?>
+                <p class="errors"><?= $errors["pwd_match"] ?></p>
+            <?php endif; ?>
+
             <label>Telefone</label>
-            <input type="text" name="phone" inputmode="numeric" placeholder="(00) 00000-0000" required>
+            <input  type= "text" name="telefone" placeholder="(XX) XXXXX-XXXX" maxlength="11" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
 
             <?php if (isset($errors["phone_wrong"])): ?>
                 <p class="errors"><?= $errors["phone_wrong"] ?></p>
