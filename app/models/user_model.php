@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types= 1);
+require_once __DIR__ ."/../../config/dbh.config.php";
 
 class User_model extends Dbh {
 

@@ -45,6 +45,8 @@ declare(strict_types= 1);
             }
             unset($_SESSION['errors_login']);
           }
+
+          var_dump($_SESSION);
         ?>
       </div>
 

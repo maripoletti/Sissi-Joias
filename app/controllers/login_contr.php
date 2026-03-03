@@ -25,6 +25,6 @@ if($errors) {
     $_SESSION['user_id'] = $user['UserID'];
     $role = AuthMiddleware::user()['RoleID'];
     $_SESSION['role'] = $role;
-    header('Location: /dashboard');
+    header('Location: /paineldecontrole');
     exit;
 }

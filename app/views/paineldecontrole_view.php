@@ -16,12 +16,12 @@
 
         <nav>
           <a href="/paineldecontrole" class="active">Painel de Controle</a>
-          <a href="produtos.php">Produtos</a>
-          <a href="vendas.php">Vendas</a>
-          <a>Relatórios</a>
-          <a>Estoque</a>
-          <a>Controle de Usuários</a>
-          <a>Impressoras</a>
+          <a href="produtos">Produtos</a>
+          <a href="/vendas">Vendas</a>
+          <a href="/relatorios">Relatórios</a>
+          <a href="/estoque">Estoque</a>
+          <a href="/usuarios">Controle de Usuários</a>
+          <a href="/impressoras">Impressoras</a>
         </nav>
       </aside>
 
@@ -31,7 +31,6 @@
             <h1>Painel de Controle</h1>
             <span id="data-atual"></span>
           </div>
-          <a href="/novavenda" class="btn-nova-venda">Nova Venda</a>
         </header>
 
         <section class="table">
