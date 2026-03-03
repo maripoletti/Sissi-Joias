@@ -1,6 +1,7 @@
-const form = document.querySelector("#loginForm");
+(function initLogin() {
+  const form = document.querySelector("#loginForm");
+  if (!form) return;
 
-if (form) {
   form.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -14,11 +15,15 @@ if (form) {
 
     // Aqui depois liga no backend
   });
-}
+})();
 
-const dataElemento = document.getElementById("data-atual");
+// =====================
+// DATA NO TOPO (1x só)
+// =====================
+(function initDataTopo() {
+  const dataElemento = document.getElementById("data-atual");
+  if (!dataElemento) return;
 
-if (dataElemento) {
   const hoje = new Date();
   const opcoes = { weekday: "long", day: "2-digit", month: "long" };
 
@@ -26,18 +31,23 @@ if (dataElemento) {
   dataFormatada = dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
 
   dataElemento.textContent = dataFormatada;
-}
+})();
 
-const cadastroForm = document.getElementById("cadastroForm");
-const inputTelefone = document.querySelector('input[name="telefone"]');
+// =====================
+// CADASTRO + TELEFONE
+// =====================
+(function initCadastro() {
+  const cadastroForm = document.getElementById("cadastroForm");
+  const inputTelefone = document.querySelector('input[name="telefone"]');
 
-if (inputTelefone) {
-  inputTelefone.addEventListener("input", () => {
-    inputTelefone.value = inputTelefone.value.replace(/\D/g, "").slice(0, 11);
-  });
-}
+  if (inputTelefone) {
+    inputTelefone.addEventListener("input", () => {
+      inputTelefone.value = inputTelefone.value.replace(/\D/g, "").slice(0, 11);
+    });
+  }
 
-if (cadastroForm) {
+  if (!cadastroForm) return;
+
   cadastroForm.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -69,10 +79,10 @@ if (cadastroForm) {
 
     window.location.href = "dashboard.php";
   });
-}
+})();
 
 // =====================
-// BUSCA (API) 
+// BUSCA (API)
 // =====================
 (function initBuscaProdutos() {
   const inputBuscar = document.getElementById("buscar");
@@ -124,4 +134,232 @@ if (cadastroForm) {
   });
 
   buscarProdutos("");
+})();
+
+// =====================
+// CALENDÁRIO + EVENTOS
+// =====================
+(function initCalendario() {
+  const calDias = document.getElementById("calDias");
+  const calTitulo = document.getElementById("calTitulo");
+  const prevMes = document.getElementById("prevMes");
+  const nextMes = document.getElementById("nextMes");
+
+  // Modal / formulário
+  const btnAddEvento = document.getElementById("btnAddEvento");
+  const modal = document.getElementById("modalEvento");
+  const btnFecharModal = document.getElementById("btnFecharModal");
+  const btnCancelar = document.getElementById("btnCancelar");
+  const formEvento = document.getElementById("formEvento");
+
+  const evtTitulo = document.getElementById("eventoTitulo");
+  const evtData = document.getElementById("eventoData");
+  const evtHora = document.getElementById("eventoHora");
+  const evtTipo = document.getElementById("eventoTipo");
+  const evtComentario = document.getElementById("eventoComentario");
+
+  // se a página não tem calendário, não roda nada (sem erro)
+  if (!calDias || !calTitulo || !prevMes || !nextMes) return;
+
+  const STORAGE_KEY = "eventos_calendario_v1";
+
+  function gerarId() {
+    return "ev_" + Math.random().toString(16).slice(2) + Date.now().toString(16);
+  }
+
+  function iso(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function normalizarData(valor) {
+    const v = (valor || "").trim();
+
+    if (/^\d{4}-\d{2}-\d{2}$/.test(v)) return v;
+
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) {
+      const [dd, mm, yyyy] = v.split("/");
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    return "";
+  }
+
+  function loadEventos() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      const parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) {
+      console.error("Erro ao ler eventos do localStorage:", e);
+      return [];
+    }
+  }
+
+  function saveEventos(eventos) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(eventos));
+  }
+
+  let eventos = loadEventos();
+
+  const seed = [
+    { date: "2026-02-28", type: "reserva", text: "Reserva", titulo: "Reserva", comentario: "" },
+    { date: "2026-03-05", type: "aniversario", text: "Aniver", titulo: "Aniversário", comentario: "" }
+  ];
+
+  seed.forEach((s) => {
+    const existe = eventos.some((e) => e.date === s.date && e.type === s.type && e.text === s.text);
+    if (!existe) eventos.push({ id: gerarId(), hora: "", createdAt: new Date().toISOString(), ...s });
+  });
+
+  saveEventos(eventos);
+
+  let view = new Date();
+
+  function abrirModal(preencherData = "") {
+    if (!modal || !formEvento) return;
+
+    modal.classList.remove("hidden");
+
+    // já salva no padrão YYYY-MM-DD
+    if (evtData && preencherData) evtData.value = preencherData;
+
+    evtTitulo?.focus();
+  }
+
+  function fecharModal() {
+    if (!modal || !formEvento) return;
+    modal.classList.add("hidden");
+    formEvento.reset();
+  }
+
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) fecharModal();
+  });
+
+  btnAddEvento?.addEventListener("click", () => abrirModal());
+  btnFecharModal?.addEventListener("click", fecharModal);
+  btnCancelar?.addEventListener("click", fecharModal);
+
+  function renderCalendar() {
+    const year = view.getFullYear();
+    const month = view.getMonth();
+
+    const first = new Date(year, month, 1);
+    const startDay = first.getDay(); // 0 dom
+
+    const monthName = first.toLocaleDateString("pt-BR", {
+      month: "long",
+      year: "numeric"
+    });
+
+    calTitulo.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
+    calDias.innerHTML = "";
+
+    const totalCells = 42;
+
+    for (let i = 0; i < totalCells; i++) {
+      const cellDate = new Date(year, month, 1 + (i - startDay));
+      const inMonth = cellDate.getMonth() === month;
+
+      const el = document.createElement("div");
+      el.className = "day" + (inMonth ? "" : " muted");
+      el.dataset.date = iso(cellDate);
+
+      const num = document.createElement("div");
+      num.className = "num";
+      num.textContent = cellDate.getDate();
+      el.appendChild(num);
+
+      const key = iso(cellDate);
+      const evs = eventos.filter((e) => e.date === key);
+
+      evs.forEach((e) => {
+        const pill = document.createElement("div");
+        const isAniver = e.type === "aniver" || e.type === "aniversario";
+
+        pill.className = "pill" + (isAniver ? " aniver" : "");
+        pill.textContent = e.text || "Evento";
+
+        const detalhes = [
+          e.titulo ? `Título: ${e.titulo}` : "",
+          e.hora ? `Hora: ${e.hora}` : "",
+          e.comentario ? `Comentário: ${e.comentario}` : ""
+        ].filter(Boolean).join("\n");
+
+        if (detalhes) pill.title = detalhes;
+
+        pill.addEventListener("click", (evt) => {
+          evt.stopPropagation();
+          const ok = confirm("Excluir este evento?");
+          if (!ok) return;
+
+          eventos = eventos.filter((x) => x.id !== e.id);
+          saveEventos(eventos);
+          renderCalendar();
+        });
+
+        el.appendChild(pill);
+      });
+
+      el.addEventListener("click", () => abrirModal(el.dataset.date));
+      calDias.appendChild(el);
+    }
+  }
+
+  prevMes.addEventListener("click", () => {
+    view = new Date(view.getFullYear(), view.getMonth() - 1, 1);
+    renderCalendar();
+  });
+
+  nextMes.addEventListener("click", () => {
+    view = new Date(view.getFullYear(), view.getMonth() + 1, 1);
+    renderCalendar();
+  });
+
+  formEvento?.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const titulo = (evtTitulo?.value || "").trim();
+    const data = normalizarData(evtData?.value || "");
+    const hora = (evtHora?.value || "").trim();
+    const tipo = (evtTipo?.value || "outro").trim();
+    const comentario = (evtComentario?.value || "").trim();
+
+    if (!titulo || !data) {
+      alert("Preencha Título e Data.");
+      return;
+    }
+
+    let text = "Evento";
+    if (tipo === "aniversario" || tipo === "aniver") text = "Aniver";
+    else if (tipo === "reserva") text = "Reserva";
+    else if (tipo === "lembrete") text = "Lembrete";
+
+    const novo = {
+      id: gerarId(),
+      date: data, // ✅ sempre YYYY-MM-DD
+      type: tipo,
+      text,
+      titulo,
+      hora,
+      comentario,
+      createdAt: new Date().toISOString()
+    };
+
+    eventos.push(novo);
+    saveEventos(eventos);
+
+    fecharModal();
+
+    // ✅ navega pro mês do evento (agora sempre funciona)
+    const [y, m] = data.split("-").map(Number);
+    if (y && m) view = new Date(y, m - 1, 1);
+
+    renderCalendar();
+  });
+
+  renderCalendar();
 })();
