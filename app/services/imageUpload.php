@@ -7,7 +7,7 @@ class imageUpload {
 
     public function __construct(?string $dir = null) {
         if (!$dir) {
-            $dir = realpath(__DIR__ . '/../../public/uploads') ?: __DIR__ . '/../../public/uploads';
+            $dir = realpath(__DIR__ . '/../../www/uploads') ?: __DIR__ . '/../../www/uploads';
         }
         $this->uploadDir = $dir;
 

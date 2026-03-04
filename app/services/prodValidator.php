@@ -2,8 +2,8 @@
 
 declare(strict_types= 1);
 
-class ProdValidator {
-    public static function validate_add(string $name, array $tags, float $price, int $stock, string $photo) {
+class prodValidator {
+    public static function validate_add(string $name, array $tags, float $price, int $stock, null|string $photo) {
         $errors = [];
         $clean = [
             'name' => trim($name ?? ''),
@@ -13,7 +13,7 @@ class ProdValidator {
             'photo' => $photo
         ];
 
-        if(empty($clean['name']) || empty($clean['price'])) {
+        if(empty($clean['name']) || $clean['price'] <= 0) {
             $errors['needed_fields_empty'] = 'Existe algum campo vazio.';
         }
         if (mb_strlen($clean['name']) >= 100) {
@@ -28,7 +28,7 @@ class ProdValidator {
             'errors'=> $errors
         ];
     }
-    public static function validate_update(int $id, string $name, float $price, string $photo) {
+    public static function validate_update(int $id, string $name, float $price, null|string $photo) {
         $errors = [];
         $clean = [
             'id' => $id,

@@ -5,7 +5,7 @@ ini_set("session.use_strict_mode", 1);
 
 session_set_cookie_params([
     'lifetime' => 60*60*24*7*4.3,
-    /* 'domain' => 'www.sissisemijoiaseacessorios.com.br', */
+    'domain' => 'www.sissisemijoiaseacessorios.com.br',
     'path' => '/',
     'secure' => true,
     'httponly' => true

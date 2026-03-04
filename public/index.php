@@ -78,7 +78,7 @@ switch ($uri) {
 
   case '/api/produtos/update':
     if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosUpdate_contr.php';/* asdfasdasd */
+      require_once '../app/controllers/produtosUpdate_contr.php';
       break;
     } else {
       AuthMiddleware::user();

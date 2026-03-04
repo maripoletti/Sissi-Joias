@@ -9,6 +9,8 @@ header("Content-Type: application/json");
 $upload = new imageUpload();
 $db = new produtos_model();
 
+echo"asdasdasd";
+
 $fotoPath = $upload->image($_FILES['foto'] ?? []);
 
 $name = $_POST["nome"] ?? "";
@@ -16,14 +18,13 @@ $tags = $_POST["categoria"] ?? [];
 $price = (float)($_POST["preco"] ?? "");
 $stock = (int)($_POST["estoque"] ?? 0);
 
-$validate = prodValidator::validate_add($name, $tags, $price, $stock, $photo);
-var_dump( $validate );
+$validate = prodValidator::validate_add($name, $tags, $price, $stock, $fotoPath);
+
 if($validate['errors']) {
     $_SESSION['error_add_prod'] = $validate['errors'];
     exit;
 } else {
-    $asd = $db->set_products($validate['data']);
-    var_dump( $asd );
+    $db->set_products($validate['data']);
     exit;
 }
 

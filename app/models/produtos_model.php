@@ -77,7 +77,6 @@ class Produtos_model extends Dbh {
             }
             
             $pdo->commit();
-            return $data;
         } catch (PDOException $e) {
             $pdo->rollBack();
             echo "Erro na conexão: " . $e->getMessage();
@@ -96,19 +95,29 @@ class Produtos_model extends Dbh {
             $stmt->bindParam(":id", $data["id"]);
             $stmt->execute();
             
-            $query =
-            "UPDATE Sales_Products
-            SET
-                ProductName = :name,
-                Price = :price,
-                ImagePath = :photo
-            WHERE ProductID = :id
-            ";
+            $campos = [
+                "ProductName = :name",
+                "Price = :price"
+            ];
+
+            if (!empty($data["photo"])) {
+                $campos[] = "ImagePath = :photo";
+            }
+
+            $query = "UPDATE Sales_Products SET "
+                    . implode(", ", $campos) .
+                    " WHERE ProductID = :id";
+
             $stmt = $pdo->prepare($query);
+
             $stmt->bindParam(":name", $data["name"]);
             $stmt->bindParam(":price", $data["price"]);
-            $stmt->bindParam(":photo", $data["photo"]);
             $stmt->bindParam(":id", $data["id"]);
+
+            if (!empty($data["photo"])) {
+                $stmt->bindParam(":photo", $data["photo"]);
+            }
+
             $stmt->execute();
 
             $pdo->commit();
