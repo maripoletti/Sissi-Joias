@@ -17,9 +17,7 @@
   });
 })();
 
-// =====================
-// DATA NO TOPO (1x só)
-// =====================
+
 (function initDataTopo() {
   const dataElemento = document.getElementById("data-atual");
   if (!dataElemento) return;
@@ -33,9 +31,7 @@
   dataElemento.textContent = dataFormatada;
 })();
 
-// =====================
-// CADASTRO + TELEFONE
-// =====================
+
 (function initCadastro() {
   const cadastroForm = document.getElementById("cadastroForm");
   const inputTelefone = document.querySelector('input[name="telefone"]');
@@ -81,9 +77,6 @@
   });
 })();
 
-// =====================
-// BUSCA (API)
-// =====================
 (function initBuscaProdutos() {
   const inputBuscar = document.getElementById("buscar");
   const lista = document.getElementById("lista-produtos");
@@ -136,9 +129,6 @@
   buscarProdutos("");
 })();
 
-// =====================
-// CALENDÁRIO + EVENTOS
-// =====================
 (function initCalendario() {
   const calDias = document.getElementById("calDias");
   const calTitulo = document.getElementById("calTitulo");
@@ -223,7 +213,6 @@
 
     modal.classList.remove("hidden");
 
-    // já salva no padrão YYYY-MM-DD
     if (evtData && preencherData) evtData.value = preencherData;
 
     evtTitulo?.focus();
@@ -340,7 +329,7 @@
 
     const novo = {
       id: gerarId(),
-      date: data, // ✅ sempre YYYY-MM-DD
+      date: data, //
       type: tipo,
       text,
       titulo,
@@ -354,7 +343,6 @@
 
     fecharModal();
 
-    // ✅ navega pro mês do evento (agora sempre funciona)
     const [y, m] = data.split("-").map(Number);
     if (y && m) view = new Date(y, m - 1, 1);
 
@@ -363,3 +351,93 @@
 
   renderCalendar();
 })();
+
+const vendas = [
+{
+produto:"Anel Solitário Ouro 18k",
+pagamento:"Pix",
+vendedora:"Ana Paula",
+cliente:"Maria Silva",
+qtd:1,
+data:"28/02/2026",
+valor:420
+},
+{
+produto:"Pulseira Tennis Cristal",
+pagamento:"Cartão Crédito",
+vendedora:"Fernanda Lima",
+cliente:"Carla Souza",
+qtd:1,
+data:"01/03/2026",
+valor:250
+},
+{
+produto:"Colar Coração Folheado",
+pagamento:"Dinheiro",
+vendedora:"Ana Paula",
+cliente:"Juliana Costa",
+qtd:2,
+data:"01/03/2026",
+valor:178
+},
+{
+produto:"Conjunto Pérola Clássico",
+pagamento:"Pix",
+vendedora:"Beatriz Mendes",
+cliente:"Patrícia Rocha",
+qtd:1,
+data:"02/03/2026",
+valor:290
+}
+];
+
+function formatBRL(valor){
+return valor.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+}
+
+function criarCard(v){
+return `
+<article class="sale-card">
+
+<div>
+<div class="title-row">
+<h3 class="prod-title">${v.produto}</h3>
+<span class="pill">${v.pagamento}</span>
+</div>
+
+<div class="meta">
+<b>${v.vendedora}</b> · Cliente: <b>${v.cliente}</b> · Qtd: <b>${v.qtd}</b>
+</div>
+
+<div class="date">${v.data}</div>
+</div>
+
+<div class="price">
+${formatBRL(v.valor)}
+</div>
+
+</article>
+`;
+}
+
+function carregarVendas(){
+
+const lista = document.getElementById("listaVendas");
+const qtd = document.getElementById("qtdVendas");
+
+if(!lista || !qtd) return;
+
+lista.innerHTML = vendas.map(criarCard).join("");
+qtd.textContent = vendas.length;
+
+}
+
+const btn = document.getElementById("btnRegistrar");
+
+if(btn){
+btn?.addEventListener("click", () => {
+window.location.href = "novavenda.php";
+});
+}
+
+carregarVendas();
