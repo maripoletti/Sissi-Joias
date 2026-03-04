@@ -60,6 +60,13 @@ switch ($uri) {
         break;
       }
     }
+  case'/vendas':
+    if (isset($_SESSION['user_id'])) {
+      if ($method === 'GET') {
+        require_once '../app/views/vendas_view.php';
+        break;
+      }
+    }
 
   case '/produtos':
     if(isset($_SESSION['user_id'])) {

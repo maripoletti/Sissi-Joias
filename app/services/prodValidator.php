@@ -28,12 +28,13 @@ class prodValidator {
             'errors'=> $errors
         ];
     }
-    public static function validate_update(int $id, string $name, float $price, null|string $photo) {
+    public static function validate_update(int $id, string $name, float $price, int $stock, null|string $photo) {
         $errors = [];
         $clean = [
             'id' => $id,
             'name'  => trim($name ?? ''),
             'price' => abs($price),
+            'stock' => abs($stock ?? 0),
             'photo' => $photo
         ];
         if (empty($clean['id'])) {
@@ -44,6 +45,9 @@ class prodValidator {
         }
         if (empty($clean['name']) || empty($clean['price'])) {
             $errors['name_empty'] = 'Preencha todos os campos.';
+        }
+        if ($clean['stock'] < 0 || $clean['price'] < 0) {
+            $errors['invalid_values'] = 'Valores inválidos.';
         }
         if (mb_strlen($clean['name']) >= 100) {
             $errors['big_name'] = 'Limite máximo de caracteres excedido!';

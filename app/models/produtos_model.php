@@ -4,14 +4,23 @@ declare(strict_types=1);
 require_once __DIR__ . "/../../config/dbh.config.php";
 
 class Produtos_model extends Dbh {
-    public function delete_products($id) {
+    public function delete_products(int $id) {
         $pdo = $this->connect();
 
         try {
+            $pdo->beginTransaction();
+
+            $query = "DELETE FROM Prod_ProductsTags WHERE ProductID = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+
             $query = "DELETE FROM Sales_Products WHERE ProductID = :id";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(":id", $id);
             $stmt->execute();
+
+            $pdo->commit();
         } catch (PDOException $e) {
             $pdo->rollBack();
             echo "Erro na conexão: " . $e->getMessage();
@@ -97,7 +106,8 @@ class Produtos_model extends Dbh {
             
             $campos = [
                 "ProductName = :name",
-                "Price = :price"
+                "Price = :price",
+                "StockQuantity = :stock"
             ];
 
             if (!empty($data["photo"])) {
@@ -112,6 +122,7 @@ class Produtos_model extends Dbh {
 
             $stmt->bindParam(":name", $data["name"]);
             $stmt->bindParam(":price", $data["price"]);
+            $stmt->bindParam(":stock", $data["stock"]);
             $stmt->bindParam(":id", $data["id"]);
 
             if (!empty($data["photo"])) {

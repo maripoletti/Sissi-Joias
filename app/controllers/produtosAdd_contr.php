@@ -9,8 +9,6 @@ header("Content-Type: application/json");
 $upload = new imageUpload();
 $db = new produtos_model();
 
-echo"asdasdasd";
-
 $fotoPath = $upload->image($_FILES['foto'] ?? []);
 
 $name = $_POST["nome"] ?? "";

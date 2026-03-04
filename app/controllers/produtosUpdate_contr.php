@@ -18,8 +18,9 @@ if (!empty($_FILES['foto']['name'])) {
 $id = (int)($_POST['id'] ?? 0);
 $nome = $_POST['nome'] ?? "";
 $preco = (float)($_POST['preco'] ?? 0);
+$estoque = (int)($_POST['estoque'] ?? 0);
 
-$validate = prodValidator::validate_update($id, $nome, $preco, $fotoPath);
+$validate = prodValidator::validate_update($id, $nome, $preco, $estoque, $fotoPath);
 
 if($validate['errors']) {
     $_SESSION['error_upd_prod'] = $validate['errors'];

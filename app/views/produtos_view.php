@@ -396,11 +396,13 @@
 
     const file = editFoto.files && editFoto.files[0];
     if (file) produtos[idx].img = URL.createObjectURL(file);
-    
+
     const data = new FormData();
     data.append("id", id);
     data.append("nome", editNome.value.trim());
     data.append("preco", editPreco.value);
+    data.append("estoque", editEstoque.value);
+
     if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
 
     try {
