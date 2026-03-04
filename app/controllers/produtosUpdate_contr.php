@@ -3,16 +3,20 @@
 declare(strict_types= 1);
 require_once __DIR__ . "/../models/produtos_model.php";
 require_once __DIR__ . "/../services/prodValidator.php";
+require_once __DIR__ . "/../services/imageUpload.php";
 header("Content-Type: application/json");
 
-$db = new Produtos_model();
+$upload = new imageUpload();
+$db = new produtos_model();
+
+$fotoPath = $upload->image($_FILES['foto'] ?? []);
 
 $id = (int)($_POST['id'] ?? 0);
 $nome = $_POST['nome'] ?? "";
 $preco = (float)($_POST['preco'] ?? 0);
-$foto = $_FILES['foto']['tmp_name'] ?? null;
 
-$validate = ProdValidator::validate_update($id, $nome, $preco, $foto);
+
+$validate = prodValidator::validate_update($id, $nome, $preco, $fotoPath);
 if($validate['errors']) {
     $_SESSION['error_upd_prod'] = $validate['errors'];
     exit;

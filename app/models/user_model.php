@@ -3,7 +3,7 @@
 declare(strict_types= 1);
 require_once __DIR__ ."/../../config/dbh.config.php";
 
-class User_model extends Dbh {
+class user_model extends Dbh {
 
     public function find_role_by_id(int $id) {
         $pdo = $this->connect();

@@ -90,6 +90,14 @@ switch ($uri) {
     } else {
       AuthMiddleware::user();
     }
+
+  case '/api/produtos/delete':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosDel_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
   default:
     require_once '../app/views/404.html';
 }

@@ -3,7 +3,7 @@
 declare(strict_types= 1);
 require __DIR__ . "/../../config/dbh.config.php";
 
-class Signup_model extends Dbh {
+class signup_model extends Dbh {
     public function send_request(string $email, string $pwd, string $name, string $phone) {
         $pdo = $this->connect();
 

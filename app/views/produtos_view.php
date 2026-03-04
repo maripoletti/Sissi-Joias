@@ -263,7 +263,7 @@
 
             <div class="actions">
               <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
-              <button class="btn btn-outline" type="button" onclick="alert('Aqui liga no backend pra excluir')">Excluir</button>
+              <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">Excluir</button>
             </div>
           </div>
         </article>
@@ -386,6 +386,29 @@
     fecharModalAdicionar();
     render(true);
   });
+
+  async function formDel(id) {
+  if (!confirm("Deseja realmente excluir este produto?")) return;
+
+  try {
+    const res = await fetch(`/api/produtos/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+
+    if (!res.ok) throw new Error("Erro ao excluir produto");
+
+    produtos = produtos.filter(p => p.id !== id);
+    render(true);
+
+  } catch (err) {
+    console.error(err);
+    alert("Não foi possível excluir o produto.");
+  }
+}
+
+window.formDel = formDel;
 
   // ===== FECHAR COM ESC (para os dois) =====
   document.addEventListener("keydown", (e) => {

@@ -2,7 +2,7 @@
 
 declare(strict_types= 1);
 
-class AuthValidator {
+class authValidator {
     public static function validateLoginInput(string $email, string $pwd) {
         $errors = [];
         if(empty($email) || empty ($pwd)) {

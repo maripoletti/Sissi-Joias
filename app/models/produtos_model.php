@@ -4,6 +4,19 @@ declare(strict_types=1);
 require_once __DIR__ . "/../../config/dbh.config.php";
 
 class Produtos_model extends Dbh {
+    public function delete_products($id) {
+        $pdo = $this->connect();
+
+        try {
+            $query = "DELETE FROM Sales_Products WHERE ProductID = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":id", $id);
+            $stmt->execute();
+        } catch (PDOException $e) {
+            $pdo->rollBack();
+            echo "Erro na conexão: " . $e->getMessage();
+        }
+    }
     public function set_products(array $data) {
         $pdo = $this->connect();
 

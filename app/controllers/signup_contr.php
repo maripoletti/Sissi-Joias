@@ -10,9 +10,9 @@ $phone = $_POST["phone"] ?? "";
 
 require_once __DIR__ . '/../models/signup_model.php';
 require_once __DIR__ . '/../services/authValidator.php';
-$signup = new Signup_model();
+$signup = new signup_model();
 
-$validate = AuthValidator::validateSignup($name, $email, $pwd, $phone, $pwdRepeat);
+$validate = authValidator::validateSignup($name, $email, $pwd, $phone, $pwdRepeat);
 $errors = $validate['errors'] ?? [];
 
 if ($errors) {

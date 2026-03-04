@@ -28,7 +28,7 @@ class ProdValidator {
             'errors'=> $errors
         ];
     }
-    public static function validate_update(int $id, string $name, float $price, null|string $photo) {
+    public static function validate_update(int $id, string $name, float $price, string $photo) {
         $errors = [];
         $clean = [
             'id' => $id,

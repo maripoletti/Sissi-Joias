@@ -3,7 +3,7 @@
 declare(strict_types= 1);
 require_once __DIR__ . "/../../config/dbh.config.php";
 
-class Login_model extends Dbh {
+class login_model extends Dbh {
     public function get_user_by_email($email) {
         try {
             $query = 'SELECT * FROM Auth_Users WHERE Email = :email;';
