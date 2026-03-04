@@ -26,6 +26,7 @@
 <a href="usuarios.php">Controle de Usuários</a>
 <a href="impressoras.php">Impressoras</a>
 <a href="fornecedores.php">Fornecedores</a>
+<a href="revendedores.php">Revendedores</a>
 </nav>
 </aside>
 

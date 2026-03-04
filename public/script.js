@@ -148,6 +148,13 @@
   const evtTipo = document.getElementById("eventoTipo");
   const evtComentario = document.getElementById("eventoComentario");
 
+  // painel detalhe + lista aniversários
+  const calDetail = document.getElementById("calDetail");
+  const detailTitle = document.getElementById("detailTitle");
+  const detailBody = document.getElementById("detailBody");
+  const btnFecharDetalhe = document.getElementById("btnFecharDetalhe");
+  const listaAniversarios = document.getElementById("listaAniversarios");
+
   // se a página não tem calendário, não roda nada (sem erro)
   if (!calDias || !calTitulo || !prevMes || !nextMes) return;
 
@@ -177,6 +184,17 @@
     return "";
   }
 
+  function formatarDataBR(yyyy_mm_dd) {
+    if (!yyyy_mm_dd) return "";
+    const [y, m, d] = yyyy_mm_dd.split("-");
+    return `${d}/${m}/${y}`;
+  }
+
+  function isAniversario(tipo) {
+    const t = (tipo || "").toLowerCase();
+    return t === "aniversario" || t === "aniver";
+  }
+
   function loadEventos() {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -194,9 +212,10 @@
 
   let eventos = loadEventos();
 
+  // seeds só pra testar
   const seed = [
     { date: "2026-02-28", type: "reserva", text: "Reserva", titulo: "Reserva", comentario: "" },
-    { date: "2026-03-05", type: "aniversario", text: "Aniver", titulo: "Aniversário", comentario: "" }
+    { date: "2000-05-12", type: "aniversario", text: "Aniver", titulo: "Aniversário Fulano", comentario: "Cliente prefere Whats, gosta de dourado." }
   ];
 
   seed.forEach((s) => {
@@ -232,6 +251,120 @@
   btnFecharModal?.addEventListener("click", fecharModal);
   btnCancelar?.addEventListener("click", fecharModal);
 
+  function fecharDetalhe() {
+    if (!calDetail) return;
+    calDetail.style.display = "none";
+  }
+
+  btnFecharDetalhe?.addEventListener("click", fecharDetalhe);
+
+  function abrirDetalheDoDia(dataISO) {
+    if (!calDetail || !detailTitle || !detailBody) return;
+
+    const evs = eventos.filter((e) => e.date === dataISO);
+
+    detailTitle.textContent = `Dia ${formatarDataBR(dataISO)}`;
+
+    if (evs.length === 0) {
+      detailBody.innerHTML = `<p class="muted">Sem eventos nesse dia.</p>`;
+    } else {
+      detailBody.innerHTML = evs.map((e) => {
+        const tipoLabel = isAniversario(e.type) ? "Aniversário" : (e.type || "Evento");
+        const horaLabel = e.hora ? ` • ${e.hora}` : "";
+        const comentario = e.comentario ? e.comentario : "(Sem descrição)";
+        const titulo = e.titulo || e.text || "Evento";
+
+        return `
+          <div class="detail-item" style="padding:10px;border:1px solid rgba(0,0,0,.06);border-radius:12px;margin-bottom:8px;background:#fff;">
+            <div style="display:flex;justify-content:space-between;gap:10px;">
+              <strong>${titulo}</strong>
+              <span style="opacity:.7;font-weight:700;">${tipoLabel}${horaLabel}</span>
+            </div>
+            <div style="margin-top:6px;opacity:.9;">${comentario}</div>
+            <div style="margin-top:8px;">
+              <button type="button" data-del="${e.id}" style="border:none;background:#f2f2f2;padding:8px 10px;border-radius:10px;cursor:pointer;">
+                🗑 Apagar
+              </button>
+            </div>
+          </div>
+        `;
+      }).join("");
+
+      // botão apagar dentro do detalhe
+      detailBody.querySelectorAll("[data-del]").forEach((btn) => {
+        btn.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          const id = btn.getAttribute("data-del");
+          if (!id) return;
+
+          const ok = confirm("Excluir este evento?");
+          if (!ok) return;
+
+          eventos = eventos.filter((x) => x.id !== id);
+          saveEventos(eventos);
+          renderCalendar();
+          renderizarListaAniversarios();
+          fecharDetalhe();
+        });
+      });
+    }
+
+    calDetail.style.display = "block";
+  }
+
+  // LISTA COM BOTÃO DE APAGAR (🗑) DO LADO
+  function renderizarListaAniversarios() {
+    if (!listaAniversarios) return;
+
+    const anivs = eventos
+      .filter((e) => isAniversario(e.type))
+      .sort((a, b) => (a.date || "").localeCompare(b.date || ""));
+
+    if (anivs.length === 0) {
+      listaAniversarios.innerHTML = `<p class="muted">Nenhum aniversariante cadastrado.</p>`;
+      return;
+    }
+
+    listaAniversarios.innerHTML = anivs.map((e) => `
+      <div class="birth-item" data-id="${e.id}">
+        <span class="birth-name">${e.titulo || "Cliente"}</span>
+
+        <div class="birth-right">
+          <span class="birth-date">${formatarDataBR(e.date)}</span>
+          <button class="birth-del" type="button" title="Apagar">🗑</button>
+        </div>
+      </div>
+    `).join("");
+
+    // clica no item abre o detalhe do dia (pra ler descrição)
+    listaAniversarios.querySelectorAll(".birth-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        const id = item.dataset.id;
+        const evItem = eventos.find((x) => x.id === id);
+        if (evItem?.date) abrirDetalheDoDia(evItem.date);
+      });
+    });
+
+    // clica no 🗑 apaga
+    listaAniversarios.querySelectorAll(".birth-del").forEach((btn) => {
+      btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        const card = btn.closest(".birth-item");
+        const id = card?.dataset?.id;
+        if (!id) return;
+
+        const ok = confirm("Apagar este aniversariante?");
+        if (!ok) return;
+
+        eventos = eventos.filter((x) => x.id !== id);
+        saveEventos(eventos);
+        renderCalendar();
+        renderizarListaAniversarios();
+        fecharDetalhe();
+      });
+    });
+  }
+
   function renderCalendar() {
     const year = view.getFullYear();
     const month = view.getMonth();
@@ -260,6 +393,13 @@
       const num = document.createElement("div");
       num.className = "num";
       num.textContent = cellDate.getDate();
+
+      // clicar no número abre detalhe (ler descrição)
+      num.addEventListener("click", (evt) => {
+        evt.stopPropagation();
+        abrirDetalheDoDia(el.dataset.date);
+      });
+
       el.appendChild(num);
 
       const key = iso(cellDate);
@@ -267,45 +407,52 @@
 
       evs.forEach((e) => {
         const pill = document.createElement("div");
-        const isAniver = e.type === "aniver" || e.type === "aniversario";
+        const aniver = isAniversario(e.type);
 
-        pill.className = "pill" + (isAniver ? " aniver" : "");
+        pill.className = "pill" + (aniver ? " aniver" : "");
         pill.textContent = e.text || "Evento";
 
-        const detalhes = [
-          e.titulo ? `Título: ${e.titulo}` : "",
-          e.hora ? `Hora: ${e.hora}` : "",
-          e.comentario ? `Comentário: ${e.comentario}` : ""
-        ].filter(Boolean).join("\n");
-
-        if (detalhes) pill.title = detalhes;
-
+        // clique normal: ler detalhe
+        // ALT + clique: apagar
         pill.addEventListener("click", (evt) => {
           evt.stopPropagation();
-          const ok = confirm("Excluir este evento?");
-          if (!ok) return;
 
-          eventos = eventos.filter((x) => x.id !== e.id);
-          saveEventos(eventos);
-          renderCalendar();
+          abrirDetalheDoDia(key);
+
+          if (evt.altKey) {
+            const ok = confirm("Excluir este evento?");
+            if (!ok) return;
+
+            eventos = eventos.filter((x) => x.id !== e.id);
+            saveEventos(eventos);
+            renderCalendar();
+            renderizarListaAniversarios();
+            fecharDetalhe();
+          }
         });
 
         el.appendChild(pill);
       });
 
+      // clicar no dia abre modal pra criar evento
       el.addEventListener("click", () => abrirModal(el.dataset.date));
+
       calDias.appendChild(el);
     }
+
+    renderizarListaAniversarios();
   }
 
   prevMes.addEventListener("click", () => {
     view = new Date(view.getFullYear(), view.getMonth() - 1, 1);
     renderCalendar();
+    fecharDetalhe();
   });
 
   nextMes.addEventListener("click", () => {
     view = new Date(view.getFullYear(), view.getMonth() + 1, 1);
     renderCalendar();
+    fecharDetalhe();
   });
 
   formEvento?.addEventListener("submit", (e) => {
@@ -329,7 +476,7 @@
 
     const novo = {
       id: gerarId(),
-      date: data, //
+      date: data,
       type: tipo,
       text,
       titulo,
@@ -347,9 +494,11 @@
     if (y && m) view = new Date(y, m - 1, 1);
 
     renderCalendar();
+    abrirDetalheDoDia(data);
   });
 
   renderCalendar();
+  renderizarListaAniversarios();
 })();
 
 const vendas = [
