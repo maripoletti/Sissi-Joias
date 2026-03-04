@@ -118,6 +118,15 @@
         <label>Preço</label>
         <input type="number" id="editPreco" step="0.01" min="0" required />
 
+        <label>Estoque</label>
+        <input type="number" id="editEstoque" min="0" required />
+
+        <label>Dar baixa no estoque</label>
+        <div class="baixa-row">
+          <input type="number" id="editBaixa" min="1" placeholder="Qtd" />
+          <button type="button" class="btn btn-outline" onclick="darBaixaEstoque()">Dar baixa</button>
+        </div>
+
         <label>Foto</label>
         <input type="file" id="editFoto" accept="image/*" />
 
@@ -198,6 +207,8 @@
   const editId = document.getElementById("editId");
   const editNome = document.getElementById("editNome");
   const editPreco = document.getElementById("editPreco");
+  const editEstoque = document.getElementById("editEstoque");
+  const editBaixa = document.getElementById("editBaixa");
   const editFoto = document.getElementById("editFoto");
   const editPreview = document.getElementById("editPreview");
 
@@ -265,8 +276,10 @@
     editId.value = prod.id;
     editNome.value = prod.nome;
     editPreco.value = prod.preco;
+    editEstoque.value = prod.estoque;
 
     editFoto.value = "";
+    editBaixa.value = "";
     editPreview.src = prod.img;
 
     modalEdit.classList.remove("hidden");
@@ -287,6 +300,33 @@
     editPreview.src = URL.createObjectURL(file);
   });
 
+  function darBaixaEstoque() {
+    const id = Number(editId.value);
+    const idx = produtos.findIndex(p => p.id === id);
+    if (idx === -1) return;
+
+    const atual = Number(editEstoque.value);
+    const baixa = Number(editBaixa.value);
+
+    if (!baixa || baixa <= 0) {
+      alert("Digite uma quantidade válida pra dar baixa.");
+      return;
+    }
+
+    if (baixa > atual) {
+      alert("Não dá: baixa maior que o estoque.");
+      return;
+    }
+
+    const novo = atual - baixa;
+    
+    editEstoque.value = novo;
+    produtos[idx].estoque = novo;
+
+    editBaixa.value = "";
+    render();
+  }
+
   formEdit.addEventListener("submit", (e) => {
     e.preventDefault();
 
@@ -296,6 +336,7 @@
 
     produtos[idx].nome = editNome.value.trim();
     produtos[idx].preco = Number(editPreco.value);
+    produtos[idx].estoque = Number(editEstoque.value);
 
     const file = editFoto.files && editFoto.files[0];
     if (file) produtos[idx].img = URL.createObjectURL(file);
@@ -304,7 +345,6 @@
     render();
   });
 
-  // ===== MODAL ADD =====
   function abrirModalAdicionar() {
     modalAdd.classList.remove("hidden");
   }
@@ -345,7 +385,6 @@
     render();
   });
 
-  // ===== FECHAR COM ESC (para os dois) =====
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (!modalEdit.classList.contains("hidden")) fecharModal();
@@ -356,6 +395,7 @@
   window.fecharModal = fecharModal;
   window.abrirModalAdicionar = abrirModalAdicionar;
   window.fecharModalAdicionar = fecharModalAdicionar;
+  window.darBaixaEstoque = darBaixaEstoque;
 
   [q, cat, price, sort].forEach(el => el.addEventListener("input", render));
   render();

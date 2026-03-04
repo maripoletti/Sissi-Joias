@@ -376,3 +376,12 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   margin-top: 16px;
 }
 
+.baixa-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.baixa-row input{
+  flex:1;
+}
