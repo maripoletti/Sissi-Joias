@@ -1,0 +1,185 @@
+.relatorios-page{
+  padding: 26px;
+  background: #f7f7fb;
+  height: 100%;
+  overflow: auto;
+}
+
+/* topo */
+.rel-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom: 18px;
+}
+.rel-top h1{
+  font-size: 28px;
+  color:#2b1140;
+}
+.rel-mes{
+  border: 1px solid #e7def7;
+  background:#fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  cursor:pointer;
+  color:#3a1a55;
+  font-weight: 600;
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.rel-icon{ opacity:.75; }
+
+/* cards topo */
+.rel-cards{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 18px;
+}
+.rel-card{
+  background:#fff;
+  border: 1px solid #efe9fb;
+  border-radius: 16px;
+  padding: 16px;
+  position:relative;
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+}
+.rel-label{
+  color:#8a7aa1;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+.rel-value{
+  color:#2b1140;
+  font-size: 22px;
+}
+.rel-badge{
+  position:absolute;
+  right:14px;
+  top:14px;
+  width:34px;
+  height:34px;
+  border-radius: 12px;
+  background:#f0eaff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* grid do meio */
+.rel-grid{
+  display:grid;
+  grid-template-columns: 1.2fr .9fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.rel-box{
+  background:#fff;
+  border: 1px solid #efe9fb;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.04);
+}
+.rel-box h3{
+  color:#2b1140;
+  font-size: 16px;
+  margin-bottom: 14px;
+}
+
+/* barras */
+.rel-bars{ display:flex; flex-direction:column; gap:12px; }
+.rel-bar{
+  display:grid;
+  grid-template-columns: 130px 1fr;
+  gap: 12px;
+  align-items:center;
+  color:#3a1a55;
+  font-size: 13px;
+}
+.rel-track{
+  height: 14px;
+  background:#f1ecfb;
+  border-radius: 999px;
+  overflow:hidden;
+}
+.rel-fill{
+  height:100%;
+  border-radius: 999px;
+}
+.rel-fill.roxo{ background:#7b2cff; }
+.rel-fill.dourado{ background:#c9a23a; }
+
+/* vendedoras */
+.rel-sellers{ display:flex; flex-direction:column; gap:16px; }
+.seller{
+  display:grid;
+  grid-template-columns: 36px 1fr auto;
+  gap: 12px;
+  align-items:center;
+}
+.rank{
+  width:32px; height:32px;
+  border-radius: 999px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight: 800;
+  color:#fff;
+}
+.rank.gold{ background:#c9a23a; }
+.rank.purple{ background:#7b2cff; }
+.rank.purple2{ background:#9a62ff; }
+
+.info strong{ display:block; color:#2b1140; margin-bottom: 8px; }
+.seller-track{
+  height: 8px;
+  background:#f1ecfb;
+  border-radius: 999px;
+  overflow:hidden;
+}
+.seller-fill{ height:100%; border-radius:999px; }
+.seller-fill.gold{ background:#c9a23a; }
+.seller-fill.purple{ background:#7b2cff; }
+.seller-fill.purple2{ background:#9a62ff; }
+
+.money{
+  color:#7b2cff;
+  font-weight:800;
+}
+
+/* pagamentos */
+.rel-pay{ margin-top: 0; }
+.rel-pay-grid{
+  display:grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+}
+.pay-card{
+  background:#f3efff;
+  border-radius: 16px;
+  padding: 16px;
+}
+.pay-title{
+  font-size: 12px;
+  font-weight: 800;
+  color:#7b2cff;
+  display:inline-block;
+  margin-bottom: 10px;
+}
+.pay-card h4{
+  font-size: 18px;
+  color:#2b1140;
+  margin-bottom: 6px;
+}
+.pay-card p{
+  color:#7b7a85;
+  font-size: 12px;
+}
+
+/* responsivo */
+@media (max-width: 1100px){
+  .rel-cards{ grid-template-columns: repeat(2, 1fr); }
+  .rel-grid{ grid-template-columns: 1fr; }
+  .rel-pay-grid{ grid-template-columns: repeat(2, 1fr); }
+}
