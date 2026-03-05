@@ -128,6 +128,19 @@
           <button type="button" class="btn btn-outline" onclick="darBaixaEstoque()">Dar baixa</button>
         </div>
 
+        <div class="form-group">
+          <label>Reservar peça</label>
+
+          <div class="row-actions">
+            <input type="number" id="qtdReserva" min="1" placeholder="Qtd" class="input"
+            />
+
+            <button type="button" id="btnReservar" class="btn btn-outline">Reservar peça</button>
+          </div>
+
+        <small class="hint">Dica: use a reserva para separar peças pra clientes ou revendedoras</small>
+        </div>
+
         <label>Foto</label>
         <input type="file" id="editFoto" accept="image/*" />
 

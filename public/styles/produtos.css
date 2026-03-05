@@ -43,7 +43,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   text-underline-offset: 4px;
 }
 
-/* MAIN */
 .main{
   flex: 1;
   padding: 26px 28px;
@@ -70,7 +69,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   font-weight: 700;
 }
 
-/* HERO */
 .hero{
   background: linear-gradient(90deg, rgba(75,13,79,.10), rgba(215,179,67,.10));
   border-radius: 18px;
@@ -80,7 +78,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
 .hero h2{ font-size: 20px; color: #2b2b2b; margin-bottom: 6px; }
 .hero p{ color: #5e5e5e; }
 
-/* FILTERS */
 .filters{
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr 1fr;
@@ -108,7 +105,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   background: #fff;
 }
 
-/* GRID */
 .grid-wrap{
   background: #fff;
   border-radius: 18px;
@@ -276,8 +272,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   margin-top: 16px;
 }
 
-/* ===== MODAL EDIT PRODUTO ===== */
-
 .modal.hidden { 
   display: none; 
 }
@@ -354,7 +348,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   box-shadow: 0 0 0 4px rgba(75,13,79,.10);
 }
 
-/* Preview */
 .modal-preview{
   margin-top: 12px;
 }
@@ -368,7 +361,6 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   margin-top: 6px;
 }
 
-/* Botões */
 .modal-actions{
   display: flex;
   justify-content: flex-end;
