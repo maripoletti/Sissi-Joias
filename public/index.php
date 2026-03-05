@@ -38,16 +38,15 @@ switch ($uri) {
     }
 
   case '/cadastro':
-    if (isset($_SESSION['user_id'])) {
-      if ($method === 'GET') {
-        require_once '../app/views/signup_view.php';
-        break;
-      }
-      if ($method === 'POST') {
-        require_once '../app/controllers/signup_contr.php';
-        break;
-      }
+    if ($method === 'GET') {
+      require_once '../app/views/signup_view.php';
+      break;
     }
+    if ($method === 'POST') {
+      require_once '../app/controllers/signup_contr.php';
+      break;
+    }
+    
     
   case '/novavenda':
     if (isset($_SESSION['user_id'])) {
@@ -56,9 +55,12 @@ switch ($uri) {
         break;
       }
       if ($method === 'POST') {
-        require_once '';
+        require_once '../app/controllers/novavenda_contr.php';
         break;
       }
+    } else {
+      header('Location: /login');
+      break;
     }
   case'/vendas':
     if (isset($_SESSION['user_id'])) {
@@ -66,6 +68,9 @@ switch ($uri) {
         require_once '../app/views/vendas_view.php';
         break;
       }
+    } else {
+      header('Location: /login');
+      break;
     }
 
   case '/produtos':
@@ -74,6 +79,9 @@ switch ($uri) {
         require_once '../app/views/produtos_view.php';
         break;
       }
+    } else {
+      header('Location: /login');
+      break;
     }
     break;
 

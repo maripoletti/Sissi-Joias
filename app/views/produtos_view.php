@@ -36,7 +36,7 @@
           </div>
 
           <div class="top-actions">
-            <a href="novavenda.php" class="btn-primary">+ Nova venda</a>
+            <a href="/novavenda" class="btn-primary">+ Nova venda</a>
             <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
           </div>
         </header>

@@ -10,7 +10,5 @@ $input = json_decode(file_get_contents('php://input'), true);
 
 $id = (int)$input["id"];
 
-var_dump($id);
-
 $db->delete_products($id);
 exit;
