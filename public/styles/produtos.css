@@ -6,6 +6,46 @@
   box-shadow: 0 0 40px rgba(20, 4, 19, 0.781);
 }
 
+.card.app {
+  width: 100%;
+  min-height: calc(100vh - 36px);
+  display: flex;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 10px 40px rgba(0,0,0,.08);
+}
+
+.sidebar{
+  width: 290px;
+  background: #4b0d4f;
+  padding: 28px 22px;
+  color: #fff;
+}
+.sidebar h2{
+  font-size: 22px;
+  line-height: 1.15;
+  margin-bottom: 22px;
+}
+.sidebar nav { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+.sidebar nav a{
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+.sidebar nav a:hover{ background: rgba(255,255,255,.08); }
+.sidebar nav a.active{
+  color: #d7b343;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.main{
+  flex: 1;
+  padding: 26px 28px;
+  background: #f6f7fb;
+}
 .top{
   display: flex;
   justify-content: space-between;
@@ -27,7 +67,6 @@
   font-weight: 700;
 }
 
-/* HERO */
 .hero{
   background: linear-gradient(90deg, rgba(75,13,79,.10), rgba(215,179,67,.10));
   border-radius: 18px;
@@ -37,7 +76,6 @@
 .hero h2{ font-size: 20px; color: #2b2b2b; margin-bottom: 6px; }
 .hero p{ color: #5e5e5e; }
 
-/* FILTERS */
 .filters{
   display: grid;
   grid-template-columns: 1.3fr 1fr 1fr 1fr;
@@ -65,7 +103,6 @@
   background: #fff;
 }
 
-/* GRID */
 .grid-wrap{
   background: #fff;
   border-radius: 18px;
@@ -233,8 +270,6 @@
   margin-top: 16px;
 }
 
-/* ===== MODAL EDIT PRODUTO ===== */
-
 .modal.hidden { 
   display: none; 
 }
@@ -311,7 +346,6 @@
   box-shadow: 0 0 0 4px rgba(75,13,79,.10);
 }
 
-/* Preview */
 .modal-preview{
   margin-top: 12px;
 }
@@ -325,7 +359,6 @@
   margin-top: 6px;
 }
 
-/* Botões */
 .modal-actions{
   display: flex;
   justify-content: flex-end;

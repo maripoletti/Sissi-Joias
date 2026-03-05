@@ -23,7 +23,7 @@
 <a href="/vendas" class="active">Vendas</a>
 <a href="relatorios.php">Relatórios</a>
 <a href="estoque.php">Estoque</a>
-<a href="usuarios.php">Controle de Usuários</a>
+<a href="controledeusuarios.php">Controle de Usuários</a>
 <a href="impressoras.php">Impressoras</a>
 <a href="fornecedores.php">Fornecedores</a>
 <a href="revendedores.php">Revendedores</a>

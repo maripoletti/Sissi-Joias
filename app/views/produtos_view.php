@@ -19,10 +19,10 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos" class="active">Produtos</a>
           <a href="/vendas">Vendas</a>
-          <a href="/relatorios">Relatórios</a>
-          <a href="/estoque">Estoque</a>
-          <a href="/usuarios">Controle de Usuários</a>
-          <a href="/impressoras">Impressoras</a>
+          <a href="relatorios.php">Relatórios</a>
+          <a href="estoque.php">Estoque</a>
+          <a href="controledeusuarios.php">Controle de Usuários</a>
+          <a href="impressoras.php">Impressoras</a>
           <a href="fornecedores.php">Fornecedores</a>
           <a href="revendedores.php">Revendedores</a>
         </nav>
@@ -120,6 +120,19 @@
         <div class="baixa-row">
           <input type="number" id="editBaixa" min="1" placeholder="Qtd" />
           <button type="button" class="btn btn-outline" onclick="darBaixaEstoque()">Dar baixa</button>
+        </div>
+
+        <div class="form-group">
+          <label>Reservar peça</label>
+
+          <div class="row-actions">
+            <input type="number" id="qtdReserva" min="1" placeholder="Qtd" class="input"
+            />
+
+            <button type="button" id="btnReservar" class="btn btn-outline">Reservar peça</button>
+          </div>
+
+        <small class="hint">Dica: use a reserva para separar peças pra clientes ou revendedoras</small>
         </div>
 
         <label>Foto</label>
