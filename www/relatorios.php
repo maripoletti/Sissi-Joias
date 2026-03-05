@@ -16,11 +16,11 @@
       <h2>Sissi Semi Joias e Acessórios</h2>
       <nav>
         <a href="/paineldecontrole">Painel de Controle</a>
-        <a href="produtos.php">Produtos</a>
-        <a href="vendas.php">Vendas</a>
+        <a href="/produtos">Produtos</a>
+        <a href="/vendas">Vendas</a>
         <a href="relatorios.php" class="active">Relatórios</a>
         <a href="estoque.php">Estoque</a>
-        <a href="controledeusuarios.php">Controle de Usuários</a>
+        <a href="/controledeusuarios">Controle de Usuários</a>
         <a href="impressoras.php">Impressoras</a>
         <a href="fornecedores.php">Fornecedores</a>
         <a href="revendedores.php">Revendedores</a>

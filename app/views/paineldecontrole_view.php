@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles/paineldecontrole.css">
 </head>
 <body>
-
 <div class="container">
   <div class="card paineldecontrole">
 
@@ -17,12 +16,12 @@
         <a href="/paineldecontrole" class="active">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-        <a>Relatórios</a>
-        <a>Estoque</a>
-        <a>Controle de Usuários</a>
-        <a>Impressoras</a>
-        <a>Fornecedores</a>
-        <a>Revendedores</a>
+        <a href="relatorios.php">Relatórios</a>
+        <a href="estoque.php">Estoque</a>
+        <a href="/controledeusuarios">Controle de Usuários</a>
+        <a href="impressoras.php">Impressoras</a>
+        <a href="fornecedores.php">Fornecedores</a>
+        <a href="revendedores.php">Revendedores</a>
       </nav>
     </aside>
 
