@@ -24,6 +24,7 @@
           <a href="/usuarios">Controle de Usuários</a>
           <a href="/impressoras">Impressoras</a>
           <a href="fornecedores.php">Fornecedores</a>
+          <a href="revendedores.php">Revendedores</a>
         </nav>
       </aside>
 
@@ -348,7 +349,7 @@
     }
 
     const novo = atual - baixa;
-    
+
     editEstoque.value = novo;
     produtos[idx].estoque = novo;
 
