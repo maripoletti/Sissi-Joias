@@ -20,13 +20,58 @@ class controledeusuarios_model extends Dbh {
     public function reject_user(int $tempid) {
         $pdo = $this->connect();
 
+        $pdo->beginTransaction();
+
         try {
-            $query = "UPDATE Temp_PendingUsers SET Status = 'rejeitado' WHERE PendUserID = :userid";
+
+            $query = "SELECT * FROM Temp_PendingUsers WHERE PendUserID = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":id", $tempid, PDO::PARAM_INT);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if(!$user) {
+                throw new Exception("Usuário não encontrado");
+            }
+
+            $query = "SELECT UserID FROM Auth_Users WHERE Email = :email";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":email", $user["Email"]);
+            $stmt->execute();
+            $authUser = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if($authUser) {
+
+                $userID = $authUser["UserID"];
+
+                $query = "DELETE FROM Auth_UserRoles WHERE UserID = :userid";
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam(":userid", $userID);
+                $stmt->execute();
+
+                $query = "DELETE FROM Sales_Employees WHERE UserID = :userid";
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam(":userid", $userID);
+                $stmt->execute();
+
+                $query = "DELETE FROM Auth_Users WHERE UserID = :userid";
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam(":userid", $userID);
+                $stmt->execute();
+            }
+
+            $query = "UPDATE Temp_PendingUsers 
+                    SET Status = 'rejeitado' 
+                    WHERE PendUserID = :userid";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(":userid", $tempid, PDO::PARAM_INT);
             $stmt->execute();
-        } catch (PDOException $e) {
-            echo "Erro na conexão: ". $e->getMessage();
+
+            $pdo->commit();
+
+        } catch (Exception $e) {
+            $pdo->rollback();
+            echo "Erro: " . $e->getMessage();
         }
     }
     public function create_user_from_pending(int $PendUserID) {
@@ -35,7 +80,7 @@ class controledeusuarios_model extends Dbh {
         $pdo->beginTransaction();
 
         try {
-            $query = "SELECT * FROM Temp_PendingUser WHERE PendUserID = :id;";
+            $query = "SELECT * FROM Temp_PendingUsers WHERE PendUserID = :id;";
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(":id", $PendUserID);
             $stmt->execute();
@@ -65,9 +110,9 @@ class controledeusuarios_model extends Dbh {
             $stmt->bindParam(":userid", $UserID);
             $stmt->execute();
 
-            $query = "DELETE FROM Temp_PendingUsers WHERE PendUserID = :userid";
+            $query = "UPDATE Temp_PendingUsers SET Status = 'aprovado' WHERE PendUserID = :userid";
             $stmt = $pdo->prepare($query);
-            $stmt->bindParam(":userid", $PendUserID);
+            $stmt->bindParam(":userid", $PendUserID, PDO::PARAM_INT);
             $stmt->execute();
 
             $pdo->commit();
@@ -95,6 +140,19 @@ class controledeusuarios_model extends Dbh {
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {
             throw $e;
+        }
+    }
+    public function get_status_by_id(int $id) {
+        $pdo = $this->connect();
+
+        try {
+            $query = "SELECT Status FROM Temp_PendingUsers WHERE PendUserID = :id";
+            $stmt = $pdo->prepare($query);
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Erro na conexão: " . $e->getMessage();
         }
     }
 }
