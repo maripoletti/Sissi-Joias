@@ -4,14 +4,14 @@
   --border: #ece6ff;
   --shadow: 0 10px 30px rgba(51, 23, 88, .06);
 
-  --purple: #4a138b;
+  --purple: #5e0c57;
   --muted: #8f86a8;
 
   --gold: #c9a44a;
   --gold-2: #e7cf86;
 
   --pill-bg: #f2eaff;
-  --pill-txt: #7a3fe6;
+  --pill-txt: #551063;
 }
 
 .main{
@@ -57,7 +57,7 @@
   font-weight: 800;
   padding: 12px 18px;
   border-radius: 14px;
-  box-shadow: 0 8px 20px rgba(201, 164, 74, .25);
+  box-shadow: 0 8px 20px rgba(224, 214, 188, 0.25);
   display: inline-flex;
   align-items: center;
   gap: 10px;
