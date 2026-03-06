@@ -47,8 +47,8 @@ function renderGrid() {
 
       <div class="type-badge ${p.type}">
         ${p.type === "nf"
-          ? `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg> Nota Fiscal`
-          : `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg> Etiquetas`}
+          ? `🧾 Nota Fiscal`
+          : `🏷️ Etiquetas`}
       </div>
 
       <div class="printer-name">${p.name}</div>
@@ -78,17 +78,9 @@ function renderGrid() {
       </div>
 
       <div class="card-actions">
-        <button class="btn-action ${p.type === "nf" ? "primary" : "et-primary"}" onclick="testPrint(${p.id})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6,9 6,2 18,2 18,9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
-          Testar
-        </button>
-        <button class="btn-action" onclick="toggleStatus(${p.id})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg>
-          Status
-        </button>
-        <button class="btn-action danger" onclick="deletePrinter(${p.id})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="3,6 5,6 21,6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-        </button>
+        <button class="btn-action" onclick="testPrint(${p.id})">Testar</button>
+        <button class="btn-action" onclick="toggleStatus(${p.id})">Status</button>
+        <button class="btn-action danger" onclick="deletePrinter(${p.id})">Excluir</button>
       </div>
     </div>
   `).join("");
@@ -108,7 +100,6 @@ function setFilter(f, el) {
 
 function openModal() {
   const overlay = document.getElementById("modal-overlay");
-
   overlay.classList.add("open");
   document.body.classList.add("modal-open");
   overlay.setAttribute("aria-hidden", "false");
@@ -119,19 +110,15 @@ function openModal() {
   document.getElementById("inp-sector").value = "";
 
   selectType("nf");
-
   setTimeout(() => document.getElementById("inp-name")?.focus(), 0);
 }
 
 function closeModal() {
   const overlay = document.getElementById("modal-overlay");
-
   overlay.classList.remove("open");
   document.body.classList.remove("modal-open");
   overlay.setAttribute("aria-hidden", "true");
 }
-
-const overlayEl = document.getElementById("modal-overlay");
 
 document.getElementById("modal-overlay").addEventListener("click", (e) => {
   if (e.target === e.currentTarget) closeModal();
@@ -139,7 +126,16 @@ document.getElementById("modal-overlay").addEventListener("click", (e) => {
 
 document.addEventListener("keydown", (e) => {
   const overlay = document.getElementById("modal-overlay");
-  if (e.key === "Escape" && overlay?.classList.contains("open")) closeModal();
+  if (!overlay?.classList.contains("open")) return;
+
+  if (e.key === "Escape") closeModal();
+
+  if (e.key === "Enter") {
+    const tag = document.activeElement?.tagName?.toLowerCase();
+    if (tag === "select") return;
+    e.preventDefault();
+    savePrinter();
+  }
 });
 
 function selectType(t) {
@@ -149,8 +145,20 @@ function selectType(t) {
 }
 
 function savePrinter() {
-  const name  = document.getElementById("inp-name").value.trim();
-  const model = document.getElementById("inp-model").value.trim();
+  const nameEl   = document.getElementById("inp-name");
+  const modelEl  = document.getElementById("inp-model");
+  const connEl   = document.getElementById("inp-conn");
+  const ipEl     = document.getElementById("inp-ip");
+  const sectorEl = document.getElementById("inp-sector");
+  const statusEl = document.getElementById("inp-status");
+
+  if (!nameEl || !modelEl || !connEl || !ipEl || !sectorEl || !statusEl) {
+    showToast("Campos do modal não encontrados (IDs errados).");
+    return;
+  }
+
+  const name  = nameEl.value.trim();
+  const model = modelEl.value.trim();
   if (!name || !model) { showToast("Preencha nome e modelo!"); return; }
 
   const caps = selectedType === "nf"
@@ -161,11 +169,11 @@ function savePrinter() {
     id: nextId++,
     name,
     model,
-    type:   selectedType,
-    conn:   document.getElementById("inp-conn").value,
-    ip:     document.getElementById("inp-ip").value     || "—",
-    sector: document.getElementById("inp-sector").value || "—",
-    status: document.getElementById("inp-status").value,
+    type: selectedType,
+    conn: connEl.value,
+    ip: ipEl.value.trim() || "—",
+    sector: sectorEl.value.trim() || "—",
+    status: statusEl.value,
     caps,
   });
 

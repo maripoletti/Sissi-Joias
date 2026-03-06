@@ -23,6 +23,7 @@
         <a>Impressoras</a>
         <a>Fornecedores</a>
         <a>Revendedores</a>
+        <a>Cadastrar Impressora</a>
       </nav>
     </aside>
 

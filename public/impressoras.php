@@ -6,8 +6,8 @@
   <title>Impressoras - Sissi Semi Joias e Acessórios</title>
 
   <link rel="stylesheet" href="styles/global.css">
-  <link rel="stylesheet" href="styles/produtos.css" />
-  <link rel="stylesheet" href="styles/impressoras.css"/>
+  <link rel="stylesheet" href="styles/produtos.css">
+  <link rel="stylesheet" href="styles/impressoras.css">
 </head>
 <body>
 
@@ -27,6 +27,7 @@
           <a href="impressoras.php" class="active">Impressoras</a>
           <a href="fornecedores.php">Fornecedores</a>
           <a href="revendedores.php">Revendedores</a>
+          <a href="cadastroimpressora.php">Cadastrar Impressora</a>
         </nav>
       </aside>
 
@@ -37,13 +38,6 @@
             <h1 class="page-title">Impressoras <span>·</span></h1>
             <p class="page-subtitle">Gerencie impressoras fiscais e de etiquetas</p>
           </div>
-          <button class="btn-add" type="button" onclick="openModal()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="15" height="15">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
-            Nova Impressora
-          </button>
         </div>
 
         <div class="stats-row">
@@ -84,6 +78,7 @@
     </div>
   </div>
 
+  <!-- MODAL -->
   <div class="modal-overlay" id="modal-overlay" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true">
       <div class="modal-title">Nova Impressora</div>
@@ -92,12 +87,12 @@
       <div class="form-group">
         <label class="form-label">Tipo de Impressora</label>
         <div class="type-selector">
-          <div class="type-opt selected" id="opt-nf" onclick="selectType('nf')">
+          <div class="type-opt selected" id="opt-nf" onclick="selectType('nf')" role="button" tabindex="0">
             <div class="type-opt-icon">🧾</div>
             <div class="type-opt-label">Nota Fiscal</div>
             <div class="type-opt-sub">Cupom e NF-e</div>
           </div>
-          <div class="type-opt et-opt" id="opt-et" onclick="selectType('et')">
+          <div class="type-opt et-opt" id="opt-et" onclick="selectType('et')" role="button" tabindex="0">
             <div class="type-opt-icon">🏷️</div>
             <div class="type-opt-label">Etiquetas</div>
             <div class="type-opt-sub">Nome + Preço</div>
@@ -146,16 +141,14 @@
         </select>
       </div>
 
-      <div class="modal-footer">
-        <button class="btn-cancel" type="button" onclick="closeModal()">Cancelar</button>
-        <button class="btn-save"   type="button" onclick="savePrinter()">Salvar Impressora</button>
-      </div>
+      <!-- Sem botões (salva com Enter / fecha com ESC ou clique fora) -->
+      <div class="modal-hint">Dica: pressione <b>Enter</b> para salvar. <b>Esc</b> para fechar.</div>
     </div>
   </div>
 
   <div class="toast" id="toast">
     <div class="toast-dot"></div>
-    <span id="toast-msg">Impressora salva!</span>
+    <span id="toast-msg">Ok!</span>
   </div>
 
   <script src="impressoras.js"></script>
