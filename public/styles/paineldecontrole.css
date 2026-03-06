@@ -21,9 +21,9 @@ body {
 
 .main {
   flex: 1;
-  background: #f6f7fb;
+  background: #fbf6fb;
   padding: 30px;
-  color: #333;
+  color: #460857;
 }
 
 .top {
@@ -500,8 +500,8 @@ body {
 }
 
 .gold{background:#d4af37;}
-.roxo{background:#6f42c1;}
-.lilas{background:#9b7bff;}
+.roxo{background:#820d74;}
+.lilas{background:#510743;}
 .cinza{background:#bbb;}
 
 .barra{
@@ -519,8 +519,8 @@ body {
 }
 
 .fill.gold{background:#d4af37;}
-.fill.roxo{background:#6f42c1;}
-.fill.lilas{background:#9b7bff;}
+.fill.roxo{background:#820d74;}
+.fill.lilas{background:#510743;}
 .fill.cinza{background:#bbb;}
 
 .cal-detail{

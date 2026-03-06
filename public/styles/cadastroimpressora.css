@@ -3,7 +3,7 @@
   background: #f6f7fb;
   padding: 28px;
   overflow-y: auto;
-  color: #111827;
+  color: #500b48;
 }
 
 .page-header{
@@ -26,7 +26,7 @@
   display:flex;
   align-items:center;
   justify-content:center;
-  background: #0f172a;
+  background: #4a0a47;
   color: #fff;
 }
 
@@ -38,14 +38,14 @@
 .ph-sub{
   margin: 2px 0 0;
   font-size: 13px;
-  color: rgba(17,24,39,.65);
+  color: rgba(86, 5, 55, 0.65);
 }
 
 .ni-card{
   background: #ffffff;
-  border: 1px solid rgba(15,23,42,.08);
+  border: 1px solid rgba(98, 11, 81, 0.08);
   border-radius: 18px;
-  box-shadow: 0 14px 30px rgba(15,23,42,.06);
+  box-shadow: 0 14px 30px rgba(100, 5, 81, 0.06);
   overflow: hidden;
   width: 100%;
 }
@@ -55,7 +55,7 @@
 }
 
 .ni-card-top{
-  background: linear-gradient(180deg, #0b1220 0%, #0f1a2e 100%);
+  background: linear-gradient(180deg, #5b0641 0%, #420545 100%);
   padding: 14px 16px;
 }
 
@@ -67,7 +67,7 @@
 .ni-tab{
   border: 1px solid rgba(255,255,255,.12);
   background: rgba(255,255,255,.08);
-  color: rgba(255,255,255,.92);
+  color: rgba(255, 216, 22, 0.92);
   padding: 10px 14px;
   border-radius: 12px;
   display:flex;
