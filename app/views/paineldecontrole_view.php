@@ -5,22 +5,29 @@
   <title>Sissi Semi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/paineldecontrole.css">
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
+
 <div class="container">
   <div class="card paineldecontrole">
 
     <aside class="sidebar">
       <h2>Sissi Semi Joias e Acessórios</h2>
+
       <nav>
         <a href="/paineldecontrole" class="active">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-        <a href="/relatoris">Relatórios</a>
-        <a href="/controledeusuarios">Controle de Usuários</a>
+        <a href="/relatorios">Relatórios</a>
         <a href="/impressoras">Impressoras</a>
-        <a href="/fornecedores">Fornecedores</a>
-        <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/controledeusuarios">Controle de Usuários</a>
+          <a href="/fornecedores">Fornecedores</a>
+          <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+        <?php endif; ?>
+
       </nav>
     </aside>
 
@@ -66,7 +73,6 @@
 
           <!-- LEGENDA -->
           <div class="cal-legend">
-            <span class="dot dot-reserva"></span> Reserva
             <span class="dot dot-aniver"></span> Aniversário
             <span class="dot dot-outro"></span> Outro
           </div>
@@ -88,13 +94,6 @@
             <h4>Aniversariantes</h4>
             <div id="listaAniversarios" class="birth-list">
               <p class="muted">Nenhum aniversariante cadastrado.</p>
-            </div>
-          </div>
-
-          <div class="cal-birthdays">
-            <h4>Reservas</h4>
-            <div id="listaReservas" class="birth-list">
-              <p class="muted">Nenhuma reserva cadastrada.</p>
             </div>
           </div>
 
@@ -175,7 +174,6 @@
                 Tipo
                 <select id="eventoTipo" required>
                   <option value="">Selecione</option>
-                  <option value="reserva">Reserva</option>
                   <option value="aniversario">Aniversário</option>
                   <option value="lembrete">Lembrete</option>
                   <option value="outro">Outro</option>

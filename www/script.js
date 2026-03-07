@@ -585,7 +585,7 @@ const btn = document.getElementById("btnRegistrar");
 
 if(btn){
 btn?.addEventListener("click", () => {
-window.location.href = "novavenda.php";
+window.location.href = "/novavenda";
 });
 }
 

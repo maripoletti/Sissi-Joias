@@ -145,6 +145,39 @@ switch ($uri) {
     } else {
       AuthMiddleware::user();
     }
+
+  case '/cadastrarimpressora':
+    if ($_SESSION['role'] == '2') {
+      require_once 'cadastroimpressora.php';
+      break;
+    } else {
+      header('Location: /login');
+      break;
+    }
+  case '/impressoras':
+    if ($_SESSION['role'] == '2') {
+      require_once 'impressoras.php';
+      break;
+    } else {
+      header('Location: /login');
+      break;
+    }
+  case '/relatorios':
+    if ($_SESSION['role'] == '2') {
+      require_once 'relatorios.php';
+      break;
+    } else {
+      header('Location: /login');
+      break;
+    }
+  case '/fornecedores':
+    if ($_SESSION['role'] == '2') {
+      require_once 'fornecedores.php';
+      break;
+    } else {
+      header('Location: /login');
+      break;
+    }
   default:
     require_once '../app/views/404.html';
 }

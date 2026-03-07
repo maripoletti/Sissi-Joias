@@ -5,6 +5,7 @@
     <title>Cadastro</title>
 
     <link rel="stylesheet" href="styles/cadastro.css">
+    <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
 

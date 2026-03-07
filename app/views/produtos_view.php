@@ -6,6 +6,7 @@
   <title>Produtos - Sissi Semi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/produtos.css" />
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
 
@@ -19,11 +20,15 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos" class="active">Produtos</a>
           <a href="/vendas">Vendas</a>
-          <a href="relatorios.php">Relatórios</a>
-          <a href="/controledeusuarios">Controle de Usuários</a>
-          <a href="impressoras.php">Impressoras</a>
-          <a href="fornecedores.php">Fornecedores</a>
-          <a href="cadastroimpressora.php">Cadastrar Impressora</a>
+          <a href="/relatorios">Relatórios</a>
+          <a href="/impressoras">Impressoras</a>
+
+          <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/controledeusuarios">Controle de Usuários</a>
+            <a href="/fornecedores">Fornecedores</a>
+            <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+          <?php endif; ?>
+
         </nav>
       </aside>
 
@@ -115,23 +120,22 @@
         <label>Estoque</label>
         <input type="number" id="editEstoque" min="0" required />
 
+        <label>Tamanho da peça</label>
+        <input type="text" id="editTamanho" placeholder="Ex: 12, 14, P, M, G, Ajustável" />
+
+        <label>Cor</label>
+        <input type="text" id="editCor" placeholder="Ex: Dourado, Prata, Rosé" />
+
+        <label>Peso do banho</label>
+        <input type="text" id="editPesoBanho" placeholder="Ex: 5g" />
+
+        <label>Milésimos de banho</label>
+        <input type="text" id="editMilesimosBanho" placeholder="Ex: 3 milésimos" />
+
         <label>Dar baixa no estoque</label>
         <div class="baixa-row">
           <input type="number" id="editBaixa" min="1" placeholder="Qtd" />
           <button type="button" class="btn btn-outline" onclick="darBaixaEstoque()">Dar baixa</button>
-        </div>
-
-        <div class="form-group">
-          <label>Reservar peça</label>
-
-          <div class="row-actions">
-            <input type="number" id="qtdReserva" min="1" placeholder="Qtd" class="input"
-            />
-
-            <button type="button" id="btnReservar" class="btn btn-outline">Reservar peça</button>
-          </div>
-
-        <small class="hint">Dica: use a reserva para separar peças pra clientes ou revendedoras</small>
         </div>
 
         <label>Foto</label>
@@ -171,6 +175,18 @@
         <label>Estoque</label>
         <input type="number" id="addEstoque" min="0" required />
 
+        <label>Tamanho da peça</label>
+        <input type="text" id="addTamanho" placeholder="Ex: 12, 14, P, M, G, Ajustável" />
+
+        <label>Cor</label>
+        <input type="text" id="addCor" placeholder="Ex: Dourado, Prata, Rosé" />
+
+        <label>Peso do banho</label>
+        <input type="text" id="addPesoBanho" placeholder="Ex: 5g" />
+
+        <label>Milésimos de banho</label>
+        <input type="text" id="addMilesimosBanho" placeholder="Ex: 3 milésimos" />
+
         <label>Foto</label>
         <input type="file" id="addFoto" accept="image/*"/>
 
@@ -198,6 +214,10 @@
   const editNome = document.getElementById("editNome");
   const editPreco = document.getElementById("editPreco");
   const editEstoque = document.getElementById("editEstoque");
+  const editTamanho = document.getElementById("editTamanho");
+  const editCor = document.getElementById("editCor");
+  const editPesoBanho = document.getElementById("editPesoBanho");
+  const editMilesimosBanho = document.getElementById("editMilesimosBanho");
   const editBaixa = document.getElementById("editBaixa");
   const editFoto = document.getElementById("editFoto");
   const editPreview = document.getElementById("editPreview");
@@ -209,6 +229,10 @@
   const addCategoria = document.getElementById("addCategoria");
   const addPreco = document.getElementById("addPreco");
   const addEstoque = document.getElementById("addEstoque");
+  const addTamanho = document.getElementById("addTamanho");
+  const addCor = document.getElementById("addCor");
+  const addPesoBanho = document.getElementById("addPesoBanho");
+  const addMilesimosBanho = document.getElementById("addMilesimosBanho");
   const addFoto = document.getElementById("addFoto");
 
   function inPriceRange(p, range) {
@@ -310,15 +334,18 @@
     }
   });
 
-  // ===== MODAL EDIT =====
   function abrirModal(id) {
     const prod = produtos.find(p => p.id === id);
     if (!prod) return;
 
     editId.value = prod.id;
-    editNome.value = prod.nome;
-    editPreco.value = prod.preco;
-    editEstoque.value = prod.estoque;
+    editNome.value = prod.nome || "";
+    editPreco.value = prod.preco || "";
+    editEstoque.value = prod.estoque || 0;
+    editTamanho.value = prod.tamanho || "";
+    editCor.value = prod.cor || "";
+    editPesoBanho.value = prod.peso_banho || "";
+    editMilesimosBanho.value = prod.milesimos_banho || "";
 
     editFoto.value = "";
     editBaixa.value = "";
@@ -335,7 +362,6 @@
     if (e.target === modalEdit) fecharModal();
   });
 
-  // preview da foto (edit)
   editFoto.addEventListener("change", () => {
     const file = editFoto.files && editFoto.files[0];
     if (!file) return;
@@ -369,33 +395,6 @@
     render();
   }
 
-  function darBaixaEstoque() {
-    const id = Number(editId.value);
-    const idx = produtos.findIndex(p => p.id === id);
-    if (idx === -1) return;
-
-    const atual = Number(editEstoque.value);
-    const baixa = Number(editBaixa.value);
-
-    if (!baixa || baixa <= 0) {
-      alert("Digite uma quantidade válida pra dar baixa.");
-      return;
-    }
-
-    if (baixa > atual) {
-      alert("Não dá: baixa maior que o estoque.");
-      return;
-    }
-
-    const novo = atual - baixa;
-    
-    editEstoque.value = novo;
-    produtos[idx].estoque = novo;
-
-    editBaixa.value = "";
-    render();
-  }
-
   formEdit.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -406,6 +405,10 @@
     produtos[idx].nome = editNome.value.trim();
     produtos[idx].preco = Number(editPreco.value);
     produtos[idx].estoque = Number(editEstoque.value);
+    produtos[idx].tamanho = editTamanho.value.trim();
+    produtos[idx].cor = editCor.value.trim();
+    produtos[idx].peso_banho = editPesoBanho.value.trim();
+    produtos[idx].milesimos_banho = editMilesimosBanho.value.trim();
 
     const file = editFoto.files && editFoto.files[0];
     if (file) produtos[idx].img = URL.createObjectURL(file);
@@ -415,6 +418,10 @@
     data.append("nome", editNome.value.trim());
     data.append("preco", editPreco.value);
     data.append("estoque", editEstoque.value);
+    data.append("tamanho", editTamanho.value.trim());
+    data.append("cor", editCor.value.trim());
+    data.append("peso_banho", editPesoBanho.value.trim());
+    data.append("milesimos_banho", editMilesimosBanho.value.trim());
 
     if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
 
@@ -449,20 +456,29 @@
 
   formAdd.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const addCategoriaClean = addCategoria.value
-        .split(",")
-        .map(t => t.trim())
-        .filter(t => t.length > 0);
+      .split(",")
+      .map(t => t.trim())
+      .filter(t => t.length > 0);
 
     const data = new FormData();
 
     addCategoriaClean.forEach(cat => {
       data.append("categoria[]", cat);
     });
+
     data.append("nome", addNome.value.trim());
     data.append("preco", addPreco.value);
     data.append("estoque", addEstoque.value);
-    data.append("foto", addFoto.files[0]);
+    data.append("tamanho", addTamanho.value.trim());
+    data.append("cor", addCor.value.trim());
+    data.append("peso_banho", addPesoBanho.value.trim());
+    data.append("milesimos_banho", addMilesimosBanho.value.trim());
+
+    if (addFoto.files[0]) {
+      data.append("foto", addFoto.files[0]);
+    }
 
     const res = await fetch("/api/produtos/add", {
       method: "POST",
@@ -477,27 +493,27 @@
   });
 
   async function formDel(id) {
-  if (!confirm("Deseja realmente excluir este produto?")) return;
+    if (!confirm("Deseja realmente excluir este produto?")) return;
 
-  try {
-    const res = await fetch(`/api/produtos/delete`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id })
-    });
+    try {
+      const res = await fetch(`/api/produtos/delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id })
+      });
 
-    if (!res.ok) throw new Error("Erro ao excluir produto");
+      if (!res.ok) throw new Error("Erro ao excluir produto");
 
-    produtos = produtos.filter(p => p.id !== id);
-    render(true);
+      produtos = produtos.filter(p => p.id !== id);
+      render(true);
 
-  } catch (err) {
-    console.error(err);
-    alert("Não foi possível excluir o produto.");
+    } catch (err) {
+      console.error(err);
+      alert("Não foi possível excluir o produto.");
+    }
   }
-}
 
-window.formDel = formDel;
+  window.formDel = formDel;
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
