@@ -36,7 +36,7 @@
                     <div id="mensagem-vazia" class="empty" style="display:none;">Nenhum produto encontrado</div>
                 </div>
 
-                <button class="btn-continuar" onclick="irParaCliente()">Continuar</button>
+                <button class="btn-continuar" type="button" onclick="irParaCliente()">Continuar</button>
             </div>
 
             <div class="right">
@@ -66,22 +66,25 @@
     <div id="etapa-cliente" style="display:none;">
         <div class="card">
             <h2>Dados do Cliente</h2>
-            <input type="text" placeholder="Nome do cliente">
-            <input type="text" placeholder="CPF">
-            <button onclick="irParaFinalizacao()">Continuar</button>
+            <input type="text" id="nomeCliente" placeholder="Nome do cliente">
+            <input type="text" id="cpfCliente" placeholder="CPF">
+            <button type="button" class="btn-continuar" onclick="irParaFinalizacao()">Continuar</button>
         </div>
     </div>
 
     <div id="etapa-finalizacao" style="display:none;">
         <div class="card">
             <h2>Finalização</h2>
-            <p>Escolha forma de pagamento</p>
-            <select>
-                <option>Dinheiro</option>
-                <option>Cartão</option>
-                <option>Pix</option>
+            <p style="margin-bottom: 12px;">Escolha forma de pagamento</p>
+
+            <select id="formaPagamento">
+                <option value="">Selecione</option>
+                <option value="Dinheiro">Dinheiro</option>
+                <option value="Cartão">Cartão</option>
+                <option value="Pix">Pix</option>
             </select>
-            <button>Finalizar Venda</button>
+
+            <button id="finalizarVenda" type="button">Finalizar Venda</button>
         </div>
     </div>
 
@@ -292,11 +295,48 @@ function irParaCliente() {
 }
 
 function irParaFinalizacao() {
+    const nomeCliente = document.getElementById("nomeCliente").value.trim();
+    const cpfCliente = document.getElementById("cpfCliente").value.trim();
+
+    if (!nomeCliente) {
+        alert("Preencha o nome do cliente.");
+        return;
+    }
+
+    if (!cpfCliente) {
+        alert("Preencha o CPF.");
+        return;
+    }
+
     document.getElementById("etapa-produtos").style.display = "none";
     document.getElementById("etapa-cliente").style.display = "none";
     document.getElementById("etapa-finalizacao").style.display = "block";
     atualizarBarra(2);
 }
+
+document.getElementById("finalizarVenda").addEventListener("click", function () {
+    const formaPagamento = document.getElementById("formaPagamento").value;
+    const nomeCliente = document.getElementById("nomeCliente").value.trim();
+    const cpfCliente = document.getElementById("cpfCliente").value.trim();
+
+    if (carrinho.length === 0) {
+        alert("O carrinho está vazio.");
+        return;
+    }
+
+    if (!nomeCliente || !cpfCliente) {
+        alert("Preencha os dados do cliente antes de finalizar.");
+        return;
+    }
+
+    if (!formaPagamento) {
+        alert("Selecione a forma de pagamento.");
+        return;
+    }
+
+    alert("Venda finalizada com sucesso!");
+    window.location.href = "/vendas";
+});
 
 atualizarBarra(0);
 render();

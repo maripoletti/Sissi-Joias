@@ -20,20 +20,20 @@
 }
 
 .page-header p{
-  color: #a78bfa;
+  color: #780765;
   font-size: 15px;
 }
 
 .btn-novo{
-  background: #e4ca07;
-  color: #2d1063;
+  background: #4b0d4f;
+  color: #ffffff;
   border: none;
   border-radius: 14px;
   padding: 16px 24px;
   font-size: 16px;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 8px 18px rgba(244, 167, 0, 0.25);
+  box-shadow: 0 8px 18px rgba(59, 3, 69, 0.22);
   transition: .2s ease;
 }
 
@@ -63,7 +63,7 @@
 .search-box input:focus,
 .toolbar select:focus{
   outline: none;
-  border-color: #c084fc;
+  border-color: #461577;
   box-shadow: 0 0 0 4px rgba(192, 132, 252, 0.12);
 }
 
@@ -95,7 +95,7 @@
   color: #fff;
 }
 
-.stat-icon.purple{ background: #d020f8; }
+.stat-icon.purple{ background: #1c07212f; }
 .stat-icon.green{ background: #22c55e; }
 .stat-icon.yellow{ background: #c285d7; }
 .stat-icon.gray{ background: #9ca3af; }
@@ -107,7 +107,7 @@
 }
 
 .stat-card span{
-  color: #a78bfa;
+  color: #780765;
   font-size: 14px;
 }
 
@@ -135,12 +135,12 @@
 
 .card-top h3{
   font-size: 28px;
-  color: #4c1d95;
+  color: #470537;
   margin-bottom: 6px;
 }
 
 .card-top small{
-  color: #a855f7;
+  color: #460443;
   font-size: 14px;
 }
 
@@ -188,8 +188,8 @@
 }
 
 .btn-acao.editar{
-  background: #ede9fe;
-  color: #6d28d9;
+  background: #4b0d4f;
+  color: #ffffff;
 }
 
 .btn-acao.excluir{
@@ -286,7 +286,7 @@
 .modal-header h2{
   font-size: 18px;
   font-weight: 700;
-  color: #6d28d9;
+  color: #600a5e;
 }
 
 .modal-close{
@@ -304,7 +304,7 @@
 
 .modal-close:hover{
   background: #f5f3ff;
-  color: #6d28d9;
+  color: #510b43;
 }
 
 .form-grid{
@@ -326,7 +326,7 @@
   font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
-  color: #7c3aed;
+  color: #560e47;
   margin-bottom: 8px;
 }
 
@@ -377,7 +377,7 @@
 
 .btn-cancelar{
   background: #fff;
-  color: #7c3aed;
+  color: #460a3f;
   border: 1px solid #e9d5ff;
 }
 
@@ -386,14 +386,14 @@
 }
 
 .btn-salvar{
-  background: #7c3aed;
+  background: #960798;
   color: #fff;
   box-shadow: 0 8px 18px rgba(124, 58, 237, 0.25);
 }
 
 .btn-salvar:hover{
   transform: translateY(-1px);
-  background: #6d28d9;
+  background: #780382;
 }
 
 @media (max-width: 768px){

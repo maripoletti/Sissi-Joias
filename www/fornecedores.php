@@ -227,6 +227,6 @@
     </div>
   </div>
 
-  <script src="scripts/fornecedores.js"></script>
+  <script src="fornecedores.js"></script>
 </body>
 </html>
