@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="styles/paineldecontrole.css">
 </head>
 <body>
-
 <div class="container">
   <div class="card paineldecontrole">
 
@@ -15,14 +14,15 @@
       <h2>Sissi Semi Joias e Acessórios</h2>
       <nav>
         <a href="/paineldecontrole" class="active">Painel de Controle</a>
-        <a href="produtos.php">Produtos</a>
-        <a href="vendas.php">Vendas</a>
-        <a>Relatórios</a>
-        <a>Estoque</a>
-        <a>Controle de Usuários</a>
-        <a>Impressoras</a>
-        <a>Fornecedores</a>
-        <a>Cadastrar Impressora</a>
+        <a href="/produtos">Produtos</a>
+        <a href="/vendas">Vendas</a>
+        <a href="/relatoris">Relatórios</a>
+        <a href="/estoque">Estoque</a>
+        <a href="/controledeusuarios">Controle de Usuários</a>
+        <a href="/impressoras">Impressoras</a>
+        <a href="/fornecedores">Fornecedores</a>
+        <a href="/revendedores">Revendedores</a>
+        <a href="/cadastrarimpressora">Cadastrar Impressora</a>
       </nav>
     </aside>
 

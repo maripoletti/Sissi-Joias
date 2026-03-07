@@ -85,6 +85,55 @@
 </div>
 
 <script>
+
+const buscar = document.getElementById("buscar");
+
+async function render() {
+    const texto = buscar.value.trim();
+    const lista = document.getElementById("lista-produtos");
+    const msg = document.getElementById("mensagem-vazia");
+
+    lista.innerHTML = "";
+    msg.style.display = "none";
+
+    let data = [];
+
+    try {
+        const res = await fetch("/novavenda", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto })
+        });
+
+        if (!res.ok) {
+            throw new Error("Resposta inválida");
+        }
+
+        data = await res.json();
+
+        if (!Array.isArray(data)) {
+            data = [];
+        }
+
+    } catch (err) {
+        data = [];
+    }
+
+    if (data.length === 0) {
+        msg.style.display = "block";
+        return;
+    }
+
+    data.forEach(produto => {
+        const div = document.createElement("div");
+        div.textContent = `${produto.nome} - R$ ${Number(produto.preco).toFixed(2)} - Estoque: ${produto.estoque ?? 0}`;
+        lista.appendChild(div);
+    });
+}
+
+buscar.addEventListener("input", () => render(true));
+
+
 function atualizarBarra(indice) {
   const steps = document.querySelectorAll(".progress .step");
   steps.forEach((step, i) => {
@@ -107,9 +156,11 @@ function irParaFinalizacao() {
 }
 
 atualizarBarra(0);
+
+
 </script>
 
-<script src="scripts/script.js" defer></script>
+<!-- <script src="scripts/script.js" defer></script> -->
 
 </body>
 </html> 

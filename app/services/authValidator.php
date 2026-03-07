@@ -2,7 +2,7 @@
 
 declare(strict_types= 1);
 
-class AuthValidator {
+class authValidator {
     public static function validateLoginInput(string $email, string $pwd) {
         $errors = [];
         if(empty($email) || empty ($pwd)) {
@@ -57,7 +57,7 @@ class AuthValidator {
         }
 
         if (mb_strlen($clean['name']) < 2) {
-            $errors['pwd_wrong'] = 'Nome inválido.';
+            $errors['name_wrong'] = 'Nome inválido.';
         }
 
         if (!filter_var($clean['email'], FILTER_VALIDATE_EMAIL)) {

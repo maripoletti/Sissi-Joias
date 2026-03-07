@@ -19,11 +19,11 @@
 
 <nav>
 <a href="/paineldecontrole">Painel de Controle</a>
-<a href="produtos.php">Produtos</a>
-<a href="vendas.php" class="active">Vendas</a>
+<a href="/produtos">Produtos</a>
+<a href="/vendas" class="active">Vendas</a>
 <a href="relatorios.php">Relatórios</a>
 <a href="estoque.php">Estoque</a>
-<a href="controledeusuarios.php">Controle de Usuários</a>
+<a href="/controledeusuarios">Controle de Usuários</a>
 <a href="impressoras.php">Impressoras</a>
 <a href="fornecedores.php">Fornecedores</a>
 <a href="cadastroimpressora.php">Cadastrar Impressora</a>

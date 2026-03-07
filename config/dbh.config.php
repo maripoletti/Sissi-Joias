@@ -1,17 +1,13 @@
 <?php
 
-/////////////////////////////
-//MUDAR NOME DO BANCO ANTES DE SUBIR
-/////////////////////////////
-
 class Dbh {
     
     protected function connect() {
         try {
-            $dbusername = 'root';//'sissisemijoiase';
-            $dbpassword = '';//'VPS11062010h!DB';
+            $dbusername = 'root'/* 'sissisemijoiase' */;
+            $dbpassword = ''/* 'VPS11062010h!DB' */;
 
-            $pdo = new PDO("mysql:host=localhost;dbname=sissisemijoiaseacessorios", $dbusername, $dbpassword);
+            $pdo = new PDO("mysql:host=localhost;dbname=sissisemijoiaseacessorios", $dbusername, $dbpassword, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"]);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $pdo;

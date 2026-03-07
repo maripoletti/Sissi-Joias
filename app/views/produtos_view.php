@@ -17,11 +17,11 @@
 
         <nav>
           <a href="/paineldecontrole">Painel de Controle</a>
-          <a href="produtos.php" class="active">Produtos</a>
-          <a href="vendas.php">Vendas</a>
+          <a href="/produtos" class="active">Produtos</a>
+          <a href="/vendas">Vendas</a>
           <a href="relatorios.php">Relatórios</a>
           <a href="estoque.php">Estoque</a>
-          <a href="controledeusuarios.php">Controle de Usuários</a>
+          <a href="/controledeusuarios">Controle de Usuários</a>
           <a href="impressoras.php">Impressoras</a>
           <a href="fornecedores.php">Fornecedores</a>
           <a href="cadastroimpressora.php">Cadastrar Impressora</a>
@@ -37,7 +37,7 @@
           </div>
 
           <div class="top-actions">
-            <a href="novavenda.php" class="btn-primary">+ Nova venda</a>
+            <a href="/novavenda" class="btn-primary">+ Nova venda</a>
             <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
           </div>
         </header>
@@ -57,14 +57,7 @@
 
           <div class="filter">
             <label>Categoria</label>
-            <select id="cat">
-              <option value="all">Todas</option>
-              <option value="aneis">Anéis</option>
-              <option value="brincos">Brincos</option>
-              <option value="colares">Colares</option>
-              <option value="pulseiras">Pulseiras</option>
-              <option value="conjuntos">Conjuntos</option>
-            </select>
+            <input type="text" id="cat">
           </div>
 
           <div class="filter">
@@ -84,7 +77,8 @@
               <option value="relevancia">Relevância</option>
               <option value="menor">Menor preço</option>
               <option value="maior">Maior preço</option>
-              <option value="nome">Nome (A-Z)</option>
+              <option value="az">Nome (A-Z)</option>
+              <option value="za">Nome (Z-A)</option>
             </select>
           </div>
         </section>
@@ -170,13 +164,7 @@
         <input type="text" id="addNome" required />
 
         <label>Categoria</label>
-        <select id="addCategoria" required>
-          <option value="aneis">Anéis</option>
-          <option value="brincos">Brincos</option>
-          <option value="colares">Colares</option>
-          <option value="pulseiras">Pulseiras</option>
-          <option value="conjuntos">Conjuntos</option>
-        </select>
+        <input type="text" id="addCategoria" required>
 
         <label>Preço</label>
         <input type="number" id="addPreco" step="0.01" min="0" required />
@@ -185,7 +173,7 @@
         <input type="number" id="addEstoque" min="0" required />
 
         <label>Foto</label>
-        <input type="file" id="addFoto" accept="image/*" required />
+        <input type="file" id="addFoto" accept="image/*"/>
 
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" onclick="fecharModalAdicionar()">Cancelar</button>
@@ -196,24 +184,13 @@
   </div>
 
 <script>
-  // Produtos fake (troca depois por banco/API)
-  const produtos = [
-    { id: 1, nome: "Brinco Zircônia Lux", categoria: "brincos", preco: 79.90, estoque: 12, img: "https://picsum.photos/seed/brinco1/600/600" },
-    { id: 2, nome: "Colar Ponto de Luz", categoria: "colares", preco: 129.90, estoque: 6, img: "https://picsum.photos/seed/colar1/600/600" },
-    { id: 3, nome: "Anel Solitário", categoria: "aneis", preco: 99.90, estoque: 9, img: "https://picsum.photos/seed/anel1/600/600" },
-    { id: 4, nome: "Pulseira Elegance", categoria: "pulseiras", preco: 59.90, estoque: 15, img: "https://picsum.photos/seed/pulseira1/600/600" },
-    { id: 5, nome: "Conjunto Dourado", categoria: "conjuntos", preco: 219.90, estoque: 4, img: "https://picsum.photos/seed/conjunto1/600/600" },
-    { id: 6, nome: "Brinco Argola Premium", categoria: "brincos", preco: 49.90, estoque: 22, img: "https://picsum.photos/seed/brinco2/600/600" },
-    { id: 7, nome: "Colar Choker Fashion", categoria: "colares", preco: 89.90, estoque: 7, img: "https://picsum.photos/seed/colar2/600/600" },
-    { id: 8, nome: "Anel Ajustável", categoria: "aneis", preco: 39.90, estoque: 30, img: "https://picsum.photos/seed/anel2/600/600" }
-  ];
-
   const q = document.getElementById("q");
   const cat = document.getElementById("cat");
   const price = document.getElementById("price");
   const sort = document.getElementById("sort");
   const grid = document.getElementById("grid");
   const count = document.getElementById("count");
+  const main = document.querySelector(".main");
 
   // edit
   const modalEdit = document.getElementById("modalEdit");
@@ -242,45 +219,97 @@
     return p >= min && p <= max;
   }
 
-  function render() {
+  let produtos = [];
+  let page = 0;
+  let limit = 12;
+  let isLoading = false;
+  let acabou = false;
+
+  async function render(reset = false) {
+    if (isLoading) return;
+
+    if (reset) {
+      page = 0;
+      acabou = false;
+      produtos = [];
+      grid.innerHTML = "";
+    }
+
+    if (acabou) return;
+
+    isLoading = true;
+
     const term = q.value.trim().toLowerCase();
     const catVal = cat.value;
     const priceVal = price.value;
     const sortVal = sort.value;
 
-    let list = produtos.filter(p => {
-      const matchTerm = p.nome.toLowerCase().includes(term);
-      const matchCat = (catVal === "all") ? true : p.categoria === catVal;
-      const matchPrice = inPriceRange(p.preco, priceVal);
-      return matchTerm && matchCat && matchPrice;
-    });
+    try {
+      const tags = catVal
+        .split(",")
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
+      
+      const res = await fetch("/api/produtos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({
+          text: term,
+          tags: tags,
+          price: priceVal,
+          sort: sortVal,
+          page: page,
+          limit: limit
+        })
+      });
 
-    if (sortVal === "menor") list.sort((a,b) => a.preco - b.preco);
-    if (sortVal === "maior") list.sort((a,b) => b.preco - a.preco);
-    if (sortVal === "nome") list.sort((a,b) => a.nome.localeCompare(b.nome));
+      if (!res.ok) throw new Error("Erro na requisição");
 
-    count.textContent = `Mostrando ${list.length} produto(s)`;
+      const data = await res.json();
+      const novos = data.produtos;
+      const total = data.total;
 
-    grid.innerHTML = list.map(p => `
-      <article class="product">
-        <div class="thumb">
-          <img src="${p.img}" alt="${p.nome}">
-          ${p.estoque <= 5 ? `<span class="badge">Baixo estoque</span>` : ``}
-        </div>
+      if (novos.length < limit) acabou = true;
 
-        <div class="info">
-          <h3 title="${p.nome}">${p.nome}</h3>
-          <p class="meta">${p.categoria.toUpperCase()} • Estoque: ${p.estoque}</p>
-          <div class="price">R$ ${p.preco.toFixed(2).replace(".", ",")}</div>
+      produtos = [...produtos, ...novos];
 
-          <div class="actions">
-            <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
-            <button class="btn btn-outline" type="button" onclick="alert('Aqui liga no backend pra excluir')">Excluir</button>
+      count.textContent = `Mostrando ${total} produto(s)`;
+
+      grid.innerHTML += novos.map(p => `
+        <article class="product">
+          <div class="thumb">
+            <img src="${p.img}" alt="${p.nome}">
+            ${p.estoque <= 5 ? `<span class="badge">Baixo estoque</span>` : ``}
           </div>
-        </div>
-      </article>
-    `).join("");
+
+          <div class="info">
+            <h3 title="${p.nome}">${p.nome}</h3>
+            <p class="meta">• Estoque: ${p.estoque}</p>
+            <div class="price">R$ ${parseFloat(p.preco).toFixed(2).replace(".", ",")}</div>
+
+            <div class="actions">
+              <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
+              <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">Excluir</button>
+            </div>
+          </div>
+        </article>
+      `).join("");
+
+      page++;
+
+    } catch (err) {
+      console.error(err);
+      if (reset) grid.innerHTML = "<p>Erro ao carregar produtos.</p>";
+    }
+
+    isLoading = false;
   }
+
+  main.addEventListener("scroll", () => {
+    if (main.scrollTop + main.clientHeight >= main.scrollHeight - 200) {
+      render();
+    }
+  });
 
   // ===== MODAL EDIT =====
   function abrirModal(id) {
@@ -341,7 +370,34 @@
     render();
   }
 
-  formEdit.addEventListener("submit", (e) => {
+  function darBaixaEstoque() {
+    const id = Number(editId.value);
+    const idx = produtos.findIndex(p => p.id === id);
+    if (idx === -1) return;
+
+    const atual = Number(editEstoque.value);
+    const baixa = Number(editBaixa.value);
+
+    if (!baixa || baixa <= 0) {
+      alert("Digite uma quantidade válida pra dar baixa.");
+      return;
+    }
+
+    if (baixa > atual) {
+      alert("Não dá: baixa maior que o estoque.");
+      return;
+    }
+
+    const novo = atual - baixa;
+    
+    editEstoque.value = novo;
+    produtos[idx].estoque = novo;
+
+    editBaixa.value = "";
+    render();
+  }
+
+  formEdit.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const id = Number(editId.value);
@@ -355,8 +411,29 @@
     const file = editFoto.files && editFoto.files[0];
     if (file) produtos[idx].img = URL.createObjectURL(file);
 
-    fecharModal();
-    render();
+    const data = new FormData();
+    data.append("id", id);
+    data.append("nome", editNome.value.trim());
+    data.append("preco", editPreco.value);
+    data.append("estoque", editEstoque.value);
+
+    if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
+
+    try {
+      const res = await fetch("/api/produtos/update", {
+        method: "POST",
+        body: data
+      });
+
+      if (!res.ok) throw new Error("Erro ao atualizar produto");
+
+      fecharModal();
+      render(true);
+
+    } catch (err) {
+      console.error(err);
+      alert("Não foi possível atualizar o produto.");
+    }
   });
 
   function abrirModalAdicionar() {
@@ -371,33 +448,57 @@
     if (e.target === modalAdd) fecharModalAdicionar();
   });
 
-  formAdd.addEventListener("submit", (e) => {
+  formAdd.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const addCategoriaClean = addCategoria.value
+        .split(",")
+        .map(t => t.trim())
+        .filter(t => t.length > 0);
 
-    const nome = addNome.value.trim();
-    const categoria = addCategoria.value;
-    const preco = Number(addPreco.value);
-    const estoque = Number(addEstoque.value);
-    const file = addFoto.files && addFoto.files[0];
+    const data = new FormData();
 
-    if (!nome || !categoria || !file || !(preco >= 0) || !(estoque >= 0)) {
-      alert("Preencha tudo certinho.");
-      return;
-    }
-
-    produtos.push({
-      id: Date.now(),
-      nome,
-      categoria,
-      preco,
-      estoque,
-      img: URL.createObjectURL(file)
+    addCategoriaClean.forEach(cat => {
+      data.append("categoria[]", cat);
     });
+    data.append("nome", addNome.value.trim());
+    data.append("preco", addPreco.value);
+    data.append("estoque", addEstoque.value);
+    data.append("foto", addFoto.files[0]);
+
+    const res = await fetch("/api/produtos/add", {
+      method: "POST",
+      body: data
+    });
+
+    if (!res.ok) return console.error("Erro ao enviar pro back");
 
     formAdd.reset();
     fecharModalAdicionar();
-    render();
+    render(true);
   });
+
+  async function formDel(id) {
+  if (!confirm("Deseja realmente excluir este produto?")) return;
+
+  try {
+    const res = await fetch(`/api/produtos/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id })
+    });
+
+    if (!res.ok) throw new Error("Erro ao excluir produto");
+
+    produtos = produtos.filter(p => p.id !== id);
+    render(true);
+
+  } catch (err) {
+    console.error(err);
+    alert("Não foi possível excluir o produto.");
+  }
+}
+
+window.formDel = formDel;
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
@@ -411,8 +512,12 @@
   window.fecharModalAdicionar = fecharModalAdicionar;
   window.darBaixaEstoque = darBaixaEstoque;
 
-  [q, cat, price, sort].forEach(el => el.addEventListener("input", render));
-  render();
+  q.addEventListener("input", () => render(true));
+  cat.addEventListener("input", () => render(true));
+  price.addEventListener("change", () => render(true));
+  sort.addEventListener("change", () => render(true));
+
+  render(true);
 </script>
 
 </body>
