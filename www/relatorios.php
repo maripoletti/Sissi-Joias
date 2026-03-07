@@ -19,7 +19,6 @@
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
         <a href="relatorios.php" class="active">Relatórios</a>
-        <a href="estoque.php">Estoque</a>
         <a href="/controledeusuarios">Controle de Usuários</a>
         <a href="impressoras.php">Impressoras</a>
         <a href="fornecedores.php">Fornecedores</a>

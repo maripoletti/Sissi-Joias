@@ -22,10 +22,10 @@
           <a href="produtos.php">Produtos</a>
           <a href="vendas.php">Vendas</a>
           <a href="relatorios.php">Relatórios</a>
-          <a href="estoque.php">Estoque</a>
           <a href="controledeusuarios.php">Controle de Usuários</a>
           <a href="impressoras.php" class="active">Impressoras</a>
           <a href="/fornecedores.php">Fornecedores</a>
+          <a href="revendedores.php">Revendedores</a>
           <a href="cadastroimpressora.php">Cadastrar Impressora</a>
         </nav>
       </aside>

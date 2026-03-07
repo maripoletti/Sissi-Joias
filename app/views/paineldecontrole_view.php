@@ -17,7 +17,6 @@
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
         <a href="/relatoris">Relatórios</a>
-        <a href="/estoque">Estoque</a>
         <a href="/controledeusuarios">Controle de Usuários</a>
         <a href="/impressoras">Impressoras</a>
         <a href="/fornecedores">Fornecedores</a>
@@ -35,7 +34,7 @@
         <div class="top-actions">
            <a class="btn-certificado" href="certificado_garantia.pdf" download>
             ↓ Certificado de Garantia </a>
-          <a class="btn-primary" href="vendas.php">+ Nova Venda</a>
+          <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
         </div>
       </header>
 
