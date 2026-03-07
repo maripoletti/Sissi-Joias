@@ -21,7 +21,6 @@
         <a href="/controledeusuarios">Controle de Usuários</a>
         <a href="/impressoras">Impressoras</a>
         <a href="/fornecedores">Fornecedores</a>
-        <a href="/revendedores">Revendedores</a>
         <a href="/cadastrarimpressora">Cadastrar Impressora</a>
       </nav>
     </aside>
