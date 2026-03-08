@@ -3,10 +3,10 @@
 declare(strict_types= 1);
 require_once __DIR__ . "/../models/produtos_model.php";
 require_once __DIR__ . "/../services/prodValidator.php";
-require_once __DIR__ . "/../services/imageUpload.php";
+require_once __DIR__ . "/../helpers/imageUpload.php";
 header("Content-Type: application/json");
 
-$upload = new imageUpload();
+$upload = new ImageUpload();
 $db = new produtos_model();
 
 $fotoPath = $upload->image($_FILES['foto'] ?? []);

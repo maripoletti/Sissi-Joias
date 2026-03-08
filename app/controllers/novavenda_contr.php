@@ -2,7 +2,7 @@
 
 declare(strict_types= 1);
 require_once __DIR__ . "/../models/novavenda_model.php";
-require_once __DIR__ . "/../services/utf8ize.php";
+require_once __DIR__ . "/../helpers/utf8ize.php";
 header("Content-Type: application/json");
 
 $db = new novavenda_model();

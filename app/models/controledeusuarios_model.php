@@ -3,7 +3,7 @@
 declare(strict_types= 1);
 require_once __DIR__ . "/../../config/dbh.config.php";
 
-class controledeusuarios_model extends Dbh {
+class ControledeusuariosModel extends Dbh {
     public function switch_lvl($id, $nivel) {
         $pdo = $this->connect();
 

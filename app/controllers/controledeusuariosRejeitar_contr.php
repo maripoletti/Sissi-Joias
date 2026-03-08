@@ -3,7 +3,7 @@
 declare(strict_types= 1);
 require_once __DIR__ . "/../models/controledeusuarios_model.php";
 header("Content-Type: application/json");
-$db = new controledeusuarios_model();
+$db = new ControledeusuariosModel();
 
 $input = json_decode(file_get_contents("php://input"), true);
 

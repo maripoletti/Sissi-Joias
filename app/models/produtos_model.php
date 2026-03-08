@@ -74,6 +74,15 @@ class Produtos_model extends Dbh {
 
             $productId = $pdo->lastInsertId();
 
+            //adicionando código de barras
+
+            $barcode = "2" . str_pad($productId, 11, "0", STR_PAD_LEFT);
+
+            $stmt = $pdo->prepare(
+                "UPDATE Sales_Products SET Barcode = ? WHERE ProductID = ?"
+            );
+
+            $stmt->execute([$barcode, $productId]);
 
 
             //linkando tags com produtos
@@ -233,7 +242,8 @@ class Produtos_model extends Dbh {
                     p.StockQuantity AS estoque,
                     p.Price AS preco,
                     p.Description AS descricao,
-                    p.ImagePath AS img
+                    p.ImagePath AS img,
+                    p.Barcode AS cdb
                 FROM Sales_Products p
                 $joinTags
                 $where

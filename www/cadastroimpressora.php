@@ -23,7 +23,7 @@
           <a href="relatorios.php">Relatórios</a>
           <a href="estoque.php">Estoque</a>
           <a href="controledeusuarios.php">Controle de Usuários</a>
-          <a href="impressoras.php">Impressoras</a>
+          <a href="/impressoras">Impressoras</a>
           <a href="fornecedores.php">Fornecedores</a>
           <a href="revendedores.php">Revendedores</a>
           <a href="cadastroimpressora.php" class="active">Cadastrar Impressora</a>
@@ -103,8 +103,28 @@
         </div>
 
         <div class="ni-field">
-          <label class="ni-label" for="ip">IP / PORTA</label>
-          <input class="ni-input" id="ip" name="ip" placeholder="Ex: 192.168.1.100">
+          <label class="ni-label" for="ip">IP</label>
+          <input 
+            class="ni-input"
+            id="ip"
+            name="ip"
+            placeholder="192.168.1.100"
+            inputmode="numeric"
+            pattern="^(\d{1,3}\.){3}\d{1,3}$"
+          >
+        </div>
+
+        <div class="ni-field">
+          <label class="ni-label" for="porta">PORTA</label>
+          <input
+            class="ni-input"
+            id="porta"
+            name="porta"
+            type="number"
+            min="0"
+            max="65535"
+            placeholder="9100"
+          >
         </div>
 
         <div class="ni-field">
@@ -136,33 +156,87 @@
 </main>
 
 <script>
- 
-  const tabs = document.querySelectorAll(".ni-tab");
-  let tipo = "nf";
 
-  const hiddenType = document.createElement("input");
-  hiddenType.type = "hidden";
-  hiddenType.name = "tipo";
-  hiddenType.value = tipo;
-  document.getElementById("printerForm").appendChild(hiddenType);
+const tabs = document.querySelectorAll(".ni-tab");
+let tipo = "nf";
 
-  tabs.forEach(btn => {
-    btn.addEventListener("click", () => {
-      tabs.forEach(b => { b.classList.remove("active"); b.setAttribute("aria-selected","false"); });
-      btn.classList.add("active");
-      btn.setAttribute("aria-selected","true");
-      tipo = btn.dataset.type;
-      hiddenType.value = tipo;
+const form = document.getElementById("printerForm");
+
+const hiddenType = document.createElement("input");
+hiddenType.type = "hidden";
+hiddenType.name = "tipo";
+hiddenType.value = tipo;
+form.appendChild(hiddenType);
+
+tabs.forEach(btn => {
+  btn.addEventListener("click", () => {
+    tabs.forEach(b => {
+      b.classList.remove("active");
+      b.setAttribute("aria-selected","false");
     });
-  });
 
-  document.getElementById("printerForm").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const fd = new FormData(e.target);
-    const data = Object.fromEntries(fd.entries());
-    console.log("Cadastrar:", data);
-    alert("Cadastro pronto (aqui tu integra com o PHP/BD).");
-    e.target.reset();
+    btn.classList.add("active");
+    btn.setAttribute("aria-selected","true");
+
+    tipo = btn.dataset.type;
     hiddenType.value = tipo;
   });
+});
+
+function validarIP(ip) {
+  if (!ip) return true;
+
+  const partes = ip.split(".");
+  if (partes.length !== 4) return false;
+
+  return partes.every(p => {
+    const n = Number(p);
+    return p !== "" && n >= 0 && n <= 255;
+  });
+}
+
+function validarPorta(porta) {
+  if (!porta) return true;
+
+  const n = Number(porta);
+  return Number.isInteger(n) && n >= 0 && n <= 65535;
+}
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const fd = new FormData(form);
+  const data = Object.fromEntries(fd.entries());
+
+  if (!validarIP(data.ip)) {
+    alert("IP inválido");
+    return;
+  }
+
+  if (!validarPorta(data.porta)) {
+    alert("Porta inválida");
+    return;
+  }
+
+  try {
+
+    const res = await fetch("/api/cadastroimpressora", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(data)
+    });
+
+    const json = await res.json();
+    console.log(json);
+
+    form.reset();
+    hiddenType.value = tipo;
+
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 </script>

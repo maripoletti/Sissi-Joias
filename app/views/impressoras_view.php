@@ -19,14 +19,14 @@
 
         <nav>
           <a href="/paineldecontrole">Painel de Controle</a>
-          <a href="produtos.php">Produtos</a>
-          <a href="vendas.php">Vendas</a>
-          <a href="relatorios.php">Relatórios</a>
-          <a href="estoque.php">Estoque</a>
-          <a href="controledeusuarios.php">Controle de Usuários</a>
-          <a href="impressoras.php" class="active">Impressoras</a>
-          <a href="fornecedores.php">Fornecedores</a>
-          <a href="revendedores.php">Revendedores</a>
+          <a href="/produtos">Produtos</a>
+          <a href="/vendas">Vendas</a>
+          <a href="/relatorios">Relatórios</a>
+          <a href="/estoque">Estoque</a>
+          <a href="/controledeusuarios">Controle de Usuários</a>
+          <a href="/impressoras" class="active">Impressoras</a>
+          <a href="/fornecedores">Fornecedores</a>
+          <a href="/revendedores">Revendedores</a>
           <a href="cadastroimpressora.php">Cadastrar Impressora</a>
         </nav>
       </aside>
@@ -123,7 +123,7 @@
 
       <div class="form-row">
         <div class="form-group">
-          <label class="form-label">IP / Porta</label>
+          <label class="form-label">IP</label>
           <input class="form-input" id="inp-ip" type="text" placeholder="192.168.1.100"/>
         </div>
         <div class="form-group">

@@ -1,20 +1,19 @@
 <?php
 
 declare(strict_types= 1);
-require_once __DIR__ . "/../models/produtos_model.php";
+require_once __DIR__ . "/../models/impressoras_model.php";
 header("Content-Type: application/json");
 
-$db = new produtos_model();
-
+$db = new impressoras_model();
 $input = json_decode(file_get_contents('php://input'), true);
-
-$id = (int)($input["id"] ?? "");
+$id = (int)($input["id"]);
+$newStatus = $input["status"];
 
 if(!$id) {
     http_response_code(400);
     echo "Dados inválidos";
     exit;
 } else {
-    $db->delete_products($id);
+    $db->new_status_printer($id, $newStatus);
     exit;
 }

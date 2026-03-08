@@ -16,7 +16,7 @@
         <a href="/paineldecontrole" class="active">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-        <a href="/relatoris">Relatórios</a>
+        <a href="/relatorios">Relatórios</a>
         <a href="/estoque">Estoque</a>
         <a href="/controledeusuarios">Controle de Usuários</a>
         <a href="/impressoras">Impressoras</a>

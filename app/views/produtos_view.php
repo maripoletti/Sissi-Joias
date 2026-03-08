@@ -6,6 +6,7 @@
   <title>Produtos - Sissi Semi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/produtos.css" />
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"></script>
 </head>
 <body>
 
@@ -290,7 +291,14 @@
 
             <div class="actions">
               <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
-              <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">Excluir</button>
+
+              <button class="btn btn-outline" type="button" onclick="imprimirEtiqueta(${p.id})">
+                Etiqueta
+              </button>
+
+              <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">
+                Excluir
+              </button>
             </div>
           </div>
         </article>
@@ -497,6 +505,83 @@
     console.error(err);
     alert("Não foi possível excluir o produto.");
   }
+}
+
+function imprimirEtiqueta(id){
+
+  const prod = produtos.find(p => p.id === id);
+  if(!prod) return;
+
+  const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
+
+  const html = `
+  <html>
+
+  <head>
+
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
+
+  <style>
+
+  body{
+    font-family: Arial;
+    text-align:center;
+    padding:40px;
+  }
+
+  .etiqueta{
+    width:220px;
+    border:1px solid black;
+    padding:12px;
+    margin:auto;
+  }
+
+  .nome{
+    font-size:14px;
+  }
+
+  .preco{
+    font-size:24px;
+    font-weight:bold;
+  }
+
+  </style>
+
+  </head>
+
+  <body>
+
+  <div class="etiqueta">
+
+    <div class="nome">${prod.nome}</div>
+
+    <div class="preco">R$ ${preco}</div>
+
+    <svg id="barcode"></svg>
+
+  </div>
+
+  <script>
+
+    JsBarcode("#barcode", "${prod.cdb}", {
+      format:"CODE128",
+      width:2,
+      height:60,
+      displayValue:true
+    });
+
+    window.print();
+
+  <\/script>
+
+  </body>
+
+  </html>
+  `;
+
+  const win = window.open();
+  win.document.write(html);
+
 }
 
 window.formDel = formDel;
