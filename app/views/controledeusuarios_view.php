@@ -7,6 +7,7 @@
 
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/controledeusuarios.css" />
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
 
@@ -20,12 +21,15 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos">Produtos</a>
           <a href="/vendas">Vendas</a>
-          <a href="relatorios.php">Relatórios</a>
-          <a href="estoque.php">Estoque</a>
-          <a href="controledeusuarios.php" class="active">Controle de Usuários</a>
+          <a href="/relatorios">Relatórios</a>
           <a href="/impressoras">Impressoras</a>
-          <a href="fornecedores.php">Fornecedores</a>
-          <a href="revendedores.php">Revendedores</a>
+
+          <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/controledeusuarios" class="active">Controle de Usuários</a>
+            <a href="/fornecedores">Fornecedores</a>
+            <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+          <?php endif; ?>
+
         </nav>
       </aside>
 

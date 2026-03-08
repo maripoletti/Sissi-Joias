@@ -183,3 +183,53 @@
   .rel-grid{ grid-template-columns: 1fr; }
   .rel-pay-grid{ grid-template-columns: repeat(2, 1fr); }
 }
+
+.estoque-stats{
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  padding: 20px;
+}
+
+.stat-card{
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 18px;
+  min-height: 120px;
+}
+
+.stat-icon{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  font-size: 19px;
+}
+
+.stat-icon.gold{
+  background: rgba(255, 204, 0, 0.18);
+}
+
+.stat-icon.lilac{
+  background: rgba(214, 139, 255, 0.20);
+}
+
+.stat-icon.red{
+  background: rgba(255, 107, 107, 0.20);
+}
+
+.stat-value{
+  color: var(--yellow);
+  font-size: 20px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.stat-label{
+  color: var(--muted);
+  font-size: 14px;
+}

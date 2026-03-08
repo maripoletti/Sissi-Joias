@@ -7,6 +7,7 @@
 
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/vendas.css">
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 
 <body>
@@ -14,22 +15,24 @@
 <div class="container">
 <div class="card app">
 
-<aside class="sidebar">
-<h2>Sissi Semi Joias e Acessórios</h2>
+    <aside class="sidebar">
+      <h2>Sissi Semi Joias e Acessórios</h2>
 
-<nav>
-<a href="/paineldecontrole">Painel de Controle</a>
-<a href="/produtos">Produtos</a>
-<a href="/vendas" class="active">Vendas</a>
-<a href="relatorios.php">Relatórios</a>
-<a href="estoque.php">Estoque</a>
-<a href="/controledeusuarios">Controle de Usuários</a>
-<a href="impressoras.php">Impressoras</a>
-<a href="fornecedores.php">Fornecedores</a>
-<a href="revendedores.php">Revendedores</a>
-<a href="cadastroimpressora.php">Cadastrar Impressora</a>
-</nav>
-</aside>
+      <nav>
+        <a href="/paineldecontrole">Painel de Controle</a>
+        <a href="/produtos">Produtos</a>
+        <a href="/vendas" class="active">Vendas</a>
+        <a href="/relatorios">Relatórios</a>
+        <a href="/impressoras">Impressoras</a>
+
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/controledeusuarios">Controle de Usuários</a>
+          <a href="/fornecedores">Fornecedores</a>
+          <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+        <?php endif; ?>
+
+      </nav>
+    </aside>
 
 <main class="main">
 

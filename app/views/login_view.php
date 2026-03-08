@@ -9,6 +9,7 @@ declare(strict_types= 1);
   <meta charset="UTF-8" />
   <title>Sissi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/login.css">
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
 
@@ -35,6 +36,7 @@ declare(strict_types= 1);
         </form>
 
         <p>Não tem uma conta? <a href="/cadastro">Cadastrar-se</a></p>
+        <p>Esqueceu sua senha? <a href="esquecisenha.php">Clique aqui</a></p> 
         
 
         <?php

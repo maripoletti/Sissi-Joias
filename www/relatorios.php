@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/paineldecontrole.css">
   <link rel="stylesheet" href="styles/relatorios.css">
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
 
@@ -14,34 +15,33 @@
 
     <aside class="sidebar">
       <h2>Sissi Semi Joias e Acessórios</h2>
+
       <nav>
         <a href="/paineldecontrole">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-        <a href="relatorios.php" class="active">Relatórios</a>
-        <a href="estoque.php">Estoque</a>
-        <a href="/controledeusuarios">Controle de Usuários</a>
-        <a href="impressoras.php">Impressoras</a>
-        <a href="fornecedores.php">Fornecedores</a>
-        <a href="revendedores.php">Revendedores</a>
-        <a href="cadastroimpressora.php">Cadastrar Impressora</a>
+        <a href="/relatorios" class="active">Relatórios</a>
+        <a href="/impressoras">Impressoras</a>
+
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/controledeusuarios">Controle de Usuários</a>
+          <a href="/fornecedores">Fornecedores</a>
+          <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+        <?php endif; ?>
+
+      </nav>
     </aside>
 
     <main class="main relatorios-page">
 
       <header class="rel-top">
         <h1>Relatórios</h1>
-
-        <button class="rel-mes">
-          março de 2026
-          <span class="rel-icon">📅</span>
-        </button>
       </header>
 
       <!-- Cards topo -->
       <section class="rel-cards">
         <div class="rel-card">
-          <p class="rel-label">Total do mês</p>
+          <p class="rel-label">Total</p>
           <h2 class="rel-value">R$ 1588,00</h2>
           <div class="rel-badge">$</div>
         </div>
@@ -53,7 +53,7 @@
         </div>
 
         <div class="rel-card">
-          <p class="rel-label">Ticket médio</p>
+          <p class="rel-label">Valor médio</p>
           <h2 class="rel-value">R$ 226,86</h2>
           <div class="rel-badge">📈</div>
         </div>
@@ -64,6 +64,33 @@
           <div class="rel-badge">👤</div>
         </div>
       </section>
+
+      <section class="estoque-stats">
+          <div class="stat-card">
+            <div class="stat-icon gold">💎</div>
+            <div class="stat-value" id="totalPecas">5</div>
+            <div class="stat-label">Total de peças</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon lilac">⬡</div>
+            <div class="stat-value" id="totalUnidades">17</div>
+            <div class="stat-label">Unidades em estoque</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon red">⚠</div>
+            <div class="stat-value" id="totalAlertas">2</div>
+            <div class="stat-label">Alertas de estoque</div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon gold">↗</div>
+            <div class="stat-value" id="valorEstoque">R$ 33.770</div>
+            <div class="stat-label">Valor em estoque</div>
+          </div>
+        </section>
+
 
       <!-- Blocos do meio -->
       <section class="rel-grid">

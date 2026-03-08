@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/produtos.css">
   <link rel="stylesheet" href="styles/impressoras.css">
+  <link rel="shortcut icon" href=".ico" type="image/x-icon">
 </head>
 <body>
 
@@ -22,12 +23,15 @@
           <a href="/produtos">Produtos</a>
           <a href="/vendas">Vendas</a>
           <a href="/relatorios">Relatórios</a>
-          <a href="/estoque">Estoque</a>
-          <a href="/controledeusuarios">Controle de Usuários</a>
           <a href="/impressoras" class="active">Impressoras</a>
-          <a href="/fornecedores">Fornecedores</a>
-          <a href="/revendedores">Revendedores</a>
-          <a href="cadastroimpressora.php">Cadastrar Impressora</a>
+    
+
+          <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/controledeusuarios">Controle de Usuários</a>
+            <a href="/fornecedores">Fornecedores</a>
+            <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+          <?php endif; ?>
+
         </nav>
       </aside>
 
@@ -141,7 +145,6 @@
         </select>
       </div>
 
-      <!-- Sem botões (salva com Enter / fecha com ESC ou clique fora) -->
       <div class="modal-hint">Dica: pressione <b>Enter</b> para salvar. <b>Esc</b> para fechar.</div>
     </div>
   </div>

@@ -3,7 +3,7 @@
   background: #f6f7fb;
   padding: 28px;
   overflow-y: auto;
-  color: #500b48;
+  color: #4b0d4f;
 }
 
 .page-header{
@@ -55,7 +55,7 @@
 }
 
 .ni-card-top{
-  background: linear-gradient(180deg, #5b0641 0%, #420545 100%);
+  background: linear-gradient(180deg, #4b0d4f 0%, #420545 100%);
   padding: 14px 16px;
 }
 
@@ -157,7 +157,7 @@
 }
 
 .ni-btn-primary{
-  background: #9ca3af; /* igual botão cinza da imagem */
+  background: #d7b343; /* igual botão cinza da imagem */
   color: #fff;
 }
 
