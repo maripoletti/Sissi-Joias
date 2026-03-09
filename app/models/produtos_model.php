@@ -8,11 +8,13 @@ class Produtos_model extends Dbh {
         $pdo = $this->connect();
 
         try {
-            $stmt = $pdo->prepare("UPDATE Sales_Products SET Status = 0 WHERE ProductID = :id");
+            $stmt = $pdo->prepare("UPDATE Sales_Products SET Status = '0' WHERE ProductID = :id");
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
         } catch (PDOException $e) {
-            echo "Erro na conexão: " . $e->getMessage();
+            http_response_code(500);
+            echo json_encode(["produtos"=>[], "total"=>0, "erro"=>$e->getMessage()]);
+            exit;
         }
     }
     public function set_products(array $data) {
@@ -111,7 +113,9 @@ class Produtos_model extends Dbh {
             $pdo->commit();
         } catch (PDOException $e) {
             $pdo->rollBack();
-            echo "Erro na conexão: " . $e->getMessage();
+            http_response_code(500);
+            echo json_encode(["produtos"=>[], "total"=>0, "erro"=>$e->getMessage()]);
+            exit;
         }
     }
     public function update_products(array $data) {
@@ -165,7 +169,9 @@ class Produtos_model extends Dbh {
             $pdo->commit();
         } catch (PDOException $e) {
             $pdo->rollback();
-            echo "Erro na conexão: " . $e->getMessage();
+            http_response_code(500);
+            echo json_encode(["produtos"=>[], "total"=>0, "erro"=>$e->getMessage()]);
+            exit;
         }
     }
 
@@ -271,6 +277,7 @@ class Produtos_model extends Dbh {
             switch ($sort) {
                 case "relevancia":
                     $orderBy = "ORDER BY p.Relevancy DESC";
+                    break;
                 case "menor":
                     $orderBy = "ORDER BY p.Price ASC";
                     break;
@@ -325,7 +332,9 @@ class Produtos_model extends Dbh {
             ];
 
         } catch (PDOException $e) {
-            echo "Erro na conexão: " . $e->getMessage();
+            http_response_code(500);
+            echo json_encode(["produtos"=>[], "total"=>0, "erro"=>$e->getMessage()]);
+            exit;
         }
     }
 }

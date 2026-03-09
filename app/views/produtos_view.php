@@ -6,6 +6,7 @@
   <title>Produtos - Sissi Semi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/produtos.css" />
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
 

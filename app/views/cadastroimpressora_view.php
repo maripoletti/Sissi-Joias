@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/cadastroimpressora.css" />
-  <link rel="shortcut icon" href=".ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
 
@@ -138,9 +138,9 @@
         <div class="ni-field ni-full">
           <label class="ni-label" for="status">STATUS</label>
           <select class="ni-select" id="status" name="status">
-            <option value="ativa" selected>Ativa</option>
-            <option value="inativa">Inativa</option>
-            <option value="manutencao">Manutenção</option>
+            <option value="online" selected>Ativa</option>
+            <option value="offline">Inativa</option>
+            <option value="standby">Manutenção</option>
           </select>
         </div>
 
@@ -232,7 +232,6 @@ form.addEventListener("submit", async (e) => {
     });
 
     const json = await res.json();
-    console.log(json);
 
     form.reset();
     hiddenType.value = tipo;

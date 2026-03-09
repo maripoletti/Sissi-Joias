@@ -559,8 +559,6 @@ scanner.addEventListener("keydown", async (e) => {
     const codigo = scanner.value.trim();
     scanner.value = ""; 
 
-    console.log("Enter pressionado, código:", codigo);
-
     try {
       const res = await fetch("/api/novavenda/scan", {
         method: "POST",

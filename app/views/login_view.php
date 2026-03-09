@@ -9,7 +9,7 @@ declare(strict_types= 1);
   <meta charset="UTF-8" />
   <title>Sissi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/login.css">
-  <link rel="shortcut icon" href=".ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
 

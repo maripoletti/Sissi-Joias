@@ -99,7 +99,6 @@ function renderGrid() {
       </div>
 
       <div class="card-actions">
-        <button class="btn-action" onclick="testPrint(${p.id})">Testar</button>
         <button class="btn-action" onclick="toggleStatus(${p.id})">Status</button>
         <button class="btn-action danger" onclick="deletePrinter(${p.id})">Excluir</button>
       </div>

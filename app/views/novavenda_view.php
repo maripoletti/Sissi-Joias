@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Nova Venda</title>
     <link rel="stylesheet" href="styles/novavenda.css">
-    <link rel="shortcut icon" href=".ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 
 <body>

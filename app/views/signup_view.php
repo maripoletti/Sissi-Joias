@@ -8,7 +8,7 @@ declare(strict_types=1);
     <title>Cadastro</title>
 
     <link rel="stylesheet" href="styles/cadastro.css">
-    <link rel="shortcut icon" href=".ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
 

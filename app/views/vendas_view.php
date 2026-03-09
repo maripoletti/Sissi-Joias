@@ -7,7 +7,7 @@
 
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/vendas.css">
-  <link rel="shortcut icon" href=".ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
 
 <body>
