@@ -33,6 +33,7 @@ class relatorios_model extends Dbh {
                     ON so.CustomerID = sc.CustomerID
                 LEFT JOIN Sales_Employees se
                     ON sc.EmployeeID = se.EmployeeID
+                WHERE se.FullName IS NOT NULL
                 GROUP BY se.EmployeeID
                 ORDER BY valor DESC
                 LIMIT 4

@@ -14,7 +14,8 @@ class comprovante_model extends Dbh {
             p.Price,
             o.Quantity,
             o.Sales,
-            o.OrderDate
+            o.OrderDate,
+            o.PaymentMethod
         FROM Sales_Orders o
         JOIN Sales_Products p ON p.ProductID = o.ProductID
         WHERE o.OrderID = ?

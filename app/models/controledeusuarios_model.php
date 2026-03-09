@@ -54,6 +54,11 @@ class ControledeusuariosModel extends Dbh {
                 $stmt->bindParam(":userid", $userID);
                 $stmt->execute();
 
+                $query = "DELETE FROM Events WHERE UserID = :userid";
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam(":userid", $userID);
+                $stmt->execute();
+
                 $query = "DELETE FROM Auth_Users WHERE UserID = :userid";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(":userid", $userID);

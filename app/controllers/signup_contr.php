@@ -6,7 +6,7 @@ $name = $_POST["name"] ?? "";
 $email = $_POST["email"] ?? "";
 $pwd = $_POST["pwd"] ?? "";
 $pwdRepeat = $_POST["pwdRepeat"] ?? "";
-$phone = $_POST["phone"] ?? "";
+$phone = $_POST["phone_raw"] ?? "";
 
 require_once __DIR__ . '/../models/signup_model.php';
 require_once __DIR__ . '/../services/authValidator.php';

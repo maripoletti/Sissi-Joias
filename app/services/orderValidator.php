@@ -29,7 +29,7 @@ class orderValidator {
             $errors["cpf_invalid"] = "CPF inválido.";
         }
 
-        $pagamentosValidos = ["Dinheiro","Cartão","Pix"];
+        $pagamentosValidos = ["Dinheiro","Débito", "Crédito", "Pix"];
 
         if (!in_array($clean["pagamento"], $pagamentosValidos, true)) {
             $errors["pagamento_invalid"] = "Pagamento inválido.";

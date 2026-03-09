@@ -5,7 +5,7 @@ require_once __DIR__ ."/../../config/dbh.config.php";
 
 class user_model extends Dbh {
 
-    public function find_role_by_id(int $id) {
+    public function find_role_by_id(string|int $id) {
         $pdo = $this->connect();
 
         $query = "SELECT RoleID FROM Auth_UserRoles WHERE UserID = :userid"; 

@@ -11,7 +11,7 @@ class AuthMiddleware {
         }
 
         $userModel = new User_model();
-        $role = $userModel->find_role_by_id($_SESSION["user_id"]);
+        $role = $userModel->find_role_by_id((int)($_SESSION["user_id"]));
         $_SESSION["role"] = $role["RoleID"];
         return $role;
     }

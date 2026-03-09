@@ -1,7 +1,5 @@
 <?php
-
-declare(strict_types= 1);
-
+declare(strict_types=1);
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -33,46 +31,40 @@ declare(strict_types= 1);
 
             <label>Nome completo</label>
             <input type="text" name="name" placeholder="Seu nome completo" required>
-
             <?php if (isset($errors["name_wrong"])): ?>
                 <p class="errors"><?= $errors["name_wrong"] ?></p>
             <?php endif; ?>
 
-
             <label>E-mail</label>
             <input type="email" name="email" placeholder="seu@email.com" required>
-
             <?php if (isset($errors["email_wrong"])): ?>
                 <p class="errors"><?= $errors["email_wrong"] ?></p>
             <?php endif; ?>
 
-
             <label>Senha</label>
             <input type="password" name="pwd" placeholder="Crie uma senha forte" required>
-
             <?php if (isset($errors["pwd_wrong"])): ?>
                 <p class="errors"><?= $errors["pwd_wrong"] ?></p>
             <?php endif; ?>
 
-
             <label>Confirmar Senha</label>
             <input type="password" name="pwdRepeat" placeholder="Confirme sua senha">
-
             <?php if (isset($errors["pwd_match"])): ?>
                 <p class="errors"><?= $errors["pwd_match"] ?></p>
             <?php endif; ?>
 
             <label>Telefone</label>
-            <input  type= "text" name="telefone" placeholder="(XX) XXXXX-XXXX" maxlength="11" inputmode="numeric" pattern="[0-9]*" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 11)">
+            <input type="text" name="phone" id="telefone" placeholder="(XX) XXXXX-XXXX" inputmode="numeric">
+            <input type="hidden" name="phone_raw" id="telefone_raw">
 
             <?php if (isset($errors["phone_wrong"])): ?>
                 <p class="errors"><?= $errors["phone_wrong"] ?></p>
             <?php endif; ?>
-            
+
             <?php if (isset($errors["empty_field"])): ?>
                 <p class="errors"><?= $errors["empty_field"] ?></p>
             <?php endif; ?>
-            
+
             <?php if (isset($errors["is_bigger"])): ?>
                 <p class="errors"><?= $errors["is_bigger"] ?></p>
             <?php endif; ?>
@@ -88,5 +80,26 @@ declare(strict_types= 1);
 
 </div>
 
+<script>
+const Telefone = document.querySelector("#telefone");
+const TelefoneRaw = document.querySelector("#telefone_raw");
+
+Telefone.addEventListener("input", () => {
+    let v = Telefone.value.replace(/\D/g, "");
+    if (v.length > 11) v = v.slice(0, 11);  
+
+    let vFormat = v;
+    if (v.length > 10) {
+        vFormat = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); 
+    } else if (v.length > 5) {
+        vFormat = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3"); 
+    } else if (v.length > 2) {
+        vFormat = v.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
+    }
+    Telefone.value = vFormat;
+
+    TelefoneRaw.value = v;
+});
+</script>
 </body>
 </html>

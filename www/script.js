@@ -552,4 +552,36 @@ main.addEventListener("scroll", () => {
 
 });
 
+const scanner = document.getElementById("scanner");
+
+scanner.addEventListener("keydown", async (e) => {
+  if (e.key === "Enter") {
+    const codigo = scanner.value.trim();
+    scanner.value = ""; 
+
+    console.log("Enter pressionado, código:", codigo);
+
+    try {
+      const res = await fetch("/api/novavenda/scan", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cdb: codigo })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        alert(`Venda registrada: ${data.produto_nome}`);
+      } else {
+        alert("Produto não encontrado");
+      }
+    } catch (err) {
+      console.error("Erro na venda:", err);
+    }
+  }
+});
+
+scanner.focus();
+setInterval(() => scanner.focus(), 500);
+
 carregarVendas();

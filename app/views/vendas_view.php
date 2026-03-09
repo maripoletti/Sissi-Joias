@@ -39,19 +39,22 @@
 <section class="wrap">
 
 <header class="top">
+  <div class="top-left">
+    <h1>Vendas</h1>
+    <p class="subtitle">
+      <span id="qtdVendas">0</span> venda(s) registrada(s)
+    </p>
+  </div>
 
-<div class="top-left">
-<h1>Vendas</h1>
-<p class="subtitle">
-<span id="qtdVendas">0</span> venda(s) registrada(s)
-</p>
-</div>
-
-<button class="btn-primary" id="btnRegistrar">
-+ Registrar Venda
-</button>
-
+  <button class="btn-primary" id="btnRegistrar">
+    + Registrar Venda
+  </button>
 </header>
+
+
+<div style="margin: 10px 0;">
+  <input type="text" id="scanner" style="width:200px; height:30px;" placeholder="Digite o código ou escaneie" autofocus>
+</div>
 
 <section class="list" id="listaVendas">
 </section>
@@ -71,6 +74,5 @@
 </script>
 
 <script src="script.js"></script>
-
 </body>
 </html>

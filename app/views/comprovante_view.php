@@ -48,7 +48,7 @@ Comprovante de Venda
 <div class="divisor"></div>
 
 <div class="center">
-Pagamento: PIX<br>
+Pagamento: <?= $venda['PaymentMethod'] ?><br>
 Data: <?= date("d/m/Y H:i", strtotime($venda['OrderDate'])) ?>
 </div>
 

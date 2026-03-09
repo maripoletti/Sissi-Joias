@@ -104,7 +104,7 @@ function abrirModal(id) {
 
     editId.value = f.id;
     editNome.value = f.nome || "";
-    editCnpj.value = formatCNPJ(f.cnpj) || "";
+    editCnpj.value = f.cnpj || "";
     editPhone.value = f.telefone || "";
     editEmail.value = f.email || "";
     editAddress.value = f.endereco || "";

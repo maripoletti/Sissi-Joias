@@ -8,21 +8,10 @@ class Produtos_model extends Dbh {
         $pdo = $this->connect();
 
         try {
-            $pdo->beginTransaction();
-
-            $query = "DELETE FROM Prod_ProductsTags WHERE ProductID = :id";
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(":id", $id);
+            $stmt = $pdo->prepare("UPDATE Sales_Products SET Status = 0 WHERE ProductID = :id");
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
-
-            $query = "DELETE FROM Sales_Products WHERE ProductID = :id";
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(":id", $id);
-            $stmt->execute();
-
-            $pdo->commit();
         } catch (PDOException $e) {
-            $pdo->rollBack();
             echo "Erro na conexão: " . $e->getMessage();
         }
     }
@@ -200,6 +189,8 @@ class Produtos_model extends Dbh {
             $params = [];
             $whereParts = [];
 
+            $whereParts[] = "p.Status = 1";
+
             if (!empty($tamanho)) {
                 $whereParts[] = "p.Size = ?";
                 $params[] = $tamanho;
@@ -221,7 +212,7 @@ class Produtos_model extends Dbh {
             }
 
             if (!empty($text)) {
-                $whereParts[] = "MATCH(p.ProductName, p.Description) AGAINST (? IN BOOLEAN MODE)";
+                $whereParts[] = "MATCH(p.ProductName) AGAINST (? IN BOOLEAN MODE)";
                 $params[] = $text . "*";
             }
 

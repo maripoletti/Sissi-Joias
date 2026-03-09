@@ -31,6 +31,7 @@ switch ($uri) {
   case '/paineldecontrole': 
     if (isset($_SESSION['user_id'])) {
       require_once '../app/views/paineldecontrole_view.php';
+      AuthMiddleware::user();
       break;
     } else {
       header('Location: /login');
@@ -70,6 +71,7 @@ switch ($uri) {
     if (isset($_SESSION['user_id'])) {
       if ($method === 'GET') {
         require_once '../app/views/novavenda_view.php';
+        AuthMiddleware::user();
         break;
       }
       if ($method === 'POST') {
@@ -86,11 +88,19 @@ switch ($uri) {
       require_once '../app/controllers/novavendaFin_contr.php';
       break;
     }
+    
+  case '/api/novavenda/scan':
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/vendascan_contr.php';
+      break;
+    }
+
 
   case'/vendas':
     if (isset($_SESSION['user_id'])) {
       if ($method === 'GET') {
         require_once '../app/views/vendas_view.php';
+        AuthMiddleware::user();
         break;
       }
     } else {
@@ -107,6 +117,7 @@ switch ($uri) {
   case '/controledeusuarios':
     if (isset($_SESSION['user_id']) && $_SESSION['role'] == '2') {
       require_once '../app/views/controledeusuarios_view.php';
+      AuthMiddleware::user();
       break;
     } else {
       header('Location: /login');
@@ -147,6 +158,7 @@ switch ($uri) {
       if(isset($_SESSION['user_id'])) {
       if ($method === 'GET') {
         require_once '../app/views/produtos_view.php';
+        AuthMiddleware::user();
         break;
       }
     } else {
@@ -186,31 +198,24 @@ switch ($uri) {
   case '/impressoras':
     if (isset($_SESSION['user_id'])) {
       require_once '../app/views/impressoras_view.php';
+      AuthMiddleware::user();
       break;
     }
   case '/api/impressoras':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/impressorasGet_contr.php';
-      break;
-    }
+    require_once '../app/controllers/impressorasGet_contr.php';
+    break;
     
   case '/api/impressoras/delete':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/impressorasDel_contr.php';
-      break;
-    }
+    require_once '../app/controllers/impressorasDel_contr.php';
+    break;
     
   case '/api/impressoras/status':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/impressorasStatus_contr.php';
-      break;
-    }
+    require_once '../app/controllers/impressorasStatus_contr.php';
+    break;
     
   case '/api/impressoras/test':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/impressorasTest_contr.php';
-      break;
-    }
+    require_once '../app/controllers/impressorasTest_contr.php';
+    break;
 
   case '/cadastrarimpressora': 
     if ($_SESSION['role'] == '2') {
@@ -218,6 +223,7 @@ switch ($uri) {
         require_once '../app/views/cadastroimpressora_view.php';
         break;
       } else {
+        AuthMiddleware::user();
         header('Location: /login');
         break;
       }
@@ -228,6 +234,8 @@ switch ($uri) {
       if($method === 'POST') {
         require_once '../app/controllers/cadastroimpressora_contr.php';
         break;
+      } else {
+        AuthMiddleware::user();
       }
     }
     
@@ -236,20 +244,20 @@ switch ($uri) {
     require_once '../app/views/relatorios_view.php';
     break;
   } else {
+    AuthMiddleware::user();
     header('Location: /login');
     break;
   }
 
   case '/api/relatorios': 
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/relatorios_contr.php';
-      break;
-    }
+    require_once '../app/controllers/relatorios_contr.php';
+    break;
   case '/fornecedores':
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/fornecedores_view.php';
       break;
     } else {
+      AuthMiddleware::user();
       header('Location: /login');
       break;
     }
@@ -279,10 +287,14 @@ switch ($uri) {
       require_once '../app/controllers/comprovante_contr.php';
       break;
     } else {
+      AuthMiddleware::user();
       header('Location: /login');
       break;
     }
 
+  case '/esquecisenha':
+    require_once '../app/views/esquecisenha_view.php';
+    break;
   default:
     require_once '../app/views/404.html';
 }

@@ -117,5 +117,11 @@ button:hover {
 }
 
 .errors {
-  color: red;
+  color: #ffdddd;
+  background-color: #8b0000;
+  padding: 8px 12px;
+  margin-top: 6px;
+  border-left: 4px solid #ff4c4c;
+  border-radius: 6px;
+  font-size: 13px;
 }

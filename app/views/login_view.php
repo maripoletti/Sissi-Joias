@@ -36,7 +36,7 @@ declare(strict_types= 1);
         </form>
 
         <p>Não tem uma conta? <a href="/cadastro">Cadastrar-se</a></p>
-        <p>Esqueceu sua senha? <a href="esquecisenha.php">Clique aqui</a></p> 
+        <p>Esqueceu sua senha? <a href="/esquecisenha">Clique aqui</a></p> 
         
 
         <?php
