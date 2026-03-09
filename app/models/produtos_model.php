@@ -43,20 +43,43 @@ class Produtos_model extends Dbh {
             }
 
             //pegando os Ids de tags inseridas
-            $placeholders = implode(', ', array_fill(0, count($data['tags']),'?'));
+            $tagsIds = [];
 
-            $stmt = $pdo->prepare(
-                "SELECT TagID
-                FROM Prod_Tags
-                WHERE TagName IN ($placeholders)"
-            );
-            $stmt->execute($data['tags']);
-            $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            if (!empty($data['tags'])) {
+
+                $placeholders = implode(', ', array_fill(0, count($data['tags']), '?'));
+
+                $stmt = $pdo->prepare(
+                    "SELECT TagID
+                    FROM Prod_Tags
+                    WHERE TagName IN ($placeholders)"
+                );
+
+                $stmt->execute($data['tags']);
+                $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            }
 
 
             //inserindo produtos
-            $campos = ['ProductName', 'StockQuantity', 'Price'];
-            $params = [$data['name'], $data['stock'], $data['price']];
+            $campos = [
+                'ProductName',
+                'StockQuantity',
+                'Price',
+                'Size',
+                'Color',
+                'BathWeight',
+                'BathThickness'
+            ];
+
+            $params = [
+                $data['name'],
+                $data['stock'],
+                $data['price'],
+                $data['tamanho'],
+                $data['cor'],
+                $data['peso_banho'],
+                $data['milesimos_banho']
+            ];
             
             if(!empty($data['photo'])) {
                 $campos[] = 'ImagePath';
@@ -90,8 +113,10 @@ class Produtos_model extends Dbh {
                 "INSERT INTO Prod_ProductsTags (ProductID, TagID) VALUES (?, ?)"
             );
 
-            foreach ($tagsIds as $tag) {
-                $stmt->execute([$productId, $tag]);
+            if (!empty($tagsIds)) {
+                foreach ($tagsIds as $tag) {
+                    $stmt->execute([$productId, $tag]);
+                }
             }
             
             $pdo->commit();
@@ -116,7 +141,11 @@ class Produtos_model extends Dbh {
             $campos = [
                 "ProductName = :name",
                 "Price = :price",
-                "StockQuantity = :stock"
+                "StockQuantity = :stock",
+                "Size = :tamanho",
+                "Color = :cor",
+                "BathWeight = :peso_banho",
+                "BathThickness = :milesimos_banho"
             ];
 
             if (!empty($data["photo"])) {
@@ -133,6 +162,10 @@ class Produtos_model extends Dbh {
             $stmt->bindParam(":price", $data["price"]);
             $stmt->bindParam(":stock", $data["stock"]);
             $stmt->bindParam(":id", $data["id"]);
+            $stmt->bindParam(":tamanho", $data["tamanho"]);
+            $stmt->bindParam(":cor", $data["cor"]);
+            $stmt->bindParam(":peso_banho", $data["peso_banho"]);
+            $stmt->bindParam(":milesimos_banho", $data["milesimos_banho"]);
 
             if (!empty($data["photo"])) {
                 $stmt->bindParam(":photo", $data["photo"]);
@@ -158,10 +191,34 @@ class Produtos_model extends Dbh {
             $sort  = $data["sort"]  ?? null;
             $limit = $data["limit"] ?? 12;
             $page  = $data["page"]  ?? 0;
+            $tamanho = $data["tamanho"] ?? "";
+            $cor = $data["cor"] ?? "";
+            $peso_banho = $data["peso_banho"] ?? "";
+            $milesimos_banho = $data["milesimos_banho"] ?? "";
             $offset = $page * $limit;
 
             $params = [];
             $whereParts = [];
+
+            if (!empty($tamanho)) {
+                $whereParts[] = "p.Size = ?";
+                $params[] = $tamanho;
+            }
+
+            if (!empty($cor)) {
+                $whereParts[] = "p.Color = ?";
+                $params[] = $cor;
+            }
+
+            if (!empty($peso_banho)) {
+                $whereParts[] = "p.BathWeight = ?";
+                $params[] = $peso_banho;
+            }
+
+            if (!empty($milesimos_banho)) {
+                $whereParts[] = "p.BathThickness = ?";
+                $params[] = $milesimos_banho;
+            }
 
             if (!empty($text)) {
                 $whereParts[] = "MATCH(p.ProductName, p.Description) AGAINST (? IN BOOLEAN MODE)";
@@ -221,6 +278,8 @@ class Produtos_model extends Dbh {
             $orderBy = "";
 
             switch ($sort) {
+                case "relevancia":
+                    $orderBy = "ORDER BY p.Relevancy DESC";
                 case "menor":
                     $orderBy = "ORDER BY p.Price ASC";
                     break;
@@ -241,9 +300,12 @@ class Produtos_model extends Dbh {
                     p.ProductName AS nome,
                     p.StockQuantity AS estoque,
                     p.Price AS preco,
-                    p.Description AS descricao,
                     p.ImagePath AS img,
-                    p.Barcode AS cdb
+                    p.Barcode AS cdb,
+                    p.Size AS tamanho,
+                    p.Color AS cor,
+                    p.BathWeight AS peso_banho,
+                    p.BathThickness AS milesimos_banho
                 FROM Sales_Products p
                 $joinTags
                 $where

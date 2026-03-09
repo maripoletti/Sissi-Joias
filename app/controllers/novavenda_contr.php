@@ -10,6 +10,7 @@ $db = new novavenda_model();
 $input = json_decode(file_get_contents("php://input"), true);
 
 $nome = $input["texto"] ?? "";
+$userID = $_SESSION["user_id"] ?? "";
 
 if ($nome === "") {
     exit;

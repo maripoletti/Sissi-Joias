@@ -19,10 +19,10 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos" class="active">Produtos</a>
           <a href="/vendas">Vendas</a>
-          <a href="/relatorios">Relatórios</a>
           <a href="/impressoras">Impressoras</a>
-
+          
           <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/relatorios">Relatórios</a>
             <a href="/controledeusuarios">Controle de Usuários</a>
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
@@ -84,6 +84,25 @@
               <option value="za">Nome (Z-A)</option>
             </select>
           </div>
+          <div class="filter">
+            <label>Tamanho</label>
+            <input type="text" id="tamanho" placeholder="Ex: 12, P, M, G..." />
+          </div>
+
+          <div class="filter">
+            <label>Cor</label>
+            <input type="text" id="cor" placeholder="Ex: Dourado, Prata..." />
+          </div>
+
+          <div class="filter">
+            <label>Peso do banho</label>
+            <input type="text" id="pesoBanho" placeholder="Ex: 5g" />
+          </div>
+
+          <div class="filter">
+            <label>Milésimos do banho</label>
+            <input type="text" id="milesimosBanho" placeholder="Ex: 3" />
+          </div>
         </section>
 
         <section class="grid-wrap">
@@ -126,10 +145,10 @@
         <input type="text" id="editCor" placeholder="Ex: Dourado, Prata, Rosé" />
 
         <label>Peso do banho</label>
-        <input type="text" id="editPesoBanho" placeholder="Ex: 5g" />
+        <input type="number" id="editPesoBanho" placeholder="Ex: 5g" />
 
         <label>Milésimos de banho</label>
-        <input type="text" id="editMilesimosBanho" placeholder="Ex: 3 milésimos" />
+        <input type="number" id="editMilesimosBanho" placeholder="Ex: 3 milésimos" />
 
         <label>Dar baixa no estoque</label>
         <div class="baixa-row">
@@ -166,7 +185,7 @@
         <input type="text" id="addNome" required />
 
         <label>Categoria</label>
-        <input type="text" id="addCategoria" required>
+        <input type="text" id="addCategoria">
 
         <label>Preço</label>
         <input type="number" id="addPreco" step="0.01" min="0" required />
@@ -181,10 +200,10 @@
         <input type="text" id="addCor" placeholder="Ex: Dourado, Prata, Rosé" />
 
         <label>Peso do banho</label>
-        <input type="text" id="addPesoBanho" placeholder="Ex: 5g" />
+        <input type="number" id="addPesoBanho" placeholder="Ex: 5g" />
 
         <label>Milésimos de banho</label>
-        <input type="text" id="addMilesimosBanho" placeholder="Ex: 3 milésimos" />
+        <input type="number" id="addMilesimosBanho" placeholder="Ex: 3 milésimos" />
 
         <label>Foto</label>
         <input type="file" id="addFoto" accept="image/*"/>
@@ -280,6 +299,10 @@
           tags: tags,
           price: priceVal,
           sort: sortVal,
+          tamanho: tamanho.value.trim(),
+          cor: cor.value.trim(),
+          peso_banho: pesoBanho.value.trim(),
+          milesimos_banho: milesimosBanho.value.trim(),
           page: page,
           limit: limit
         })
@@ -301,12 +324,18 @@
         <article class="product">
           <div class="thumb">
             <img src="${p.img}" alt="${p.nome}">
-            ${p.estoque <= 5 ? `<span class="badge">Baixo estoque</span>` : ``}
+            ${p.estoque <= 3 ? `<span class="badge">Baixo estoque</span>` : ``}
           </div>
 
           <div class="info">
             <h3 title="${p.nome}">${p.nome}</h3>
-            <p class="meta">• Estoque: ${p.estoque}</p>
+            <div class="meta">
+              <p>• Estoque: ${p.estoque}</p>
+              ${p.tamanho ? `<p>• Tamanho: ${p.tamanho}</p>` : ``}
+              ${p.cor ? `<p>• Cor: ${p.cor}</p>` : ``}
+              ${p.peso_banho ? `<p>• Peso banho: ${p.peso_banho}</p>` : ``}
+              ${p.milesimos_banho ? `<p>• Milésimos: ${p.milesimos_banho}</p>` : ``}
+            </div>
             <div class="price">R$ ${parseFloat(p.preco).toFixed(2).replace(".", ",")}</div>
 
             <div class="actions">
@@ -614,6 +643,10 @@ function imprimirEtiqueta(id){
   cat.addEventListener("input", () => render(true));
   price.addEventListener("change", () => render(true));
   sort.addEventListener("change", () => render(true));
+  tamanho.addEventListener("input", () => render(true));
+  cor.addEventListener("input", () => render(true));
+  pesoBanho.addEventListener("input", () => render(true));
+  milesimosBanho.addEventListener("input", () => render(true));
 
   render(true);
 </script>

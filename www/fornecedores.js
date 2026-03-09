@@ -1,222 +1,229 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const buscaInput = document.getElementById("buscaFornecedor");
-  const listaFornecedores = document.getElementById("listaFornecedores");
-  const totalFornecedores = document.getElementById("totalFornecedores");
+const main = document.querySelector(".main");
+const grid = document.getElementById("listaFornecedores");
+const q = document.getElementById("buscaFornecedor");
 
-  const btnNovoFornecedor = document.getElementById("btnNovoFornecedor");
-  const modalFornecedor = document.getElementById("modalFornecedor");
-  const fecharModalFornecedor = document.getElementById("fecharModalFornecedor");
-  const cancelarModalFornecedor = document.getElementById("cancelarModalFornecedor");
-  const formFornecedor = document.getElementById("formFornecedor");
-  const btnSalvarFornecedor = document.getElementById("btnSalvarFornecedor");
+const modalEdit = document.getElementById("modalFornecedor");
 
-  const nomeFornecedor = document.getElementById("nomeFornecedor");
-  const cnpjFornecedor = document.getElementById("cnpjFornecedor");
-  const emailFornecedor = document.getElementById("emailFornecedor");
-  const telefoneFornecedor = document.getElementById("telefoneFornecedor");
-  const enderecoFornecedor = document.getElementById("enderecoFornecedor");
-  const obsFornecedor = document.getElementById("obsFornecedor");
+const editId = document.getElementById("editId");
+const editNome = document.getElementById("nomeFornecedor");
+const editCnpj = document.getElementById("cnpjFornecedor");
+const editPhone = document.getElementById("telefoneFornecedor");
+const editEmail = document.getElementById("emailFornecedor");
+const editAddress = document.getElementById("enderecoFornecedor");
 
-  let cardEditando = null;
+let fornecedores = [];
+let page = 0;
+let limit = 10;
+let acabou = false;
+let isLoading = false;
 
-  function atualizarTotal() {
-    const cardsVisiveis = document.querySelectorAll(".fornecedor-card:not(.oculto)");
-    totalFornecedores.textContent = cardsVisiveis.length;
-  }
+async function render(reset = false) {
+    if (isLoading) return;
 
-  function atualizarBusca() {
-    const cards = document.querySelectorAll(".fornecedor-card");
-    const busca = buscaInput.value.toLowerCase().trim();
-
-    cards.forEach(card => {
-      const texto = card.innerText.toLowerCase();
-      const encontrou = texto.includes(busca);
-
-      if (encontrou) {
-        card.classList.remove("oculto");
-      } else {
-        card.classList.add("oculto");
-      }
-    });
-
-    atualizarTotal();
-  }
-
-  function abrirModal(modoEdicao = false) {
-    modalFornecedor.classList.add("ativo");
-    document.body.style.overflow = "hidden";
-
-    const tituloModal = modalFornecedor.querySelector(".modal-header h2");
-    if (tituloModal) {
-      tituloModal.textContent = modoEdicao ? "Editar Fornecedor" : "Novo Fornecedor";
+    if (reset) {
+        page = 0;
+        acabou = false;
+        fornecedores = [];
+        grid.innerHTML = "";
     }
 
-    if (btnSalvarFornecedor) {
-      btnSalvarFornecedor.textContent = modoEdicao ? "Salvar Alterações" : "Cadastrar";
+    if (acabou) return;
+
+    isLoading = true;
+
+    const term = q.value.trim().toLowerCase();
+
+    try {
+        const res = await fetch("/api/fornecedores", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: term, page, limit })
+        });
+
+        if (!res.ok) throw new Error("Erro na API");
+
+        const data = await res.json();
+        const novos = data.fornecedores;
+
+        if (novos.length < limit) acabou = true;
+
+        fornecedores = [...fornecedores, ...novos];
+
+        grid.innerHTML += novos.map(f => `
+            <article class="fornecedor-card" data-id="${f.id}">
+                <div class="card-top">
+                    <div>
+                        <h3>${f.nome}</h3>
+                        <small>${formatCNPJ(f.cnpj)}</small>
+                    </div>
+                </div>
+                <div class="card-info">
+                    <p>✉ ${f.email}</p>
+                    <p>☎ ${formatTelefone(f.telefone)}</p>
+                    <p>📍 ${f.endereco}</p>
+                </div>
+                <div class="card-footer">
+                    <div class="acoes">
+                        <button class="btn-acao editar">Editar</button>
+                        <button class="btn-acao excluir">Excluir</button>
+                    </div>
+                </div>
+            </article>
+        `).join("");
+
+        
+        document.querySelectorAll(".fornecedor-card").forEach(card => {
+            const id = Number(card.getAttribute("data-id"));
+            const btnEdit = card.querySelector(".btn-acao.editar");
+            const btnDel = card.querySelector(".btn-acao.excluir");
+
+            btnEdit.onclick = () => abrirModal(id);
+            btnDel.onclick = () => excluirFornecedor(id);
+        });
+
+        page++;
+    } catch (err) {
+        console.error(err);
+        if (reset) grid.innerHTML = "<p>Erro ao carregar fornecedores.</p>";
     }
-  }
 
-  function fecharModal() {
-    modalFornecedor.classList.remove("ativo");
-    document.body.style.overflow = "";
-    formFornecedor.reset();
-    cardEditando = null;
+    isLoading = false;
+}
 
-    const tituloModal = modalFornecedor.querySelector(".modal-header h2");
-    if (tituloModal) {
-      tituloModal.textContent = "Novo Fornecedor";
+main.addEventListener("scroll", () => {
+    if (main.scrollTop + main.clientHeight >= main.scrollHeight - 200) {
+        render();
     }
-
-    if (btnSalvarFornecedor) {
-      btnSalvarFornecedor.textContent = "Cadastrar";
-    }
-  }
-
-  function adicionarEventosCard(card) {
-    const btnExcluir = card.querySelector(".btn-acao.excluir");
-    const btnEditar = card.querySelector(".btn-acao.editar");
-
-    if (btnExcluir) {
-      btnExcluir.addEventListener("click", () => {
-        const nome = card.querySelector("h3").textContent;
-
-        if (confirm(`Deseja excluir o fornecedor "${nome}"?`)) {
-          card.remove();
-          atualizarTotal();
-        }
-      });
-    }
-
-    if (btnEditar) {
-      btnEditar.addEventListener("click", () => {
-        cardEditando = card;
-
-        const nome = card.querySelector("h3")?.textContent || "";
-        const cnpj = card.querySelector("small")?.textContent || "";
-
-        const infos = card.querySelectorAll(".card-info p");
-        const email = infos[0]?.innerText.replace("✉", "").trim() || "";
-        const telefone = infos[1]?.innerText.replace("☎", "").trim() || "";
-        const endereco = infos[2]?.innerText.replace("📍", "").trim() || "";
-        const observacao = infos[3]?.innerText.replace("📝", "").trim() || "";
-
-        nomeFornecedor.value = nome;
-        cnpjFornecedor.value = cnpj === "CNPJ não informado" ? "" : cnpj;
-        emailFornecedor.value = email === "Email não informado" ? "" : email;
-        telefoneFornecedor.value = telefone === "Telefone não informado" ? "" : telefone;
-        enderecoFornecedor.value = endereco === "Endereço não informado" ? "" : endereco;
-        obsFornecedor.value = observacao === "Observações não informadas" ? "" : observacao;
-
-        abrirModal(true);
-      });
-    }
-  }
-
-  function criarCardFornecedor(dados) {
-    const article = document.createElement("article");
-    article.className = "fornecedor-card";
-
-    article.innerHTML = `
-      <div class="card-top">
-        <div>
-          <h3>${dados.nome}</h3>
-          <small>${dados.cnpj || "CNPJ não informado"}</small>
-        </div>
-      </div>
-
-      <div class="card-info">
-        <p>✉ ${dados.email || "Email não informado"}</p>
-        <p>☎ ${dados.telefone || "Telefone não informado"}</p>
-        <p>📍 ${dados.endereco || "Endereço não informado"}</p>
-        ${dados.observacoes ? `<p>📝 ${dados.observacoes}</p>` : ""}
-      </div>
-
-      <div class="card-footer">
-        <div class="acoes">
-          <button class="btn-acao editar">Editar</button>
-          <button class="btn-acao excluir">Excluir</button>
-        </div>
-      </div>
-    `;
-
-    adicionarEventosCard(article);
-    return article;
-  }
-
-  if (btnNovoFornecedor) {
-    btnNovoFornecedor.addEventListener("click", () => {
-      cardEditando = null;
-      abrirModal(false);
-    });
-  }
-
-  if (fecharModalFornecedor) {
-    fecharModalFornecedor.addEventListener("click", fecharModal);
-  }
-
-  if (cancelarModalFornecedor) {
-    cancelarModalFornecedor.addEventListener("click", fecharModal);
-  }
-
-  if (modalFornecedor) {
-    modalFornecedor.addEventListener("click", (e) => {
-      if (e.target === modalFornecedor) {
-        fecharModal();
-      }
-    });
-  }
-
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && modalFornecedor.classList.contains("ativo")) {
-      fecharModal();
-    }
-  });
-
-  if (buscaInput) {
-    buscaInput.addEventListener("input", atualizarBusca);
-  }
-
-  document.querySelectorAll(".fornecedor-card").forEach(adicionarEventosCard);
-
-  if (formFornecedor) {
-    formFornecedor.addEventListener("submit", (e) => {
-      e.preventDefault();
-
-      const dados = {
-        nome: nomeFornecedor.value.trim(),
-        cnpj: cnpjFornecedor.value.trim(),
-        email: emailFornecedor.value.trim(),
-        telefone: telefoneFornecedor.value.trim(),
-        endereco: enderecoFornecedor.value.trim(),
-        observacoes: obsFornecedor.value.trim()
-      };
-
-      if (!dados.nome) {
-        alert("Preencha o nome do fornecedor.");
-        nomeFornecedor.focus();
-        return;
-      }
-
-      if (cardEditando) {
-        cardEditando.querySelector("h3").textContent = dados.nome;
-        cardEditando.querySelector("small").textContent = dados.cnpj || "CNPJ não informado";
-
-        const info = cardEditando.querySelector(".card-info");
-        info.innerHTML = `
-          <p>✉ ${dados.email || "Email não informado"}</p>
-          <p>☎ ${dados.telefone || "Telefone não informado"}</p>
-          <p>📍 ${dados.endereco || "Endereço não informado"}</p>
-          ${dados.observacoes ? `<p>📝 ${dados.observacoes}</p>` : ""}
-        `;
-      } else {
-        const novoCard = criarCardFornecedor(dados);
-        listaFornecedores.prepend(novoCard);
-      }
-
-      fecharModal();
-      atualizarBusca();
-    });
-  }
-
-  atualizarTotal();
 });
+
+q.addEventListener("input", () => render(true));
+
+function abrirModal(id) {
+    const f = fornecedores.find(p => p.id === id);
+    if (!f) return;
+
+    editId.value = f.id;
+    editNome.value = f.nome || "";
+    editCnpj.value = formatCNPJ(f.cnpj) || "";
+    editPhone.value = f.telefone || "";
+    editEmail.value = f.email || "";
+    editAddress.value = f.endereco || "";
+
+    modalEdit.classList.add("ativo");
+}
+
+function fecharModal() {
+    modalEdit.classList.remove("ativo");
+}
+
+
+modalEdit.addEventListener("click", e => {
+    if (e.target === modalEdit) fecharModal();
+});
+
+const btnNovo = document.getElementById("btnNovoFornecedor");
+btnNovo.addEventListener("click", () => {
+    editId.value = "";       
+    editNome.value = "";
+    editCnpj.value = "";
+    editPhone.value = "";
+    editEmail.value = "";
+    editAddress.value = "";
+
+    
+    modalEdit.classList.add("ativo");
+});
+
+
+async function salvarFornecedor() {
+    const body = {
+        nome: editNome.value,
+        cnpj: editCnpj.value,
+        telefone: editPhone.value,
+        email: editEmail.value,
+        endereco: editAddress.value
+    };
+
+    let url = "/api/fornecedores/add";
+
+    
+    if (editId.value) {
+        body.id = editId.value;
+        url = "/api/fornecedores/update";
+    }
+
+    try {
+        await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+        });
+
+        fecharModal();
+        render(true);
+    } catch (err) {
+        console.error(err);
+        alert("Erro ao salvar fornecedor");
+    }
+}
+
+async function excluirFornecedor(id) {
+    if (!confirm("Deseja excluir este fornecedor?")) return;
+
+    try {
+        await fetch("/api/fornecedores/delete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ id })
+        });
+
+        render(true);
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+function formatCNPJ(cnpj) {
+    if (!cnpj) return "";
+    cnpj = cnpj.replace(/\D/g, "");
+    return cnpj.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, "$1.$2.$3/$4-$5");
+}
+
+editCnpj.addEventListener("input", () => {
+    let v = editCnpj.value.replace(/\D/g, "");
+    if (v.length > 14) v = v.slice(0, 14);
+    v = v.replace(/^(\d{2})(\d)/, "$1.$2");
+    v = v.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+    v = v.replace(/\.(\d{3})(\d)/, ".$1/$2");
+    v = v.replace(/(\d{4})(\d)/, "$1-$2");
+    editCnpj.value = v;
+});
+
+editPhone.addEventListener("input", () => {
+    let v = editPhone.value.replace(/\D/g, "");
+    if (v.length > 11) v = v.slice(0, 11); 
+    if (v.length > 10) { 
+        v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    } else if (v.length > 5) { 
+        v = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
+    } else if (v.length > 2) {
+        v = v.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
+    }
+    editPhone.value = v;
+});
+
+function formatTelefone(tel) {
+    if (!tel) return "";
+    let v = tel.replace(/\D/g, "");
+    if (v.length > 11) v = v.slice(0, 11);
+    if (v.length > 10) {
+        v = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
+    } else if (v.length > 5) {
+        v = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
+    } else if (v.length > 2) {
+        v = v.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
+    }
+    return v;
+}
+
+render(true);

@@ -3,14 +3,28 @@
 declare(strict_types= 1);
 
 class prodValidator {
-    public static function validate_add(string $name, array $tags, float $price, int $stock, null|string $photo) {
+    public static function validate_add(
+        string $name,
+        array $tags,
+        float $price,
+        int $stock,
+        null|string $photo,
+        string $tamanho,
+        string $cor,
+        string $peso_banho,
+        string $milesimos_banho
+    ) {
         $errors = [];
         $clean = [
             'name' => trim($name ?? ''),
             'tags' => array_map(fn($v) => mb_strtolower($v, 'UTF-8'), $tags) ?? [],
             'price' => abs($price ?? 0),
             'stock' => is_int(abs($stock ?? 0)),
-            'photo' => $photo
+            'photo' => $photo,
+            'tamanho' => trim($tamanho),
+            'cor' => trim($cor),
+            'peso_banho' => trim($peso_banho),
+            'milesimos_banho' => trim($milesimos_banho)
         ];
 
         if(empty($clean['name']) || $clean['price'] <= 0) {
@@ -28,14 +42,28 @@ class prodValidator {
             'errors'=> $errors
         ];
     }
-    public static function validate_update(int $id, string $name, float $price, int $stock, null|string $photo) {
+    public static function validate_update(
+        int $id,
+        string $name,
+        float $price,
+        int $stock,
+        null|string $photo,
+        string $tamanho,
+        string $cor,
+        string $peso_banho,
+        string $milesimos_banho
+    ) {
         $errors = [];
         $clean = [
             'id' => $id,
-            'name'  => trim($name ?? ''),
+            'name' => trim($name),
             'price' => abs($price),
-            'stock' => abs($stock ?? 0),
-            'photo' => $photo
+            'stock' => abs($stock),
+            'photo' => $photo,
+            'tamanho' => trim($tamanho),
+            'cor' => trim($cor),
+            'peso_banho' => trim($peso_banho),
+            'milesimos_banho' => trim($milesimos_banho)
         ];
         if (empty($clean['id'])) {
             $errors['product_wrong'] = 'Algo deu errado.';
@@ -58,7 +86,18 @@ class prodValidator {
             'data'=> $clean
         ];
     }
-    public static function validate_get(string $text, string|array $tags, string $price, string $sort, int $limit, int $page) {
+    public static function validate_get(
+        string $text,
+        string|array $tags,
+        string $price,
+        string $sort,
+        int $limit,
+        int $page,
+        string $tamanho,
+        string $cor,
+        string $peso_banho,
+        string $milesimos_banho
+    ) {
         $data = [];
 
         switch ($price) {
@@ -90,7 +129,11 @@ class prodValidator {
             'min'=> $min,
             'max'=> $max,
             'limit' => $limit,
-            'page'=> $page
+            'page'=> $page,
+            'tamanho' => trim($tamanho),
+            'cor' => trim($cor),
+            'peso_banho' => trim($peso_banho),
+            'milesimos_banho' => trim($milesimos_banho)
         ];
 
         return $data;

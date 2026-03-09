@@ -22,10 +22,10 @@
         <a href="/paineldecontrole">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas" class="active">Vendas</a>
-        <a href="/relatorios">Relatórios</a>
         <a href="/impressoras">Impressoras</a>
-
+        
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/relatorios">Relatórios</a>
           <a href="/controledeusuarios">Controle de Usuários</a>
           <a href="/fornecedores">Fornecedores</a>
           <a href="/cadastrarimpressora">Cadastrar Impressora</a>
@@ -62,6 +62,13 @@
 
 </div>
 </div>
+
+<script>
+    window.USER = {
+        id: <?php echo $_SESSION['user_id'] ?? 'null'; ?>,
+        role: <?php echo $_SESSION['role'] ?? 'null'; ?>
+    };
+</script>
 
 <script src="script.js"></script>
 

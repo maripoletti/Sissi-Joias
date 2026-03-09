@@ -20,12 +20,27 @@ $nome = $_POST['nome'] ?? "";
 $preco = (float)($_POST['preco'] ?? 0);
 $estoque = (int)($_POST['estoque'] ?? 0);
 
-$validate = prodValidator::validate_update($id, $nome, $preco, $estoque, $fotoPath);
+$tamanho = $_POST["tamanho"] ?? "";
+$cor = $_POST["cor"] ?? "";
+$peso_banho = $_POST["peso_banho"] ?? "";
+$milesimos_banho = $_POST["milesimos_banho"] ?? "";
 
-if($validate['errors']) {
+$validate = prodValidator::validate_update(
+    $id,
+    $nome,
+    $preco,
+    $estoque,
+    $fotoPath,
+    $tamanho,
+    $cor,
+    $peso_banho,
+    $milesimos_banho
+);
+
+if($validate['errors']){
     $_SESSION['error_upd_prod'] = $validate['errors'];
     exit;
-} else {
-    $db->update_products($validate['data']);
-    exit;
 }
+
+$db->update_products($validate['data']);
+exit;

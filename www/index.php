@@ -37,6 +37,24 @@ switch ($uri) {
       break;
     }
 
+  case '/api/eventos':
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/eventosGet.php';
+      break;
+    }
+    
+  case '/api/eventos/add':
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/eventosAdd.php';
+      break;
+    }
+    
+  case '/api/eventos/del':
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/eventosDel.php';
+      break;
+    }
+
   case '/cadastro':
     if ($method === 'GET') {
       require_once '../app/views/signup_view.php';
@@ -62,6 +80,13 @@ switch ($uri) {
       header('Location: /login');
       break;
     }
+  
+  case '/api/novavenda/finalizar':
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/novavendaFin_contr.php';
+      break;
+    }
+
   case'/vendas':
     if (isset($_SESSION['user_id'])) {
       if ($method === 'GET') {
@@ -72,8 +97,15 @@ switch ($uri) {
       header('Location: /login');
       break;
     }
+
+  case '/api/vendas':
+  if(isset($_SESSION['user_id'])) {
+    require_once '../app/controllers/vendasGet_contr.php';
+    break;
+  }
+    
   case '/controledeusuarios':
-    if (isset($_SESSION['user_id']) /* && $_SESSION['role'] == '2' */) {
+    if (isset($_SESSION['user_id']) && $_SESSION['role'] == '2') {
       require_once '../app/views/controledeusuarios_view.php';
       break;
     } else {
@@ -180,7 +212,7 @@ switch ($uri) {
       break;
     }
 
-  case '/cadastroimpressora': 
+  case '/cadastrarimpressora': 
     if ($_SESSION['role'] == '2') {
       if($method === 'GET') {
         require_once '../app/views/cadastroimpressora_view.php';
@@ -201,20 +233,56 @@ switch ($uri) {
     
   case '/relatorios':
     if ($_SESSION['role'] == '2') {
-      require_once 'relatorios.php';
-      break;
-    } else {
-      header('Location: /login');
+    require_once '../app/views/relatorios_view.php';
+    break;
+  } else {
+    header('Location: /login');
+    break;
+  }
+
+  case '/api/relatorios': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/relatorios_contr.php';
       break;
     }
   case '/fornecedores':
     if ($_SESSION['role'] == '2') {
-      require_once 'fornecedores.php';
+      require_once '../app/views/fornecedores_view.php';
       break;
     } else {
       header('Location: /login');
       break;
     }
+  case '/api/fornecedores': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/fornecedoresGet_contr.php';
+      break;
+    }
+  case '/api/fornecedores/add': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/fornecedoresAdd_contr.php';
+      break;
+    }
+  case '/api/fornecedores/delete': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/fornecedoresDel_contr.php';
+      break;
+    }
+  case '/api/fornecedores/update': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/fornecedoresUpdate_contr.php';
+      break;
+    }
+
+  case '/comprovante':
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/comprovante_contr.php';
+      break;
+    } else {
+      header('Location: /login');
+      break;
+    }
+
   default:
     require_once '../app/views/404.html';
 }

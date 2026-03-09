@@ -19,10 +19,10 @@
         <a href="/paineldecontrole" class="active">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-        <a href="/relatorios">Relatórios</a>
         <a href="/impressoras">Impressoras</a>
-
+        
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/relatorios">Relatórios</a>
           <a href="/controledeusuarios">Controle de Usuários</a>
           <a href="/fornecedores">Fornecedores</a>
           <a href="/cadastrarimpressora">Cadastrar Impressora</a>
@@ -97,13 +97,6 @@
             </div>
           </div>
 
-          <div class="cal-birthdays">
-            <h4>Outros</h4>
-            <div id="listaOutros" class="birth-list">
-              <p class="muted">Nenhum item cadastrado.</p>
-            </div>
-          </div>
-
         </div>
 
         <!-- TOP VENDEDORAS -->
@@ -113,33 +106,7 @@
           </div>
 
           <div class="top-list">
-            <div class="top-item">
-              <span class="rank gold">1</span>
-              <span class="name">Ana Paula</span>
-              <span class="valor">R$ 908</span>
-            </div>
-            <div class="barra"><span class="fill gold" style="width:100%"></span></div>
-
-            <div class="top-item">
-              <span class="rank roxo">2</span>
-              <span class="name">Fernanda Lima</span>
-              <span class="valor">R$ 610</span>
-            </div>
-            <div class="barra"><span class="fill roxo" style="width:70%"></span></div>
-
-            <div class="top-item">
-              <span class="rank lilas">3</span>
-              <span class="name">Beatriz Mendes</span>
-              <span class="valor">R$ 290</span>
-            </div>
-            <div class="barra"><span class="fill lilas" style="width:35%"></span></div>
-
-            <div class="top-item">
-              <span class="rank cinza">4</span>
-              <span class="name">Carla Santos</span>
-              <span class="valor">R$ 65</span>
-            </div>
-            <div class="barra"><span class="fill cinza" style="width:10%"></span></div>
+          
           </div>
         </div>
 
