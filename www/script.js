@@ -12,11 +12,8 @@
       alert("Preencha todos os campos!");
       return;
     }
-
-
   });
 })();
-
 
 (function initDataTopo() {
   const dataElemento = document.getElementById("data-atual");
@@ -30,7 +27,6 @@
 
   dataElemento.textContent = dataFormatada;
 })();
-
 
 (function initCadastro() {
   const cadastroForm = document.getElementById("cadastroForm");
@@ -187,7 +183,6 @@
   let eventos = [];
   let view = new Date();
 
-  // --- FETCH EVENTOS ---
   async function carregarEventos() {
     try {
       const res = await fetch("/api/eventos");
@@ -229,34 +224,40 @@
     }
   }
 
-  // --- MODAL ---
   function abrirModal(preencherData = "") {
     if (!modal || !formEvento) return;
     modal.classList.remove("hidden");
     if (evtData && preencherData) evtData.value = preencherData;
     evtTitulo?.focus();
   }
+
   function fecharModal() {
     if (!modal || !formEvento) return;
     modal.classList.add("hidden");
     formEvento.reset();
   }
-  modal?.addEventListener("click", (e) => { if (e.target === modal) fecharModal(); });
+
+  modal?.addEventListener("click", (e) => {
+    if (e.target === modal) fecharModal();
+  });
+
   btnAddEvento?.addEventListener("click", () => abrirModal());
   btnFecharModal?.addEventListener("click", fecharModal);
   btnCancelar?.addEventListener("click", fecharModal);
 
-  // --- DETALHE ---
   function fecharDetalhe() {
     if (!calDetail) return;
     calDetail.style.display = "none";
   }
+
   btnFecharDetalhe?.addEventListener("click", fecharDetalhe);
 
   function abrirDetalheDoDia(dataISO) {
     if (!calDetail || !detailTitle || !detailBody) return;
+
     const evs = eventos.filter((e) => e.date === dataISO);
     detailTitle.textContent = `Dia ${formatarDataBR(dataISO)}`;
+
     if (evs.length === 0) {
       detailBody.innerHTML = `<p class="muted">Sem eventos nesse dia.</p>`;
     } else {
@@ -265,6 +266,7 @@
         const horaLabel = e.hora ? ` • ${e.hora}` : "";
         const comentario = e.comentario || "(Sem descrição)";
         const titulo = e.titulo || e.text || "Evento";
+
         return `
           <div class="detail-item" style="padding:10px;border:1px solid rgba(0,0,0,.06);border-radius:12px;margin-bottom:8px;background:#fff;">
             <div style="display:flex;justify-content:space-between;gap:10px;">
@@ -280,27 +282,32 @@
       }).join("");
 
       detailBody.querySelectorAll("[data-del]").forEach((btn) => {
-        btn.addEventListener("click", (ev) => {
+        btn.addEventListener("click", async (ev) => {
           ev.stopPropagation();
           const id = btn.getAttribute("data-del");
           if (!id) return;
           if (!confirm("Excluir este evento?")) return;
-          apagarEvento(id);
+          await apagarEvento(id);
           fecharDetalhe();
         });
       });
     }
+
     calDetail.style.display = "block";
   }
 
-  // --- ANIVERSÁRIOS ---
   function renderizarListaAniversarios() {
     if (!listaAniversarios) return;
-    const anivs = eventos.filter((e) => isAniversario(e.type)).sort((a,b)=>a.date.localeCompare(b.date));
+
+    const anivs = eventos
+      .filter((e) => isAniversario(e.type))
+      .sort((a, b) => a.date.localeCompare(b.date));
+
     if (!anivs.length) {
       listaAniversarios.innerHTML = `<p class="muted">Nenhum aniversariante cadastrado.</p>`;
       return;
     }
+
     listaAniversarios.innerHTML = anivs.map((e) => `
       <div class="birth-item" data-id="${e.id}">
         <span class="birth-name">${e.titulo || "Cliente"}</span>
@@ -320,59 +327,67 @@
     });
 
     listaAniversarios.querySelectorAll(".birth-del").forEach((btn) => {
-      btn.addEventListener("click", (ev) => {
+      btn.addEventListener("click", async (ev) => {
         ev.stopPropagation();
         const card = btn.closest(".birth-item");
         const id = card?.dataset?.id;
         if (!id) return;
         if (!confirm("Apagar este aniversariante?")) return;
-        apagarEvento(id);
+        await apagarEvento(id);
         fecharDetalhe();
       });
     });
   }
 
-  // --- CALENDÁRIO ---
   function renderCalendar() {
     const year = view.getFullYear();
     const month = view.getMonth();
     const first = new Date(year, month, 1);
     const startDay = first.getDay();
-    const monthName = first.toLocaleDateString("pt-BR",{ month:"long", year:"numeric"});
+    const monthName = first.toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+
     calTitulo.textContent = monthName.charAt(0).toUpperCase() + monthName.slice(1);
     calDias.innerHTML = "";
 
     const totalCells = 42;
+
     for (let i = 0; i < totalCells; i++) {
       const cellDate = new Date(year, month, 1 + (i - startDay));
       const inMonth = cellDate.getMonth() === month;
       const el = document.createElement("div");
+
       el.className = "day" + (inMonth ? "" : " muted");
       el.dataset.date = iso(cellDate);
 
       const num = document.createElement("div");
       num.className = "num";
       num.textContent = cellDate.getDate();
+
       num.addEventListener("click", (evt) => {
         evt.stopPropagation();
         abrirDetalheDoDia(el.dataset.date);
       });
+
       el.appendChild(num);
 
       const key = iso(cellDate);
       const evs = eventos.filter((e) => e.date === key);
+
       evs.forEach((e) => {
         const pill = document.createElement("div");
         pill.className = "pill" + (isAniversario(e.type) ? " aniver" : "");
         pill.textContent = e.text || "Evento";
-        pill.addEventListener("click", (evt) => {
+
+        pill.addEventListener("click", async (evt) => {
           evt.stopPropagation();
           abrirDetalheDoDia(key);
+
           if (evt.altKey) {
             if (!confirm("Excluir este evento?")) return;
-            apagarEvento(e.id);
+            await apagarEvento(e.id);
           }
         });
+
         el.appendChild(pill);
       });
 
@@ -381,183 +396,258 @@
     }
   }
 
-  prevMes.addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()-1,1); renderCalendar(); fecharDetalhe(); });
-  nextMes.addEventListener("click", () => { view = new Date(view.getFullYear(), view.getMonth()+1,1); renderCalendar(); fecharDetalhe(); });
+  prevMes.addEventListener("click", () => {
+    view = new Date(view.getFullYear(), view.getMonth() - 1, 1);
+    renderCalendar();
+    fecharDetalhe();
+  });
 
-  formEvento?.addEventListener("submit", (e) => {
+  nextMes.addEventListener("click", () => {
+    view = new Date(view.getFullYear(), view.getMonth() + 1, 1);
+    renderCalendar();
+    fecharDetalhe();
+  });
+
+  formEvento?.addEventListener("submit", async (e) => {
     e.preventDefault();
+
     const titulo = (evtTitulo?.value || "").trim();
     const data = normalizarData(evtData?.value || "");
     const hora = (evtHora?.value || "").trim();
     const tipo = (evtTipo?.value || "outro").trim();
     const comentario = (evtComentario?.value || "").trim();
-    if (!titulo || !data) { alert("Preencha Título e Data."); return; }
+
+    if (!titulo || !data) {
+      alert("Preencha Título e Data.");
+      return;
+    }
+
     let text = "Evento";
     if (tipo === "aniversario") text = "Aniver";
     else if (tipo === "reserva") text = "Reserva";
     else if (tipo === "lembrete") text = "Lembrete";
-    const novo = { id: gerarId(), date: data, type: tipo, text, titulo, hora, comentario, createdAt: new Date().toISOString() };
-    adicionarEvento(novo);
+
+    const novo = {
+      id: gerarId(),
+      date: data,
+      type: tipo,
+      text,
+      titulo,
+      hora,
+      comentario,
+      createdAt: new Date().toISOString()
+    };
+
+    await adicionarEvento(novo);
     fecharModal();
-    const [y,m] = data.split("-").map(Number);
-    if (y && m) view = new Date(y, m-1,1);
+
+    const [y, m] = data.split("-").map(Number);
+    if (y && m) view = new Date(y, m - 1, 1);
   });
 
-  // --- INICIALIZA ---
   carregarEventos();
 
-
   async function carregarTopVendedoras() {
-    const res = await fetch("/api/relatorios");
-    if (!res.ok) return;
-    const data = await res.json();
-    const container = document.querySelector(".top-list");
-    if (!container) return;
-    container.innerHTML = "";
-    if (data.vendedoras && data.vendedoras.length) {
-      const maiorVenda = Math.max(...data.vendedoras.map(v => Number(v.valor)));
-      data.vendedoras.sort((a,b)=>Number(b.valor)-Number(a.valor)).forEach((v,i)=>{
-        const valor = Number(v.valor);
-        const percentual = maiorVenda ? (valor/maiorVenda)*100 : 0;
-        let rankClass = "";
-        if(i===0) rankClass="gold";
-        else if(i===1) rankClass="roxo";
-        else if(i===2) rankClass="lilas";
-        else rankClass="cinza";
-        const itemHTML = `
-          <div class="top-item">
-            <span class="rank ${rankClass}">${i+1}</span>
-            <span class="name">${v.nome}</span>
-            <span class="valor">R$ ${valor.toFixed(0)}</span>
-          </div>
-          <div class="barra"><span class="fill ${rankClass}" style="width:${percentual}%"></span></div>
-        `;
-        container.insertAdjacentHTML("beforeend", itemHTML);
-      });
-    } else container.innerHTML=`<p class="muted">Nenhuma vendedora encontrada.</p>`;
-  }
-  document.addEventListener("DOMContentLoaded", ()=>{carregarTopVendedoras();});
+    try {
+      const res = await fetch("/api/relatorios");
+      if (!res.ok) return;
 
+      const data = await res.json();
+      const container = document.querySelector(".top-list");
+      if (!container) return;
+
+      container.innerHTML = "";
+
+      if (data.vendedoras && data.vendedoras.length) {
+        const maiorVenda = Math.max(...data.vendedoras.map((v) => Number(v.valor)));
+
+        data.vendedoras
+          .sort((a, b) => Number(b.valor) - Number(a.valor))
+          .forEach((v, i) => {
+            const valor = Number(v.valor);
+            const percentual = maiorVenda ? (valor / maiorVenda) * 100 : 0;
+
+            let rankClass = "";
+            if (i === 0) rankClass = "gold";
+            else if (i === 1) rankClass = "roxo";
+            else if (i === 2) rankClass = "lilas";
+            else rankClass = "cinza";
+
+            const itemHTML = `
+              <div class="top-item">
+                <span class="rank ${rankClass}">${i + 1}</span>
+                <span class="name">${v.nome}</span>
+                <span class="valor">R$ ${valor.toFixed(0)}</span>
+              </div>
+              <div class="barra">
+                <span class="fill ${rankClass}" style="width:${percentual}%"></span>
+              </div>
+            `;
+
+            container.insertAdjacentHTML("beforeend", itemHTML);
+          });
+      } else {
+        container.innerHTML = `<p class="muted">Nenhuma vendedora encontrada.</p>`;
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    carregarTopVendedoras();
+  });
 })();
 
 const lista = document.getElementById("listaVendas");
 const qtd = document.getElementById("qtdVendas");
+const btn = document.getElementById("btnRegistrar");
+const main = document.querySelector(".main");
+const scanner = document.getElementById("scanner");
 
 let page = 0;
 let limit = 10;
 let loading = false;
 let acabou = false;
-let total = 0;
 
 async function carregarVendas() {
+  if (!lista || !qtd) return;
+  if (loading || acabou) return;
 
-    if (!lista || !qtd) return;
-    if (loading || acabou) return;
+  loading = true;
 
-    loading = true;
+  try {
+    const res = await fetch("/api/vendas", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        page,
+        limit
+      })
+    });
 
-    try {
+    if (!res.ok) throw new Error("Erro ao buscar vendas");
 
-        const res = await fetch("/api/vendas", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                page: page,
-                limit: limit
-            })
-        });
+    const data = await res.json();
+    const vendas = Array.isArray(data.sales) ? data.sales : [];
 
-        if (!res.ok) throw new Error("Erro ao buscar vendas");
-
-        const data = await res.json();
-
-        const vendas = data.sales;
-
-        if (!vendas.length) {
-            acabou = true;
-            return;
-        }
-
-        const html = vendas.map(v => criarCard({
-            produto: v.ProductName,
-            pagamento: v.PaymentMethod,
-            vendedora: v.EmployeeName,
-            cliente: v.ClienteName,
-            qtd: v.Quantity,
-            data: new Date(v.OrderDate).toLocaleDateString("pt-BR"),
-            valor: parseFloat(v.Sales)
-        })).join("");
-
-        lista.insertAdjacentHTML("beforeend", html);
-
-        qtd.textContent = data.total;
-
-        page++;
-
-    } catch (err) {
-
-        console.error(err);
-
-        if (page === 0) {
-            lista.innerHTML = "<p>Não foi possível carregar as vendas.</p>";
-            qtd.textContent = 0;
-        }
-
+    if (!vendas.length) {
+      acabou = true;
+      return;
     }
 
+    const html = vendas.map((v) => criarCard({
+      id: v.id,
+      produto: v.ProductName,
+      pagamento: v.PaymentMethod,
+      vendedora: v.EmployeeName,
+      cliente: v.ClienteName,
+      qtd: v.Quantity,
+      data: new Date(v.OrderDate).toLocaleDateString("pt-BR"),
+      valor: parseFloat(v.Sales)
+    })).join("");
+
+    lista.insertAdjacentHTML("beforeend", html);
+    qtd.textContent = data.total ?? document.querySelectorAll(".sale-card").length;
+
+    page++;
+  } catch (err) {
+    console.error(err);
+
+    if (page === 0 && lista) {
+      lista.innerHTML = "<p>Não foi possível carregar as vendas.</p>";
+      qtd.textContent = 0;
+    }
+  } finally {
     loading = false;
+  }
 }
 
 function criarCard(v) {
-    return `
-    <article class="sale-card">
-        <div>
-            <div class="title-row">
-                <h3 class="prod-title">${v.produto}</h3>
-                <span class="pill">${v.pagamento}</span>
-            </div>
-            <div class="meta">
-                <b>${v.vendedora}</b> · Cliente: <b>${v.cliente}</b> · Qtd: <b>${v.qtd}</b>
-            </div>
-            <div class="date">${v.data}</div>
+  return `
+    <article class="sale-card" data-id="${v.id}">
+      <div class="card-left">
+        <div class="title-row">
+          <h3 class="prod-title">${v.produto}</h3>
+          <span class="pill">${v.pagamento}</span>
         </div>
+
+        <div class="meta">
+          <b>${v.vendedora}</b> · Cliente: <b>${v.cliente}</b> · Qtd: <b>${v.qtd}</b>
+        </div>
+
+        <div class="date">${v.data}</div>
+      </div>
+
+      <div class="card-right">
         <div class="price">${formatBRL(v.valor)}</div>
+        <button class="btn-delete" type="button" onclick="delVenda(${v.id})">🗑 Apagar</button>
+      </div>
     </article>
-    `;
+  `;
 }
 
 function formatBRL(valor) {
-    return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+  return Number(valor).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL"
+  });
 }
 
-const btn = document.getElementById("btnRegistrar");
-if (btn) {
-    btn.addEventListener("click", () => {
-        window.location.href = "/novavenda";
+async function delVenda(id) {
+  if (!confirm("Deseja realmente excluir esta venda?")) return;
+
+  try {
+    const res = await fetch("/api/vendas/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
     });
+
+    if (!res.ok) {
+      throw new Error("Erro ao excluir venda");
+    }
+
+    const card = document.querySelector(`.sale-card[data-id="${id}"]`);
+    if (card) card.remove();
+
+    const totalCards = document.querySelectorAll(".sale-card").length;
+    if (qtd) qtd.textContent = totalCards;
+  } catch (err) {
+    console.error(err);
+    alert("Não foi possível excluir a venda.");
+  }
 }
 
-const main = document.querySelector(".main");
+if (btn) {
+  btn.addEventListener("click", () => {
+    window.location.href = "/novavenda";
+  });
+}
 
-main.addEventListener("scroll", () => {
-
+if (main) {
+  main.addEventListener("scroll", () => {
     const scroll = main.scrollTop + main.clientHeight;
     const height = main.scrollHeight - 200;
 
     if (scroll >= height) {
-        carregarVendas();
+      carregarVendas();
     }
+  });
+}
 
-});
+if (scanner) {
+  scanner.addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return;
 
-const scanner = document.getElementById("scanner");
-
-scanner.addEventListener("keydown", async (e) => {
-  if (e.key === "Enter") {
     const codigo = scanner.value.trim();
-    scanner.value = ""; 
+    scanner.value = "";
+
+    if (!codigo) return;
 
     try {
       const res = await fetch("/api/novavenda/scan", {
@@ -570,16 +660,25 @@ scanner.addEventListener("keydown", async (e) => {
 
       if (data.success) {
         alert(`Venda registrada: ${data.produto_nome}`);
+        page = 0;
+        acabou = false;
+        lista.innerHTML = "";
+        await carregarVendas();
       } else {
         alert("Produto não encontrado");
       }
     } catch (err) {
       console.error("Erro na venda:", err);
+      alert("Erro ao registrar venda.");
     }
-  }
-});
+  });
 
-scanner.focus();
-setInterval(() => scanner.focus(), 500);
+  scanner.focus();
+  setInterval(() => {
+    if (document.activeElement !== scanner) {
+      scanner.focus();
+    }
+  }, 500);
+}
 
 carregarVendas();
