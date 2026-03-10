@@ -539,7 +539,7 @@ async function carregarVendas() {
     }
 
     const html = vendas.map((v) => criarCard({
-      id: v.id,
+      id: v.OrderID,
       produto: v.ProductName,
       pagamento: v.PaymentMethod,
       vendedora: v.EmployeeName,

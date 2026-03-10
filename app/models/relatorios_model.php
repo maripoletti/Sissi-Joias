@@ -17,6 +17,7 @@ class relatorios_model extends Dbh {
                     SUM(Sales) AS total,
                     COUNT(*) AS qtd_vendas
                 FROM Sales_Orders
+                WHERE Status = '1'
             ");
             $stmt->execute();
             $totais = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -34,6 +35,7 @@ class relatorios_model extends Dbh {
                 LEFT JOIN Sales_Employees se
                     ON sc.EmployeeID = se.EmployeeID
                 WHERE se.FullName IS NOT NULL
+                AND so.Status = '1'
                 GROUP BY se.EmployeeID
                 ORDER BY valor DESC
                 LIMIT 4
@@ -48,6 +50,7 @@ class relatorios_model extends Dbh {
                     SUM(Sales) AS valor,
                     PaymentMethod AS tipo
                 FROM Sales_Orders
+                WHERE Status = '1'
                 GROUP BY PaymentMethod
             ");
             $stmt->execute();
@@ -67,6 +70,7 @@ class relatorios_model extends Dbh {
             $stmt = $pdo->prepare("
                 SELECT COUNT(*) AS total_pecas
                 FROM Sales_Products
+                WHERE Status = '1'
             ");
             $stmt->execute();
             $pecas = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -77,6 +81,7 @@ class relatorios_model extends Dbh {
             $stmt = $pdo->prepare("
                 SELECT SUM(StockQuantity) AS total_unidades
                 FROM Sales_Products
+                WHERE Status = '1'
             ");
             $stmt->execute();
             $unidades = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -88,6 +93,7 @@ class relatorios_model extends Dbh {
                 SELECT COUNT(*) AS alertas
                 FROM Sales_Products
                 WHERE StockQuantity < 3
+                AND Status = '1'
             ");
             $stmt->execute();
             $alertas = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -98,6 +104,7 @@ class relatorios_model extends Dbh {
             $stmt = $pdo->prepare("
                 SELECT SUM(Price * StockQuantity) AS valor_estoque
                 FROM Sales_Products
+                WHERE Status = '1'
             ");
             $stmt->execute();
             $valorEstoque = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -111,6 +118,7 @@ class relatorios_model extends Dbh {
                     SUM(so.Quantity) AS vendidos
                 FROM Sales_Orders so
                 JOIN Sales_Products p ON so.ProductID = p.ProductID
+                WHERE so.Status = '1'
                 GROUP BY p.ProductID
                 ORDER BY vendidos DESC
                 LIMIT 6

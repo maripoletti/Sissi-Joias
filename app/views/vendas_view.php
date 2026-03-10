@@ -11,7 +11,6 @@
 </head>
 
 <body>
-
   <div class="container">
     <div class="card app">
 
@@ -43,7 +42,13 @@
                 <span id="qtdVendas">1</span> venda(s) registrada(s)
               </p>
             </div>
-
+            <div style="margin: 10px 0;">
+              <input type="text" id="scanner" style="width:200px; height:30px;" placeholder="Digite o código ou escaneie" autofocus>
+            </div>
+            <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data">
+              <input type="file" name="xmlfile" accept=".xml" required>
+              <button type="submit">Importar XML</button>
+            </form>
             <button class="btn-primary" id="btnRegistrar">
               + Registrar Venda
             </button>
@@ -51,30 +56,7 @@
 
           <section class="list" id="listaVendas">
 
-            <div class="sale-card" data-id="1">
-              <div class="card-left">
-                <div class="title-row">
-                  <h3 class="prod-title">Brinco Dourado</h3>
-                  <span class="pill">1 unidade</span>
-                </div>
-
-                <div class="meta">
-                  <span><b>Cliente:</b> Maria</span>
-                </div>
-
-                <div class="date">
-                  09/03/2026
-                </div>
-              </div>
-
-              <div class="card-right">
-                <div class="price">R$ 35,00</div>
-
-                <button class="btn-delete" type="button" onclick="delVenda(1)">
-                  🗑 Apagar
-                </button>
-              </div>
-            </div>
+          
 
           </section>
 
@@ -83,31 +65,6 @@
 
     </div>
   </div>
-
-  <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data">
-    <input type="file" name="xmlfile" accept=".xml" required>
-    <button type="submit">Importar XML</button>
-  </form>
-  <button class="btn-primary" id="btnRegistrar">
-    + Registrar Venda
-  </button>
-  
-</header>
-
-
-<div style="margin: 10px 0;">
-  <input type="text" id="scanner" style="width:200px; height:30px;" placeholder="Digite o código ou escaneie" autofocus>
-</div>
-
-<section class="list" id="listaVendas">
-</section>
-
-</section>
-
-</main>
-
-</div>
-</div>
 
 <script>
     window.USER = {

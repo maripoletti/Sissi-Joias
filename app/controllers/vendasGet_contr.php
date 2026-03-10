@@ -16,7 +16,6 @@ $page = $input["page"] ?? 0;
 $limit = $input["limit"] ?? 10;
 
 if(isset($userID)) {
-
     $sales = $db->get_sales($userID, $role, $page, $limit);
     $total = $db->get_total_sales($userID, $role);
 
