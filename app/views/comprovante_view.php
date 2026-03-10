@@ -18,6 +18,7 @@ body{ width:58mm; font-family: monospace; font-size:12px; }
 
 <div class="center">
 <b>SISSI SEMIJOIAS E ACESSÓRIOS</b><br>
+CNPJ: 49.455.057/0001-74
 Comprovante de Venda
 </div>
 

@@ -58,14 +58,16 @@ switch ($uri) {
 
   case '/cadastro':
     if ($method === 'GET') {
-      require_once '../app/views/signup_view.php';
-      break;
+        require_once '../app/views/signup_view.php';
+        break;
     }
+
     if ($method === 'POST') {
-      require_once '../app/controllers/signup_contr.php';
-      break;
+        require_once '../app/controllers/signup_contr.php';
+        exit();
     }
-    
+
+    break;
     
   case '/novavenda':
     if (isset($_SESSION['user_id'])) {
@@ -80,6 +82,11 @@ switch ($uri) {
       }
     } else {
       header('Location: /login');
+      break;
+    }
+  case '/api/novavenda/xml':
+    if(isset($_SESSION["user_id"])) {
+      require_once '../app/controllers/novavendaXml_contr.php';
       break;
     }
   
@@ -154,18 +161,25 @@ switch ($uri) {
       AuthMiddleware::user();
     }
 
-    case '/produtos':
-      if(isset($_SESSION['user_id'])) {
-      if ($method === 'GET') {
-        require_once '../app/views/produtos_view.php';
-        AuthMiddleware::user();
-        break;
-      }
-    } else {
-      header('Location: /login');
+  case '/produtos':
+    if(isset($_SESSION['user_id'])) {
+    if ($method === 'GET') {
+      require_once '../app/views/produtos_view.php';
+      AuthMiddleware::user();
       break;
     }
+  } else {
+    header('Location: /login');
     break;
+  }
+  break;
+
+  case '/api/produtos/xml':
+    if(isset($_SESSION["user_id"])) {
+      require_once '../app/controllers/produtosXml_contr.php';
+      break;
+    }
+
 
   case '/api/produtos':
     if(isset($_SESSION['user_id'])) {

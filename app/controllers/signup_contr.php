@@ -1,7 +1,6 @@
 <?php
 
 declare(strict_types= 1);
-
 $name = $_POST["name"] ?? "";
 $email = $_POST["email"] ?? "";
 $pwd = $_POST["pwd"] ?? "";
@@ -10,7 +9,8 @@ $phone = $_POST["phone_raw"] ?? "";
 
 require_once __DIR__ . '/../models/signup_model.php';
 require_once __DIR__ . '/../services/authValidator.php';
-$signup = new signup_model();
+$signup = new Signup_model();
+
 
 $validate = authValidator::validateSignup($name, $email, $pwd, $phone, $pwdRepeat);
 $errors = $validate['errors'] ?? [];
@@ -22,7 +22,7 @@ if ($errors) {
 } else {
     $data = $validate['data'] ?? [];
     $signup->send_request($data['email'], $data['pwd'], $data['name'], $data['phone']);
-    $_SESSION['signup_submitted'] = "Seu cadastro foi enviado e está aguardando aprovação";
-    header('Location: /cadastro?status=approved');
+    $_SESSION['signup_submitted'] = "Seu cadastro foi enviado e está aguardando aprovação!";
+    header('Location: /');
     exit();
 }

@@ -46,9 +46,14 @@
     </p>
   </div>
 
+  <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data">
+    <input type="file" name="xmlfile" accept=".xml" required>
+    <button type="submit">Importar XML</button>
+  </form>
   <button class="btn-primary" id="btnRegistrar">
     + Registrar Venda
   </button>
+  
 </header>
 
 

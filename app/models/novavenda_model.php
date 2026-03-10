@@ -45,7 +45,9 @@ class novavenda_model extends Dbh {
             $stmt->execute();
 
             if ($stmt->rowCount() === 0) {
-                throw new Exception("Estoque insuficiente.");
+                $pdo->rollBack();
+                echo "Estoque insuficiente ou produto não existe.";
+                return false;
             }
             
             $pdo->commit();
@@ -53,7 +55,6 @@ class novavenda_model extends Dbh {
             return $orderId;
         } catch (PDOException $e) {
             $pdo->rollBack();
-            echo "Erro na conexão: " . $e->getMessage();
         }
     }
     public function buscar_produto(string $nome) {
@@ -75,3 +76,4 @@ class novavenda_model extends Dbh {
         }
     }
 }
+

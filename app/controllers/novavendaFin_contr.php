@@ -20,9 +20,14 @@ if($validate['errors']) {
     $_SESSION['error_order_sale'] = $validate['errors'];
     exit;
 } else {
-    $orderId = $db->realizar_venda($validate['data']['produto'], $validate['data']['cliente'], $validate['data']['pagamento']);
+    $result = $db->realizar_venda($validate['data']['produto'], $validate['data']['cliente'], $validate['data']['pagamento']);
+
+    if ($result === false) {
+        exit;
+    }
+
     echo json_encode([
-        "order_id" => $orderId
+        "order_id" => $result
     ]);
     exit;
 }

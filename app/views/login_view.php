@@ -53,6 +53,9 @@ declare(strict_types= 1);
       <div class="right">
         <h1>Bem-vinda, vendedora!</h1>
         <p>Organize. Controle. Evolua.</p>
+        <?php
+        echo '<br>' . $_SESSION["signup_submitted"];
+        ?>
       </div>
 
     </div>
