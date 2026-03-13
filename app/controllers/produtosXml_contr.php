@@ -18,34 +18,44 @@ if (!file_exists($tmp) || filesize($tmp) === 0) {
 }
 
 libxml_use_internal_errors(true);
-$xml = simplexml_load_file($tmp);
+$xmlContent = file_get_contents($tmp);
+$xmlContent = preg_replace('/^\xEF\xBB\xBF/', '', $xmlContent);
+
+libxml_use_internal_errors(true);
+$xml = simplexml_load_string($xmlContent);
 
 if ($xml === false) {
-    foreach (libxml_get_errors() as $err) {
-        echo $err->message . "<br>";
-    }
     die("XML inválido");
 }
 
 $model = new Produtos_model();
 
-foreach ($xml->produto as $produto) {
+$ns = $xml->getNamespaces(true);
+$xml->registerXPathNamespace('nfe', $ns['']);
+
+$itens = $xml->xpath("//nfe:det");
+
+foreach ($itens as $item) {
+
+    $prod = $item->children($ns[''])->prod;
+
+    $codigo = (string)$prod->cProd;
+    $nome = (string)$prod->xProd;
+    $quantidade = (float)$prod->qCom;
+    $preco = (float)$prod->vUnCom;
 
     $data = [
-        "name" => (string)$produto->name,
-        "stock" => (int)$produto->stock,
-        "price" => (float)$produto->price,
-        "tamanho" => (string)$produto->size,
-        "cor" => (string)$produto->color,
-        "peso_banho" => (int)$produto->peso_banho,
-        "milesimos_banho" => (int)$produto->milesimos_banho,
-        "tags" => [],
-        "photo" => null
+        "code" => $codigo,
+        "name" => $nome,
+        "stock" => $quantidade,
+        "price" => $preco
     ];
 
-    $model->set_products($data);
+    $model->import_product($data);
+
+    echo "$codigo - $nome - $quantidade - $preco <br>";
 }
 
-header("Refresh: 1; url=/produtos");
+header("Refresh: 3; url=/produtos");
 echo "Importação concluída";
 exit;

@@ -4,6 +4,82 @@ declare(strict_types=1);
 require_once __DIR__ . "/../../config/dbh.config.php";
 
 class Produtos_model extends Dbh {
+    public function import_product(array $data) {
+        $pdo = $this->connect();
+
+        try {
+            $stmt = $pdo->prepare("
+                SELECT ProductID, StockQuantity, Status
+                FROM Sales_Products
+                WHERE SupID = ?
+                LIMIT 1
+            ");
+
+            $stmt->execute([$data["code"]]);
+            $prod = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($prod) {
+                if ($prod["Status"] == "1") {
+                    $stmt = $pdo->prepare("
+                        UPDATE Sales_Products
+                        SET StockQuantity = StockQuantity + ?
+                        WHERE ProductID = ?
+                    ");
+
+                    $stmt->execute([$data["stock"], $prod["ProductID"]]);
+
+                } else {
+                    $stmt = $pdo->prepare("
+                        UPDATE Sales_Products
+                        SET
+                            Status = 1,
+                            StockQuantity = ?,
+                            Price = ?
+                        WHERE ProductID = ?
+                    ");
+
+                    $stmt->execute([
+                        $data["stock"],
+                        $data["price"],
+                        $prod["ProductID"]
+                    ]);
+                }
+
+            } else {
+                $stmt = $pdo->prepare("
+                    INSERT INTO Sales_Products
+                    (ProductName, StockQuantity, Price, SupID)
+                    VALUES (?, ?, ?, ?)
+                ");
+
+                $stmt->execute([
+                    $data["name"],
+                    $data["stock"],
+                    $data["price"],
+                    $data["code"]
+                ]);
+
+                $productId = $pdo->lastInsertId();
+
+                $barcode = "2" . str_pad($productId, 11, "0", STR_PAD_LEFT);
+
+                $stmt = $pdo->prepare("
+                    UPDATE Sales_Products
+                    SET Barcode = ?
+                    WHERE ProductID = ?
+                ");
+
+                $stmt->execute([$barcode, $productId]);
+            }
+
+        } catch (PDOException $e) {
+
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+
+        }
+    }
     public function delete_products(int $id) {
         $pdo = $this->connect();
 
