@@ -21,7 +21,7 @@ body {
   
 .main {
   flex: 1;
-  background: #fbf6fb;
+  background: #d0a310;
   padding: 30px;
   color: #460857;
 }
@@ -34,7 +34,7 @@ body {
 
 .top span {
   font-size: 22px;
-  color: #777;
+  color: #ece5e5;
 }
 
 .btn {
