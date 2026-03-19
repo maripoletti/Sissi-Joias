@@ -569,27 +569,48 @@ function imprimirEtiqueta(id){
 
   <style>
 
-  body{
-    font-family: Arial;
-    text-align:center;
-    padding:40px;
+@media print {
+  @page {
+    size: 40mm 25mm;
+    margin: 0;
   }
 
-  .etiqueta{
-    width:220px;
-    border:1px solid black;
-    padding:12px;
-    margin:auto;
+  body {
+    margin: 0;
+    padding: 0;
   }
+}
 
-  .nome{
-    font-size:14px;
-  }
+body{
+  font-family: Arial;
+  text-align:center;
+  margin:0;
+}
 
-  .preco{
-    font-size:24px;
-    font-weight:bold;
-  }
+.etiqueta{
+  width:40mm;
+  height:25mm;
+  padding:2mm;
+  box-sizing:border-box;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+
+.nome{
+  font-size:8pt;
+}
+
+.preco{
+  font-size:12pt;
+  font-weight:bold;
+}
+
+svg{
+  width:100%;
+  height:10mm;
+}
 
   </style>
 

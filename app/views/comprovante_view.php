@@ -4,12 +4,46 @@
 <meta charset="UTF-8">
 <style>
 *{ margin:0; padding:0; box-sizing:border-box; }
-body{ width:58mm; font-family: monospace; font-size:12px; }
-.ticket{ width:100%; padding:4px; }
+
+@media print {
+  @page {
+    size: 58mm 70mm;
+    margin: 0;
+    }
+
+  body {
+    margin: 0;
+  }
+}
+
+body{
+  width:58mm;
+  font-family: monospace;
+  font-size:12px;
+}
+
+.ticket{
+  width:100%;
+  padding:4px;
+}
+
 .center{ text-align:center; }
-.divisor{ border-top:1px dashed black; margin:4px 0; }
-.row{ display:flex; justify-content:space-between; }
-.total{ font-weight:bold; font-size:13px; }
+
+.divisor{
+  border-top:1px dashed black;
+  margin:4px 0;
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  gap:4px;
+}
+
+.total{
+  font-weight:bold;
+  font-size:13px;
+}
 </style>
 </head>
 <body onload="window.print()">
