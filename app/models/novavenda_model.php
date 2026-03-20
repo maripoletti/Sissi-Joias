@@ -67,6 +67,7 @@ class novavenda_model extends Dbh {
             Price AS preco,
             StockQuantity AS estoque
             FROM Sales_Products WHERE MATCH (ProductName) AGAINST (? IN BOOLEAN MODE)
+            AND Status = 1
             LIMIT 7";
             $stmt = $pdo->prepare($query);
             $stmt->execute([$nome . "*"]);
