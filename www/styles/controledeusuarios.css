@@ -116,12 +116,13 @@ html, body {
 }
 
 .level-bar{
-  height: 8px;
+  height: 10px;
+  width: 100%;
   border-radius: 999px;
 }
 
 .level-name{
-  font-size: 12px;
+  font-size: 14px;
   color: #334155;
   font-weight: 600;
   text-align: center;
@@ -133,7 +134,6 @@ html, body {
 .level-bar.esmeralda{ background: var(--esmeralda); }
 .level-bar.rubi{ background: var(--rubi); }
 
-/* ===== Tabs (DESKTOP) ===== */
 .tabs{
   display:inline-flex;
   gap: 8px;
@@ -449,4 +449,19 @@ html, body {
 @media (max-width: 480px){
   .page-title{ font-size: 18px; }
   .meta{ flex-direction: column; gap:6px; }
+}
+
+.level{
+  display:flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+
+.level-info{
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 700;
 }

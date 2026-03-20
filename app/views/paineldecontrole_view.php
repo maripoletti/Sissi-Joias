@@ -23,7 +23,7 @@
         
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
           <a href="/relatorios">Relatórios</a>
-          <a href="/controledeusuarios">Controle de Usuários</a>
+          <a href="/controledeusuarios">Controle de Revendedores</a>
           <a href="/fornecedores">Fornecedores</a>
           <a href="/cadastrarimpressora">Cadastrar Impressora</a>
         <?php endif; ?>
@@ -41,6 +41,10 @@
         <div class="top-actions">
            <a class="btn-certificado" href="certificado_garantia.pdf" download>
             ↓ Certificado de Garantia </a>
+
+            <a class="btn-contrato" href="contrato.pdf" download>
+              ↓ Contrato 
+            </a>
           <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
         </div>
       </header>
