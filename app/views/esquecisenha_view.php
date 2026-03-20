@@ -15,7 +15,7 @@
 
       <h1>Esqueceu sua senha?</h1>
       <p>
-        Fica tranquila, acontece nas melhores famílias da TI.
+        Fica tranquila(o), acontece! <br>
         Digite seu e-mail abaixo para receber o link de redefinição.
       </p>
 

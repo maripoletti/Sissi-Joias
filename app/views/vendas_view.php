@@ -42,22 +42,32 @@
                 <span id="qtdVendas">1</span> venda(s) registrada(s)
               </p>
             </div>
-            <div style="margin: 10px 0;">
-              <input type="text" id="scanner" style="width:200px; height:30px;" placeholder="Digite o código ou escaneie" autofocus>
+
+            <div class="top-right">
+              <div class="scanner-box">
+                <input 
+                  type="text" 
+                  id="scanner" 
+                  class="scanner-input"
+                  placeholder="Digite o código ou escaneie" 
+                  autofocus
+                >
+              </div>
+
+              <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data" class="xml-form">
+                <label for="xmlfile" class="btn-primary file-btn">Escolher XML</label>
+                <input type="file" id="xmlfile" name="xmlfile" accept=".xml" required>
+                <span id="file-name" class="file-name">Nenhum arquivo escolhido</span>
+                <button type="submit" class="btn-primary">Importar XML</button>
+              </form>
+
+              <button class="btn-primary" id="btnRegistrar">
+                + Registrar Venda
+              </button>
             </div>
-            <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data">
-              <input type="file" name="xmlfile" accept=".xml" required>
-              <button type="submit">Importar XML</button>
-            </form>
-            <button class="btn-primary" id="btnRegistrar">
-              + Registrar Venda
-            </button>
           </header>
 
           <section class="list" id="listaVendas">
-
-          
-
           </section>
 
         </section>
@@ -66,13 +76,24 @@
     </div>
   </div>
 
-<script>
+  <script>
     window.USER = {
-        id: <?php echo $_SESSION['user_id'] ?? 'null'; ?>,
-        role: <?php echo $_SESSION['role'] ?? 'null'; ?>
+      id: <?php echo $_SESSION['user_id'] ?? 'null'; ?>,
+      role: <?php echo $_SESSION['role'] ?? 'null'; ?>
     };
-</script>
 
-<script src="script.js"></script>
+    const xmlInput = document.getElementById('xmlfile');
+    const fileName = document.getElementById('file-name');
+
+    if (xmlInput && fileName) {
+      xmlInput.addEventListener('change', function() {
+        fileName.textContent = this.files.length > 0
+          ? this.files[0].name
+          : 'Nenhum arquivo escolhido';
+      });
+    }
+  </script>
+
+  <script src="script.js"></script>
 </body>
 </html>

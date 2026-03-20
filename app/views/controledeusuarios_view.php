@@ -44,7 +44,7 @@
       <div class="page-icon">👥</div>
 
       <div>
-        <h1 class="page-title">Controle de Usuários</h1>
+        <h1 class="page-title">Controle de Revendedores</h1>
         <p class="page-subtitle">Gerencie as solicitações de cadastro dos seus Revendedores</p>
       </div>
     </div>

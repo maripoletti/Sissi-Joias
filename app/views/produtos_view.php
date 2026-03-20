@@ -50,7 +50,7 @@
             </label>
             <button type="submit" class="btn-primary">Importar XML</button>
           </form>
-         </div>
+          
         </header>
 
         <section class="hero">
