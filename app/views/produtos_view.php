@@ -43,11 +43,14 @@
           <div class="top-actions">
             <a href="/novavenda" class="btn-primary">+ Nova venda</a>
             <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
-            <form action="/api/produtos/xml" method="post" enctype="multipart/form-data">
-                <input type="file" name="xmlfile" accept=".xml" required>
-                <button type="submit">Importar XML</button>
-            </form>
-          </div>
+          <form action="/api/produtos/xml" method="post" enctype="multipart/form-data" class="xml-form">
+             <label class="btn-primary file-btn">
+              Escolher XML
+              <input type="file" name="xmlfile" accept=".xml" required hidden>
+            </label>
+            <button type="submit" class="btn-primary">Importar XML</button>
+          </form>
+         </div>
         </header>
 
         <section class="hero">
