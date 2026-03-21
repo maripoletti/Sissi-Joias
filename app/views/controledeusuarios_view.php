@@ -125,7 +125,7 @@
   </div>
 </div>
 
-<script src="js/controledeusuarios.js"></script>
+<script src="controledeusuarios.js"></script>
 
 </body>
 </html>

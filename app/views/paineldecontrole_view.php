@@ -42,7 +42,7 @@
            <a class="btn-certificado" href="certificado_garantia.pdf" download>
             ↓ Certificado de Garantia </a>
 
-            <a class="btn-contrato" href="contrato.pdf" download>
+            <a class="btn-contrato" href="contrato_com_ficha.pdf" download>
               ↓ Contrato 
             </a>
           <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
