@@ -14,20 +14,32 @@ declare(strict_types=1);
 
 <div class="container">
 
-    <div class="top-icon">👤</div>
+    <div class="top-icon" id="previewContainer">
+        <span id="iconPadrao">👤</span>
+        <img id="previewImage" src="" alt="Foto de perfil">
+    </div>
 
     <h1>Criar conta</h1>
     <p class="subtitle">Preencha os dados abaixo para se cadastrar</p>
 
     <div class="card">
         <?php
-        if(isset($_SESSION["errors_signup"])) {
+        if (isset($_SESSION["errors_signup"])) {
             $errors = $_SESSION["errors_signup"] ?? [];
             unset($_SESSION["errors_signup"]);
         }
         ?>
 
-        <form id="cadastroForm" action="/cadastro" method="POST">
+        <form id="cadastroForm" action="/cadastro" method="POST" enctype="multipart/form-data">
+
+            <label for="fotoPerfil">Foto de perfil</label>
+            <div class="upload-box">
+                <input type="file" name="foto_perfil" id="fotoPerfil" accept="image/*">
+            </div>
+
+            <?php if (isset($errors["foto_wrong"])): ?>
+                <p class="errors"><?= $errors["foto_wrong"] ?></p>
+            <?php endif; ?>
 
             <label>Nome completo</label>
             <input type="text" name="name" placeholder="Seu nome completo" required>
@@ -48,7 +60,7 @@ declare(strict_types=1);
             <?php endif; ?>
 
             <label>Confirmar Senha</label>
-            <input type="password" name="pwdRepeat" placeholder="Confirme sua senha">
+            <input type="password" name="pwdRepeat" placeholder="Confirme sua senha" required>
             <?php if (isset($errors["pwd_match"])): ?>
                 <p class="errors"><?= $errors["pwd_match"] ?></p>
             <?php endif; ?>
@@ -83,22 +95,45 @@ declare(strict_types=1);
 <script>
 const Telefone = document.querySelector("#telefone");
 const TelefoneRaw = document.querySelector("#telefone_raw");
+const fotoPerfil = document.querySelector("#fotoPerfil");
+const previewImage = document.querySelector("#previewImage");
+const iconPadrao = document.querySelector("#iconPadrao");
 
 Telefone.addEventListener("input", () => {
     let v = Telefone.value.replace(/\D/g, "");
-    if (v.length > 11) v = v.slice(0, 11);  
+    if (v.length > 11) v = v.slice(0, 11);
 
     let vFormat = v;
     if (v.length > 10) {
-        vFormat = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3"); 
+        vFormat = v.replace(/^(\d{2})(\d{5})(\d{4})$/, "($1) $2-$3");
     } else if (v.length > 5) {
-        vFormat = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3"); 
+        vFormat = v.replace(/^(\d{2})(\d{4})(\d{0,4})$/, "($1) $2-$3");
     } else if (v.length > 2) {
         vFormat = v.replace(/^(\d{2})(\d{0,5})$/, "($1) $2");
     }
-    Telefone.value = vFormat;
 
+    Telefone.value = vFormat;
     TelefoneRaw.value = v;
+});
+
+fotoPerfil.addEventListener("change", function () {
+    const arquivo = this.files[0];
+
+    if (arquivo) {
+        const leitor = new FileReader();
+
+        leitor.onload = function (e) {
+            previewImage.src = e.target.result;
+            previewImage.style.display = "block";
+            iconPadrao.style.display = "none";
+        };
+
+        leitor.readAsDataURL(arquivo);
+    } else {
+        previewImage.src = "";
+        previewImage.style.display = "none";
+        iconPadrao.style.display = "block";
+    }
 });
 </script>
 </body>

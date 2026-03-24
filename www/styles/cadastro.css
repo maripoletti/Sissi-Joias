@@ -6,11 +6,12 @@
 }
 
 body {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
   background: radial-gradient(circle at top, #76217a, #260b2a);
+  padding: 30px 15px;
 }
 
 .container {
@@ -19,22 +20,35 @@ body {
 }
 
 .top-icon {
-  width: 70px;
-  height: 70px;
+  width: 90px;
+  height: 90px;
   background: linear-gradient(135deg, #d0b00e, #d7d2de);
-  color: #3b0a45;
-  font-size: 30px;
-  border-radius: 18px;
+  border-radius: 22px;
   display: flex;
   justify-content: center;
   align-items: center;
   margin: 0 auto 20px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+  overflow: hidden;
+  position: relative;
+}
+
+.top-icon span {
+  color: #3b0a45;
+  font-size: 36px;
+}
+
+.top-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
 }
 
 h1 {
   color: #f1d77a;
   margin-bottom: 5px;
+  font-size: 3rem;
 }
 
 .subtitle {
@@ -44,7 +58,8 @@ h1 {
 }
 
 .card {
-  width: 400px;
+  width: 100%;
+  max-width: 400px;
   background: #2a0033;
   padding: 30px;
   border-radius: 18px;
@@ -57,7 +72,7 @@ h1 {
   display: block;
   margin: 15px 0 6px;
   font-size: 14px;
-  color: #a831ae;
+  color: #d04ce0;
 }
 
 .card input {
@@ -78,6 +93,28 @@ h1 {
 .card input:focus {
   border-color: #d4af37;
   box-shadow: 0 0 8px rgba(212,175,55,0.5);
+}
+
+.upload-box {
+  width: 100%;
+}
+
+.upload-box input[type="file"] {
+  padding: 10px;
+  background-color: #3b0a45;
+  border: 1px dashed #d4af37;
+  cursor: pointer;
+}
+
+.upload-box input[type="file"]::file-selector-button {
+  background: linear-gradient(310deg, #a9996a, #d0b00e);
+  color: #3b0a45;
+  border: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin-right: 12px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
 button {
@@ -124,4 +161,28 @@ button:hover {
   border-left: 4px solid #ff4c4c;
   border-radius: 6px;
   font-size: 13px;
+}
+
+.revendedora-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f1f1f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.revendedora-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.revendedora-avatar span {
+  font-size: 22px;
+  color: #a64bd4;
 }

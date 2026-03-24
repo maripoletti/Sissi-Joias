@@ -20,15 +20,35 @@
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
         <a href="/impressoras">Impressoras</a>
-        
-        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-          <a href="/relatorios">Relatórios</a>
-          <a href="/controledeusuarios">Controle de Revendedores</a>
-          <a href="/fornecedores">Fornecedores</a>
-          <a href="/cadastrarimpressora">Cadastrar Impressora</a>
-        <?php endif; ?>
-
+        <a href="/relatorios">Relatórios</a>
+        <a href="/controledeusuarios">Controle de Revendedores</a>
+        <a href="/fornecedores">Fornecedores</a>
+        <a href="/cadastrarimpressora">Cadastrar Impressora</a>
       </nav>
+
+      <div class="user-profile">
+        <label for="trocarFoto" class="avatar-wrap">
+          <div class="avatar">
+            <img id="avatarPreview" src="" alt="Foto de perfil" style="display: none;">
+            <span id="avatarIcon">👤</span>
+          </div>
+        </label>
+
+        <div class="user-meta">
+          <strong class="user-name" id="userName">Marcela Santana</strong>
+
+          <div class="user-group-badge safira" id="userGroupBadge">
+            Safira
+          </div>
+
+          <p class="user-recado" id="userRecado">
+            Você está pertinho do grupo <span>Topázio</span><br>
+            Faltam <strong>R$ 220,00</strong>
+          </p>
+        </div>
+
+        <input type="file" id="trocarFoto" accept="image/*" hidden>
+      </div>
     </aside>
 
     <main class="main">
@@ -39,19 +59,20 @@
         </div>
 
         <div class="top-actions">
-           <a class="btn-certificado" href="certificado_garantia.pdf" download>
-            ↓ Certificado de Garantia </a>
+          <a class="btn-certificado" href="certificado_garantia.pdf" download>
+            ↓ Certificado de Garantia
+          </a>
 
-            <a class="btn-contrato" href="contrato_com_ficha.pdf" download>
-              ↓ Contrato 
-            </a>
+          <a class="btn-contrato" href="contrato_com_ficha.pdf" download>
+            ↓ Contrato
+          </a>
+
           <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
         </div>
       </header>
 
       <section class="painel-grid">
 
-        <!-- CALENDÁRIO -->
         <div class="panel panel-calendar">
           <div class="panel-head">
             <h3>Calendário</h3>
@@ -75,13 +96,11 @@
             <div class="cal-days" id="calDias"></div>
           </div>
 
-          <!-- LEGENDA -->
           <div class="cal-legend">
-            <span class="dot dot-aniver"></span> Aniversário
-            <span class="dot dot-outro"></span> Outro
+            <span><span class="dot dot-aniver"></span> Aniversário</span>
+            <span><span class="dot dot-outro"></span> Outro</span>
           </div>
 
-          <!-- DETALHE DO DIA -->
           <div class="cal-detail" id="calDetail">
             <div class="cal-detail-head">
               <h4 id="detailTitle">Clique no número do dia para ler</h4>
@@ -93,76 +112,20 @@
             </div>
           </div>
 
-          <!-- LISTAS ABAIXO -->
           <div class="cal-birthdays">
             <h4>Aniversariantes</h4>
             <div id="listaAniversarios" class="birth-list">
               <p class="muted">Nenhum aniversariante cadastrado.</p>
             </div>
           </div>
-
         </div>
 
-        <!-- TOP VENDEDORAS -->
         <div class="panel panel-top">
           <div class="panel-head">
             <h3>Top Vendedoras</h3>
           </div>
 
-          <div class="top-list">
-          
-          </div>
-        </div>
-
-        <!-- MODAL -->
-        <div id="modalEvento" class="modal hidden">
-          <div class="modal-content">
-            <div class="modal-top">
-              <h3>Adicionar Evento</h3>
-              <button id="btnFecharModal" class="btn-close" type="button">×</button>
-            </div>
-
-            <form id="formEvento" class="form-evento">
-
-              <label>
-                Título
-                <input type="text" id="eventoTitulo" maxlength="60" required>
-              </label>
-
-              <div class="grid-2">
-                <label>
-                  Data
-                  <input type="date" id="eventoData" required>
-                </label>
-
-                <label>
-                  Hora (opcional)
-                  <input type="time" id="eventoHora">
-                </label>
-              </div>
-
-              <label>
-                Tipo
-                <select id="eventoTipo" required>
-                  <option value="">Selecione</option>
-                  <option value="aniversario">Aniversário</option>
-                  <option value="lembrete">Lembrete</option>
-                  <option value="outro">Outro</option>
-                </select>
-              </label>
-
-              <label>
-                Comentário (opcional)
-                <textarea id="eventoComentario" maxlength="200"></textarea>
-              </label>
-
-              <div class="modal-actions">
-                <button type="button" id="btnCancelar" class="btn-secondary">Cancelar</button>
-                <button type="submit" class="btn-primary">Salvar</button>
-              </div>
-
-            </form>
-          </div>
+          <div class="top-list"></div>
         </div>
 
       </section>
@@ -171,6 +134,108 @@
   </div>
 </div>
 
-<script src="script.js"></script>
+<script>
+  const dataAtual = document.getElementById("data-atual");
+  const hoje = new Date();
+  dataAtual.textContent = hoje.toLocaleDateString("pt-BR", {
+    weekday: "long",
+    day: "2-digit",
+    month: "long",
+    year: "numeric"
+  });
+
+  const inputFoto = document.getElementById("trocarFoto");
+  const avatarPreview = document.getElementById("avatarPreview");
+  const avatarIcon = document.getElementById("avatarIcon");
+
+  inputFoto.addEventListener("change", function () {
+    const arquivo = this.files[0];
+
+    if (arquivo) {
+      const leitor = new FileReader();
+
+      leitor.onload = function (e) {
+        avatarPreview.src = e.target.result;
+        avatarPreview.style.display = "block";
+        avatarIcon.style.display = "none";
+      };
+
+      leitor.readAsDataURL(arquivo);
+    }
+  });
+
+  const totalVendas = 1780;
+  const userName = "Marcela Santana";
+
+  document.getElementById("userName").textContent = userName;
+
+  function definirGrupoEMeta(total) {
+    let grupoNome = "Ametista";
+    let proximoGrupo = "Safira";
+    let proximaMeta = 1000;
+    let classeGrupo = "ametista";
+
+    if (total >= 1000 && total < 2000) {
+      grupoNome = "Safira";
+      proximoGrupo = "Topázio";
+      proximaMeta = 2000;
+      classeGrupo = "safira";
+    } else if (total >= 2000 && total < 3000) {
+      grupoNome = "Topázio";
+      proximoGrupo = "Esmeralda";
+      proximaMeta = 3000;
+      classeGrupo = "topazio";
+    } else if (total >= 3000 && total < 4000) {
+      grupoNome = "Esmeralda";
+      proximoGrupo = "Rubi";
+      proximaMeta = 4000;
+      classeGrupo = "esmeralda";
+    } else if (total >= 4000) {
+      grupoNome = "Rubi";
+      proximoGrupo = null;
+      proximaMeta = null;
+      classeGrupo = "rubi";
+    }
+
+    return { grupoNome, proximoGrupo, proximaMeta, classeGrupo };
+  }
+
+  function gerarRecado(total) {
+    const { grupoNome, proximoGrupo, proximaMeta, classeGrupo } = definirGrupoEMeta(total);
+
+    let recado = `Continue vendendo para subir de nível 💜`;
+
+    if (proximaMeta !== null) {
+      const faltam = proximaMeta - total;
+      const faltamFormatado = faltam.toLocaleString("pt-BR", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+      });
+
+      if (faltam <= 100) {
+        recado = `Tá voando! Faltam só <strong>R$ ${faltamFormatado}</strong> para chegar em <span>${proximoGrupo}</span>.`;
+      } else if (faltam <= 300) {
+        recado = `Você está pertinho do grupo <span>${proximoGrupo}</span>.<br>Faltam <strong>R$ ${faltamFormatado}</strong>.`;
+      } else if (faltam <= 500) {
+        recado = `Bom ritmo! Continue assim para alcançar <span>${proximoGrupo}</span>.`;
+      } else {
+        recado = `Seu próximo objetivo é o grupo <span>${proximoGrupo}</span>.`;
+      }
+    } else {
+      recado = `Parabéns! Você está no grupo <span>Rubi</span> e bateu a meta máxima. 🔥`;
+    }
+
+    return { grupoNome, recado, classeGrupo };
+  }
+
+  const dadosMeta = gerarRecado(totalVendas);
+
+  const badge = document.getElementById("userGroupBadge");
+  badge.textContent = dadosMeta.grupoNome;
+  badge.className = `user-group-badge ${dadosMeta.classeGrupo}`;
+
+  document.getElementById("userRecado").innerHTML = dadosMeta.recado;
+</script>
+
 </body>
 </html>
