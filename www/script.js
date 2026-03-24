@@ -682,3 +682,4 @@ if (scanner) {
 }
 
 carregarVendas();
+

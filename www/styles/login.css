@@ -33,7 +33,6 @@ body {
   background: #d0b00e;
   padding: 50px;
   color: #620059;
-  position: relative;
 }
 
 .left h2 {
@@ -81,32 +80,66 @@ button {
   color: #fff;
   font-size: 16px;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 
 button:hover {
   opacity: 0.9;
 }
 
-.left p {
-  margin-top: 20px;
-  font-size: 14px;
+/* LINKS BONITOS */
+.links-acesso {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.left span {
-  color: #3c0549;
-  cursor: pointer;
+.links-acesso p {
+  margin: 0;
+  font-size: 14px;
+  color: #5a005f;
+  line-height: 1.5;
+}
+
+.links-acesso a {
+  color: #4b0055;
+  font-weight: 700;
+  text-decoration: none;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.links-acesso a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #6c3883, #d4af37);
+  transition: width 0.3s ease;
+}
+
+.links-acesso a:hover {
+  color: #2d0033;
+}
+
+.links-acesso a:hover::after {
+  width: 100%;
 }
 
 /* LADO DIREITO */
 .right {
   width: 55%;
-  background: linear-gradient(135deg, #5d0055,);
+  background: linear-gradient(135deg, #6d1b7b, #5d0055);
   color: #d0b00e;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
+  position: relative;
 }
 
 .right h1 {
@@ -117,4 +150,93 @@ button:hover {
 .right p {
   width: 70%;
   opacity: 0.9;
+}
+
+/* ÍCONES NO CANTO */
+.social-right {
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  display: flex;
+  gap: 12px;
+}
+
+.icon-social {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+  backdrop-filter: blur(6px);
+  transition: 0.3s ease;
+}
+
+/* SVG tamanho */
+.icon-social svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* WHATSAPP */
+.icon-social:first-child:hover {
+  transform: scale(1.1);
+  background: #25D366;
+  box-shadow: 0 0 15px #25D366;
+}
+
+/* INSTAGRAM */
+.icon-social:last-child:hover {
+  transform: scale(1.1);
+  background: radial-gradient(circle at 30% 107%,
+    #fdf497 0%,
+    #fdf497 5%,
+    #fd5949 45%,
+    #d6249f 60%,
+    #285AEB 90%);
+  box-shadow: 0 0 15px rgba(214, 36, 159, 0.6);
+}
+
+.senha-box {
+  position: relative;
+}
+
+.senha-box input {
+  padding-right: 45px;
+}
+
+.toggle-senha {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-35%);
+  background: transparent;
+  border: none;
+  padding: 0;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: none;
+}
+
+.toggle-senha:hover {
+  opacity: 1;
+  background: transparent;
+}
+
+.toggle-senha svg {
+  width: 20px;
+  height: 20px;
+  color: #5a005f;
+  transition: 0.3s ease;
+}
+
+.toggle-senha:hover svg {
+  color: #2d0033;
 }
