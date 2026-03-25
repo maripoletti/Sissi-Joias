@@ -35,19 +35,18 @@
         </label>
 
         <div class="user-meta">
-          <strong class="user-name" id="userName">Marcela Santana</strong>
+          <strong class="user-name" id="userName">Carregando...</strong>
 
-          <div class="user-group-badge safira" id="userGroupBadge">
-            Safira
+          <div class="user-group-badge ametista" id="userGroupBadge">
+            Ametista
           </div>
 
           <p class="user-recado" id="userRecado">
-            Você está pertinho do grupo <span>Topázio</span><br>
-            Faltam <strong>R$ 220,00</strong>
+            Carregando informações...
           </p>
         </div>
 
-        <input type="file" id="trocarFoto" accept="image/*" hidden>
+        <input type="file" id="trocarFoto" accept="uploads/*" hidden>
       </div>
     </aside>
 
@@ -147,6 +146,9 @@
   const inputFoto = document.getElementById("trocarFoto");
   const avatarPreview = document.getElementById("avatarPreview");
   const avatarIcon = document.getElementById("avatarIcon");
+  const userNameEl = document.getElementById("userName");
+  const badge = document.getElementById("userGroupBadge");
+  const userRecadoEl = document.getElementById("userRecado");
 
   inputFoto.addEventListener("change", function () {
     const arquivo = this.files[0];
@@ -163,11 +165,6 @@
       leitor.readAsDataURL(arquivo);
     }
   });
-
-  const totalVendas = 1780;
-  const userName = "Marcela Santana";
-
-  document.getElementById("userName").textContent = userName;
 
   function definirGrupoEMeta(total) {
     let grupoNome = "Ametista";
@@ -228,13 +225,57 @@
     return { grupoNome, recado, classeGrupo };
   }
 
-  const dadosMeta = gerarRecado(totalVendas);
+  function preencherDadosUsuario(usuario) {
+    const nome = usuario.nome || "Sem nome";
+    const foto = usuario.foto || "";
+    const total = Number(usuario.total) || 0;
 
-  const badge = document.getElementById("userGroupBadge");
-  badge.textContent = dadosMeta.grupoNome;
-  badge.className = `user-group-badge ${dadosMeta.classeGrupo}`;
+    userNameEl.textContent = nome;
 
-  document.getElementById("userRecado").innerHTML = dadosMeta.recado;
+    if (foto) {
+      avatarPreview.src = foto;
+      avatarPreview.style.display = "block";
+      avatarIcon.style.display = "none";
+    } else {
+      avatarPreview.style.display = "none";
+      avatarIcon.style.display = "block";
+    }
+
+    const dadosMeta = gerarRecado(total);
+
+    badge.textContent = dadosMeta.grupoNome;
+    badge.className = `user-group-badge ${dadosMeta.classeGrupo}`;
+
+    userRecadoEl.innerHTML = dadosMeta.recado;
+  }
+
+  async function carregarDadosUsuario() {
+    try {
+      const res = await fetch("/api/usuario/perfil", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (!res.ok) {
+        throw new Error("Erro ao buscar dados do usuário");
+      }
+
+      const data = await res.json();
+
+      preencherDadosUsuario(data);
+    } catch (err) {
+      console.error(err);
+
+      userNameEl.textContent = "Erro ao carregar";
+      badge.textContent = "Ametista";
+      badge.className = "user-group-badge ametista";
+      userRecadoEl.innerHTML = "Não foi possível carregar os dados da revendedora.";
+    }
+  }
+
+  carregarDadosUsuario();
 </script>
 
 </body>
