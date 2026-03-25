@@ -43,14 +43,16 @@
           <div class="top-actions">
             <a href="/novavenda" class="btn-primary">+ Nova venda</a>
             <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
-          <form action="/api/produtos/xml" method="post" enctype="multipart/form-data" class="xml-form">
-             <label class="btn-primary file-btn">
-              Escolher XML
-              <input type="file" name="xmlfile" accept=".xml" required hidden>
-            </label>
-            <button type="submit" class="btn-primary">Importar XML</button>
-          </form>
-          
+            <button type="button" class="btn-primary" onclick="abrirModalEnvio()">Enviar produtos para revendedoras</button>
+
+            <form action="/api/produtos/xml" method="post" enctype="multipart/form-data" class="xml-form">
+              <label class="btn-primary file-btn">
+                Escolher XML
+                <input type="file" name="xmlfile" accept=".xml" required hidden>
+              </label>
+              <button type="submit" class="btn-primary">Importar XML</button>
+            </form>
+          </div>
         </header>
 
         <section class="hero">
@@ -92,6 +94,7 @@
               <option value="za">Nome (Z-A)</option>
             </select>
           </div>
+
           <div class="filter">
             <label>Tamanho</label>
             <input type="text" id="tamanho" placeholder="Ex: 12, P, M, G..." />
@@ -224,6 +227,44 @@
     </div>
   </div>
 
+  <!-- MODAL ENVIAR PRODUTOS -->
+  <div id="modalEnvio" class="modal hidden">
+    <div class="modal-card modal-card-envio">
+      <div class="modal-header">
+        <h2>Enviar produtos para revendedoras</h2>
+        <button type="button" class="modal-close" onclick="fecharModalEnvio()">✕</button>
+      </div>
+
+      <form id="formEnvio" class="modal-form">
+        <label for="revendedoraSelect">Escolha a revendedora</label>
+        <select id="revendedoraSelect" required>
+          <option value="">Selecione uma revendedora</option>
+        </select>
+
+        <label for="buscaEnvio">Buscar produto</label>
+        <input type="text" id="buscaEnvio" placeholder="Digite o nome do produto..." />
+
+        <div id="listaProdutosEnvio" class="lista-produtos-envio"></div>
+
+        <div class="resumo-envio">
+          <div class="resumo-envio-topo">
+            <h3>Produtos selecionados</h3>
+            <button type="button" class="btn btn-outline btn-limpar-envio" onclick="limparSelecaoEnvio()">Limpar</button>
+          </div>
+
+          <div id="itensSelecionadosEnvio" class="itens-selecionados-envio">
+            <p class="envio-vazio">Nenhum produto selecionado.</p>
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" onclick="fecharModalEnvio()">Cancelar</button>
+          <button type="submit" class="btn">Confirmar envio</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 <script>
   const q = document.getElementById("q");
   const cat = document.getElementById("cat");
@@ -232,6 +273,11 @@
   const grid = document.getElementById("grid");
   const count = document.getElementById("count");
   const main = document.querySelector(".main");
+
+  const tamanho = document.getElementById("tamanho");
+  const cor = document.getElementById("cor");
+  const pesoBanho = document.getElementById("pesoBanho");
+  const milesimosBanho = document.getElementById("milesimosBanho");
 
   // edit
   const modalEdit = document.getElementById("modalEdit");
@@ -261,18 +307,29 @@
   const addMilesimosBanho = document.getElementById("addMilesimosBanho");
   const addFoto = document.getElementById("addFoto");
 
-  function inPriceRange(p, range) {
-    if (range === "all") return true;
-    if (range === "200+") return p >= 200;
-    const [min, max] = range.split("-").map(Number);
-    return p >= min && p <= max;
-  }
+  // envio
+  const modalEnvio = document.getElementById("modalEnvio");
+  const formEnvio = document.getElementById("formEnvio");
+  const revendedoraSelect = document.getElementById("revendedoraSelect");
+  const buscaEnvio = document.getElementById("buscaEnvio");
+  const listaProdutosEnvio = document.getElementById("listaProdutosEnvio");
+  const itensSelecionadosEnvio = document.getElementById("itensSelecionadosEnvio");
 
   let produtos = [];
   let page = 0;
   let limit = 12;
   let isLoading = false;
   let acabou = false;
+
+  let revendedoras = [];
+  let itensEnvio = [];
+
+  const revendedorasMock = [
+    { id: 1, nome: "Ana Souza" },
+    { id: 2, nome: "Beatriz Lima" },
+    { id: 3, nome: "Carla Mendes" },
+    { id: 4, nome: "Juliana Alves" }
+  ];
 
   async function render(reset = false) {
     if (isLoading) return;
@@ -319,8 +376,8 @@
       if (!res.ok) throw new Error("Erro na requisição");
 
       const data = await res.json();
-      const novos = data.produtos;
-      const total = data.total;
+      const novos = Array.isArray(data.produtos) ? data.produtos : [];
+      const total = data.total ?? 0;
 
       if (novos.length < limit) acabou = true;
 
@@ -332,7 +389,7 @@
         <article class="product">
           <div class="thumb">
             <img src="${p.img}" alt="${p.nome}">
-            ${p.estoque <= 3 ? `<span class="badge">Baixo estoque</span>` : ``}
+            ${Number(p.estoque) <= 3 ? `<span class="badge">Baixo estoque</span>` : ``}
           </div>
 
           <div class="info">
@@ -362,6 +419,7 @@
       `).join("");
 
       page++;
+      atualizarListaProdutosEnvio();
 
     } catch (err) {
       console.error(err);
@@ -378,7 +436,7 @@
   });
 
   function abrirModal(id) {
-    const prod = produtos.find(p => p.id === id);
+    const prod = produtos.find(p => Number(p.id) === Number(id));
     if (!prod) return;
 
     editId.value = prod.id;
@@ -413,7 +471,7 @@
 
   function darBaixaEstoque() {
     const id = Number(editId.value);
-    const idx = produtos.findIndex(p => p.id === id);
+    const idx = produtos.findIndex(p => Number(p.id) === id);
     if (idx === -1) return;
 
     const atual = Number(editEstoque.value);
@@ -435,14 +493,14 @@
     produtos[idx].estoque = novo;
 
     editBaixa.value = "";
-    render();
+    render(true);
   }
 
   formEdit.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const id = Number(editId.value);
-    const idx = produtos.findIndex(p => p.id === id);
+    const idx = produtos.findIndex(p => Number(p.id) === id);
     if (idx === -1) return;
 
     produtos[idx].nome = editNome.value.trim();
@@ -528,7 +586,10 @@
       body: data
     });
 
-    if (!res.ok) return console.error("Erro ao enviar pro back");
+    if (!res.ok) {
+      console.error("Erro ao enviar pro back");
+      return;
+    }
 
     formAdd.reset();
     fecharModalAdicionar();
@@ -547,126 +608,320 @@
 
       if (!res.ok) throw new Error("Erro ao excluir produto");
 
-      produtos = produtos.filter(p => p.id !== id);
+      produtos = produtos.filter(p => Number(p.id) !== Number(id));
       render(true);
 
-  } catch (err) {
-    console.error(err);
-    alert("Não foi possível excluir o produto.");
-  }
-}
-
-function imprimirEtiqueta(id){
-
-  const prod = produtos.find(p => p.id === id);
-  if(!prod) return;
-
-  const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
-
-  const html = `
-  <html>
-
-  <head>
-
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
-
-  <style>
-
-@media print {
-  @page {
-    size: 40mm 25mm;
-    margin: 0;
+    } catch (err) {
+      console.error(err);
+      alert("Não foi possível excluir o produto.");
+    }
   }
 
-  body {
-    margin: 0;
-    padding: 0;
+  function imprimirEtiqueta(id){
+    const prod = produtos.find(p => Number(p.id) === Number(id));
+    if(!prod) return;
+
+    const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
+
+    const html = `
+    <html>
+    <head>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
+    <style>
+      @media print {
+        @page {
+          size: 40mm 25mm;
+          margin: 0;
+        }
+
+        body {
+          margin: 0;
+          padding: 0;
+        }
+      }
+
+      body{
+        font-family: Arial;
+        text-align:center;
+        margin:0;
+      }
+
+      .etiqueta{
+        width:40mm;
+        height:25mm;
+        padding:2mm;
+        box-sizing:border-box;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+        align-items:center;
+      }
+
+      .nome{
+        font-size:8pt;
+      }
+
+      .preco{
+        font-size:12pt;
+        font-weight:bold;
+      }
+
+      svg{
+        width:100%;
+        height:10mm;
+      }
+    </style>
+    </head>
+
+    <body>
+      <div class="etiqueta">
+        <div class="nome">${prod.nome}</div>
+        <div class="preco">R$ ${preco}</div>
+        <svg id="barcode"></svg>
+      </div>
+
+      <script>
+        JsBarcode("#barcode", "${prod.cdb || prod.id}", {
+          format:"CODE128",
+          width:2,
+          height:60,
+          displayValue:true
+        });
+
+        window.print();
+      <\/script>
+    </body>
+    </html>
+    `;
+
+    const win = window.open();
+    win.document.write(html);
   }
-}
 
-body{
-  font-family: Arial;
-  text-align:center;
-  margin:0;
-}
+  async function carregarRevendedoras() {
+    try {
+      const res = await fetch("/api/revendedoras");
+      if (!res.ok) throw new Error("Erro ao buscar revendedoras");
 
-.etiqueta{
-  width:40mm;
-  height:25mm;
-  padding:2mm;
-  box-sizing:border-box;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-}
+      const data = await res.json();
+      revendedoras = Array.isArray(data) ? data : [];
 
-.nome{
-  font-size:8pt;
-}
+      if (!revendedoras.length) {
+        revendedoras = revendedorasMock;
+      }
+    } catch (err) {
+      console.warn("Usando revendedoras mock no front.");
+      revendedoras = revendedorasMock;
+    }
 
-.preco{
-  font-size:12pt;
-  font-weight:bold;
-}
+    preencherSelectRevendedoras();
+  }
 
-svg{
-  width:100%;
-  height:10mm;
-}
+  function preencherSelectRevendedoras() {
+    revendedoraSelect.innerHTML = `
+      <option value="">Selecione uma revendedora</option>
+      ${revendedoras.map(r => `<option value="${r.id}">${r.nome}</option>`).join("")}
+    `;
+  }
 
-  </style>
+  function abrirModalEnvio() {
+    modalEnvio.classList.remove("hidden");
+    atualizarListaProdutosEnvio();
+    atualizarResumoEnvio();
+  }
 
-  </head>
+  function fecharModalEnvio() {
+    modalEnvio.classList.add("hidden");
+  }
 
-  <body>
+  modalEnvio.addEventListener("click", (e) => {
+    if (e.target === modalEnvio) fecharModalEnvio();
+  });
 
-  <div class="etiqueta">
+  function atualizarListaProdutosEnvio() {
+    const termo = (buscaEnvio.value || "").trim().toLowerCase();
 
-    <div class="nome">${prod.nome}</div>
-
-    <div class="preco">R$ ${preco}</div>
-
-    <svg id="barcode"></svg>
-
-  </div>
-
-  <script>
-
-    JsBarcode("#barcode", "${prod.cdb}", {
-      format:"CODE128",
-      width:2,
-      height:60,
-      displayValue:true
+    const filtrados = produtos.filter(p => {
+      const nome = (p.nome || "").toLowerCase();
+      return nome.includes(termo);
     });
 
-    window.print();
+    if (!filtrados.length) {
+      listaProdutosEnvio.innerHTML = `<p class="envio-vazio">Nenhum produto encontrado.</p>`;
+      return;
+    }
 
-  <\/script>
+    listaProdutosEnvio.innerHTML = filtrados.map(p => {
+      const jaSelecionado = itensEnvio.find(item => Number(item.id) === Number(p.id));
+      const qtdAtual = jaSelecionado ? jaSelecionado.quantidade : 1;
 
-  </body>
+      return `
+        <div class="produto-envio-item">
+          <div class="produto-envio-left">
+            <img src="${p.img}" alt="${p.nome}">
+            <div>
+              <strong>${p.nome}</strong>
+              <span>Estoque disponível: ${p.estoque}</span>
+            </div>
+          </div>
 
-  </html>
-  `;
+          <div class="produto-envio-right">
+            <input
+              type="number"
+              min="1"
+              max="${p.estoque}"
+              value="${qtdAtual}"
+              id="qtd-envio-${p.id}"
+              ${Number(p.estoque) <= 0 ? "disabled" : ""}
+            />
 
-  const win = window.open();
-  win.document.write(html);
+            <button
+              type="button"
+              class="btn ${jaSelecionado ? "btn-outline" : ""}"
+              onclick="toggleProdutoEnvio(${p.id})"
+              ${Number(p.estoque) <= 0 ? "disabled" : ""}
+            >
+              ${jaSelecionado ? "Remover" : "Adicionar"}
+            </button>
+          </div>
+        </div>
+      `;
+    }).join("");
+  }
 
-}
+  function toggleProdutoEnvio(id) {
+    const prod = produtos.find(p => Number(p.id) === Number(id));
+    if (!prod) return;
 
-  window.formDel = formDel;
+    const idx = itensEnvio.findIndex(item => Number(item.id) === Number(id));
+
+    if (idx >= 0) {
+      itensEnvio.splice(idx, 1);
+    } else {
+      const inputQtd = document.getElementById(`qtd-envio-${id}`);
+      const quantidade = Number(inputQtd?.value || 1);
+
+      if (!quantidade || quantidade <= 0) {
+        alert("Digite uma quantidade válida.");
+        return;
+      }
+
+      if (quantidade > Number(prod.estoque)) {
+        alert("A quantidade não pode ser maior que o estoque.");
+        return;
+      }
+
+      itensEnvio.push({
+        id: prod.id,
+        nome: prod.nome,
+        quantidade,
+        estoque: prod.estoque
+      });
+    }
+
+    atualizarListaProdutosEnvio();
+    atualizarResumoEnvio();
+  }
+
+  function atualizarResumoEnvio() {
+    if (!itensEnvio.length) {
+      itensSelecionadosEnvio.innerHTML = `<p class="envio-vazio">Nenhum produto selecionado.</p>`;
+      return;
+    }
+
+    itensSelecionadosEnvio.innerHTML = itensEnvio.map(item => `
+      <div class="item-selecionado-envio">
+        <div>
+          <strong>${item.nome}</strong>
+          <span>Quantidade: ${item.quantidade}</span>
+        </div>
+        <button type="button" class="btn btn-outline" onclick="removerItemEnvio(${item.id})">Remover</button>
+      </div>
+    `).join("");
+  }
+
+  function removerItemEnvio(id) {
+    itensEnvio = itensEnvio.filter(item => Number(item.id) !== Number(id));
+    atualizarListaProdutosEnvio();
+    atualizarResumoEnvio();
+  }
+
+  function limparSelecaoEnvio() {
+    itensEnvio = [];
+    atualizarListaProdutosEnvio();
+    atualizarResumoEnvio();
+  }
+
+  formEnvio.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const revendedoraId = revendedoraSelect.value;
+
+    if (!revendedoraId) {
+      alert("Selecione uma revendedora.");
+      return;
+    }
+
+    if (!itensEnvio.length) {
+      alert("Selecione pelo menos um produto.");
+      return;
+    }
+
+    const payload = {
+      revendedora_id: revendedoraId,
+      produtos: itensEnvio.map(item => ({
+        produto_id: item.id,
+        quantidade: item.quantidade
+      }))
+    };
+
+    try {
+      const res = await fetch("/api/envios-revendedoras", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!res.ok) throw new Error("Back ainda não pronto");
+
+      alert("Produtos enviados com sucesso.");
+      formEnvio.reset();
+      itensEnvio = [];
+      atualizarListaProdutosEnvio();
+      atualizarResumoEnvio();
+      fecharModalEnvio();
+
+    } catch (err) {
+      console.warn("Envio simulado no front:", payload);
+      alert("Tela pronta. O back do teu sócio só precisa receber esse envio depois.");
+      formEnvio.reset();
+      itensEnvio = [];
+      atualizarListaProdutosEnvio();
+      atualizarResumoEnvio();
+      fecharModalEnvio();
+    }
+  });
+
+  buscaEnvio.addEventListener("input", atualizarListaProdutosEnvio);
 
   document.addEventListener("keydown", (e) => {
     if (e.key !== "Escape") return;
     if (!modalEdit.classList.contains("hidden")) fecharModal();
     if (!modalAdd.classList.contains("hidden")) fecharModalAdicionar();
+    if (!modalEnvio.classList.contains("hidden")) fecharModalEnvio();
   });
 
+  window.formDel = formDel;
   window.abrirModal = abrirModal;
   window.fecharModal = fecharModal;
   window.abrirModalAdicionar = abrirModalAdicionar;
   window.fecharModalAdicionar = fecharModalAdicionar;
   window.darBaixaEstoque = darBaixaEstoque;
+  window.abrirModalEnvio = abrirModalEnvio;
+  window.fecharModalEnvio = fecharModalEnvio;
+  window.toggleProdutoEnvio = toggleProdutoEnvio;
+  window.removerItemEnvio = removerItemEnvio;
+  window.limparSelecaoEnvio = limparSelecaoEnvio;
 
   q.addEventListener("input", () => render(true));
   cat.addEventListener("input", () => render(true));
@@ -677,6 +932,7 @@ svg{
   pesoBanho.addEventListener("input", () => render(true));
   milesimosBanho.addEventListener("input", () => render(true));
 
+  carregarRevendedoras();
   render(true);
 </script>
 

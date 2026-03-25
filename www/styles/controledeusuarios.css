@@ -17,7 +17,6 @@
   --danger: #ef4444;
 }
 
-/* ===== Tela cheia (destrava largura) ===== */
 html, body {
   height: 100%;
   margin: 0;
@@ -32,11 +31,11 @@ html, body {
 .card.app{
   width: 100%;
   min-height: 100vh;
-  border-radius: 0;        /* opcional: fica full screen mesmo */
+  border-radius: 0;        
 }
 
 .sidebar{
-  height: 100vh;           /* opcional: sidebar do tamanho da tela */
+  height: 100vh;           
 }
 
 .main{
@@ -45,14 +44,12 @@ html, body {
   min-height: 100vh;
 }
 
-/* ===== Área principal ===== */
 .main{
   background: var(--bg);
   padding: 28px;
   overflow-y: auto;
 }
 
-/* ===== Topo ===== */
 .page-header{
   display:flex;
   align-items:flex-start;
