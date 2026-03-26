@@ -17,8 +17,8 @@ $price = (float)($_POST["preco"] ?? "");
 $stock = (int)($_POST["estoque"] ?? 0);
 $tamanho = $_POST["tamanho"] ?? "";
 $cor = $_POST["cor"] ?? "";
-$peso_banho = $_POST["peso_banho"] ?? "";
-$milesimos_banho = $_POST["milesimos_banho"] ?? "";
+$peso_banho = ($_POST["peso_banho"] === "") ? null : (int)$_POST["peso_banho"];
+$milesimos_banho = ($_POST["milesimos_banho"] === "") ? null : (int)$_POST["milesimos_banho"];
 
 $validate = prodValidator::validate_add(
     $name,
