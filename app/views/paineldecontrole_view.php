@@ -6,9 +6,6 @@
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/paineldecontrole.css">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-</head>
-<body>
-
 <div class="container">
   <div class="card paineldecontrole">
 
@@ -46,7 +43,7 @@
           </p>
         </div>
 
-        <input type="file" id="trocarFoto" accept="uploads/*" hidden>
+        <input type="file" id="trocarFoto" accept="image/*" hidden>
       </div>
     </aside>
 
@@ -133,10 +130,38 @@
   </div>
 </div>
 
+<div id="modalEvento" class="modal hidden">
+  <div class="modal-content">
+    <button type="button" id="btnFecharModal" class="close">×</button>
+
+    <h3>+ Evento</h3>
+
+    <form id="formEvento">
+      <input type="text" id="eventoTitulo" placeholder="Título" required>
+      <input type="date" id="eventoData" required>
+      <input type="time" id="eventoHora">
+
+      <select id="eventoTipo">
+        <option value="outro">Outro</option>
+        <option value="aniversario">Aniversário</option>
+        <option value="lembrete">Lembrete</option>
+        <option value="reserva">Reserva</option>
+      </select>
+
+      <textarea id="eventoComentario" placeholder="Comentário"></textarea>
+
+      <div class="modal-actions">
+        <button type="button" id="btnCancelar">Cancelar</button>
+        <button type="submit" class="btn-salvar-evento">Salvar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
   const dataAtual = document.getElementById("data-atual");
-  const hoje = new Date();
-  dataAtual.textContent = hoje.toLocaleDateString("pt-BR", {
+  const hojeTopo = new Date();
+  dataAtual.textContent = hojeTopo.toLocaleDateString("pt-BR", {
     weekday: "long",
     day: "2-digit",
     month: "long",
@@ -263,11 +288,9 @@
       }
 
       const data = await res.json();
-
       preencherDadosUsuario(data);
     } catch (err) {
       console.error(err);
-
       userNameEl.textContent = "Erro ao carregar";
       badge.textContent = "Ametista";
       badge.className = "user-group-badge ametista";
@@ -275,6 +298,292 @@
     }
   }
 
+  const calDias = document.getElementById("calDias");
+  const calTitulo = document.getElementById("calTitulo");
+  const prevMes = document.getElementById("prevMes");
+  const nextMes = document.getElementById("nextMes");
+  const btnAddEvento = document.getElementById("btnAddEvento");
+  const detailTitle = document.getElementById("detailTitle");
+  const detailBody = document.getElementById("detailBody");
+  const calDetail = document.getElementById("calDetail");
+  const btnFecharDetalhe = document.getElementById("btnFecharDetalhe");
+  const listaAniversarios = document.getElementById("listaAniversarios");
+
+  const modalEvento = document.getElementById("modalEvento");
+  const btnFecharModal = document.getElementById("btnFecharModal");
+  const btnCancelar = document.getElementById("btnCancelar");
+  const formEvento = document.getElementById("formEvento");
+  const eventoTitulo = document.getElementById("eventoTitulo");
+  const eventoData = document.getElementById("eventoData");
+  const eventoHora = document.getElementById("eventoHora");
+  const eventoTipo = document.getElementById("eventoTipo");
+  const eventoComentario = document.getElementById("eventoComentario");
+
+  let dataCalendario = new Date();
+  let diaSelecionado = null;
+
+  const meses = [
+    "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+    "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+  ];
+
+  function formatarData(ano, mes, dia) {
+    const mesFormatado = String(mes + 1).padStart(2, "0");
+    const diaFormatado = String(dia).padStart(2, "0");
+    return `${ano}-${mesFormatado}-${diaFormatado}`;
+  }
+
+  function obterEventos() {
+    return JSON.parse(localStorage.getItem("eventosCalendario")) || {};
+  }
+
+  function salvarEventos(eventos) {
+    localStorage.setItem("eventosCalendario", JSON.stringify(eventos));
+  }
+
+  function abrirModal(data = "") {
+    modalEvento.classList.remove("hidden");
+    if (data) {
+      eventoData.value = data;
+    }
+  }
+
+  function fecharModal() {
+    modalEvento.classList.add("hidden");
+    formEvento.reset();
+  }
+
+  function abrirDetalheDia(ano, mes, dia) {
+    const chave = formatarData(ano, mes, dia);
+    const eventos = obterEventos();
+    const lista = eventos[chave] || [];
+
+    detailTitle.textContent = `${dia} de ${meses[mes]} de ${ano}`;
+
+    if (lista.length === 0) {
+      detailBody.innerHTML = `<p class="muted">Nenhum evento cadastrado para este dia.</p>`;
+    } else {
+      detailBody.innerHTML = lista.map((evento, index) => {
+        return `
+          <div class="evento-item">
+            <strong>${evento.titulo}</strong>
+            <p>${evento.comentario || "Sem descrição."}</p>
+            <small>Tipo: ${evento.tipo} ${evento.hora ? "• " + evento.hora : ""}</small>
+            <button type="button" class="btn-remover-evento" data-data="${chave}" data-index="${index}">
+              Remover
+            </button>
+          </div>
+        `;
+      }).join("");
+
+      document.querySelectorAll(".btn-remover-evento").forEach((botao) => {
+        botao.addEventListener("click", function () {
+          const data = this.getAttribute("data-data");
+          const index = Number(this.getAttribute("data-index"));
+
+          const eventosSalvos = obterEventos();
+
+          if (eventosSalvos[data]) {
+            eventosSalvos[data].splice(index, 1);
+
+            if (eventosSalvos[data].length === 0) {
+              delete eventosSalvos[data];
+            }
+
+            salvarEventos(eventosSalvos);
+
+            const [anoStr, mesStr, diaStr] = data.split("-");
+            abrirDetalheDia(Number(anoStr), Number(mesStr) - 1, Number(diaStr));
+            renderizarCalendario();
+          }
+        });
+      });
+    }
+
+    calDetail.style.display = "block";
+  }
+
+  function atualizarListaAniversarios() {
+    const eventos = obterEventos();
+    const ano = dataCalendario.getFullYear();
+    const mes = dataCalendario.getMonth();
+
+    const aniversariosDoMes = [];
+
+    Object.keys(eventos).forEach((data) => {
+      const [anoEvento, mesEvento, diaEvento] = data.split("-").map(Number);
+
+      if (anoEvento === ano && (mesEvento - 1) === mes) {
+        eventos[data].forEach((evento) => {
+          if (evento.tipo === "Aniversário") {
+            aniversariosDoMes.push({
+              dia: diaEvento,
+              titulo: evento.titulo
+            });
+          }
+        });
+      }
+    });
+
+    if (aniversariosDoMes.length === 0) {
+      listaAniversarios.innerHTML = `<p class="muted">Nenhum aniversariante cadastrado.</p>`;
+      return;
+    }
+
+    aniversariosDoMes.sort((a, b) => a.dia - b.dia);
+
+    listaAniversarios.innerHTML = aniversariosDoMes.map((item) => {
+      return `<p><strong>${String(item.dia).padStart(2, "0")}/${String(mes + 1).padStart(2, "0")}</strong> — ${item.titulo}</p>`;
+    }).join("");
+  }
+
+  function renderizarCalendario() {
+    const ano = dataCalendario.getFullYear();
+    const mes = dataCalendario.getMonth();
+    const primeiroDiaSemana = new Date(ano, mes, 1).getDay();
+    const totalDiasMes = new Date(ano, mes + 1, 0).getDate();
+    const eventos = obterEventos();
+
+    calTitulo.textContent = `${meses[mes]} ${ano}`;
+    calDias.innerHTML = "";
+
+    for (let i = 0; i < primeiroDiaSemana; i++) {
+      const vazio = document.createElement("div");
+      vazio.className = "cal-day empty";
+      calDias.appendChild(vazio);
+    }
+
+    for (let dia = 1; dia <= totalDiasMes; dia++) {
+      const diaEl = document.createElement("div");
+      diaEl.className = "cal-day";
+
+      const hoje = new Date();
+      const ehHoje =
+        dia === hoje.getDate() &&
+        mes === hoje.getMonth() &&
+        ano === hoje.getFullYear();
+
+      const chave = formatarData(ano, mes, dia);
+      const temEvento = eventos[chave] && eventos[chave].length > 0;
+      const estaSelecionado =
+        diaSelecionado &&
+        diaSelecionado.dia === dia &&
+        diaSelecionado.mes === mes &&
+        diaSelecionado.ano === ano;
+
+      if (ehHoje) {
+        diaEl.classList.add("today");
+      }
+
+      if (temEvento) {
+        diaEl.classList.add("has-event");
+      }
+
+      if (estaSelecionado) {
+        diaEl.classList.add("selected");
+      }
+
+      diaEl.innerHTML = `
+        <span class="day-number">${dia}</span>
+        ${temEvento ? '<span class="event-marker"></span>' : ''}
+      `;
+
+      diaEl.addEventListener("click", function () {
+        diaSelecionado = { dia, mes, ano };
+        renderizarCalendario();
+        abrirDetalheDia(ano, mes, dia);
+      });
+
+      calDias.appendChild(diaEl);
+    }
+
+    atualizarListaAniversarios();
+  }
+
+  btnAddEvento.addEventListener("click", function () {
+    let ano = dataCalendario.getFullYear();
+    let mes = dataCalendario.getMonth();
+    let dia = new Date().getDate();
+
+    if (diaSelecionado) {
+      ano = diaSelecionado.ano;
+      mes = diaSelecionado.mes;
+      dia = diaSelecionado.dia;
+    }
+
+    abrirModal(formatarData(ano, mes, dia));
+  });
+
+  btnFecharModal.addEventListener("click", fecharModal);
+  btnCancelar.addEventListener("click", fecharModal);
+
+  modalEvento.addEventListener("click", function (e) {
+    if (e.target === modalEvento) {
+      fecharModal();
+    }
+  });
+
+  formEvento.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const titulo = eventoTitulo.value.trim();
+    const data = eventoData.value;
+    const hora = eventoHora.value;
+    const tipoSelecionado = eventoTipo.value;
+    const comentario = eventoComentario.value.trim();
+
+    if (!titulo || !data) {
+      alert("Preencha o título e a data.");
+      return;
+    }
+
+    const [ano, mes, dia] = data.split("-").map(Number);
+    const chave = `${ano}-${String(mes).padStart(2, "0")}-${String(dia).padStart(2, "0")}`;
+    const eventos = obterEventos();
+
+    let tipoFinal = "Outro";
+    if (tipoSelecionado === "aniversario") tipoFinal = "Aniversário";
+    if (tipoSelecionado === "lembrete") tipoFinal = "Lembrete";
+    if (tipoSelecionado === "reserva") tipoFinal = "Reserva";
+
+    if (!eventos[chave]) {
+      eventos[chave] = [];
+    }
+
+    eventos[chave].push({
+      titulo: titulo,
+      hora: hora,
+      tipo: tipoFinal,
+      comentario: comentario
+    });
+
+    salvarEventos(eventos);
+    fecharModal();
+
+    dataCalendario = new Date(ano, mes - 1, 1);
+    diaSelecionado = { dia, mes: mes - 1, ano };
+
+    renderizarCalendario();
+    abrirDetalheDia(ano, mes - 1, dia);
+  });
+
+  prevMes.addEventListener("click", function () {
+    dataCalendario.setMonth(dataCalendario.getMonth() - 1);
+    renderizarCalendario();
+    calDetail.style.display = "none";
+  });
+
+  nextMes.addEventListener("click", function () {
+    dataCalendario.setMonth(dataCalendario.getMonth() + 1);
+    renderizarCalendario();
+    calDetail.style.display = "none";
+  });
+
+  btnFecharDetalhe.addEventListener("click", function () {
+    calDetail.style.display = "none";
+  });
+
+  renderizarCalendario();
   carregarDadosUsuario();
 </script>
 
