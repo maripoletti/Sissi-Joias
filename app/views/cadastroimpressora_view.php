@@ -106,18 +106,6 @@
         </div>
 
         <div class="ni-field">
-          <label class="ni-label" for="ip">IP</label>
-          <input 
-            class="ni-input"
-            id="ip"
-            name="ip"
-            placeholder="192.168.1.100"
-            inputmode="numeric"
-            pattern="^(\d{1,3}\.){3}\d{1,3}$"
-          >
-        </div>
-
-        <div class="ni-field">
           <label class="ni-label" for="porta">PORTA</label>
           <input
             class="ni-input"
