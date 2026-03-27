@@ -13,17 +13,18 @@
     <div class="forgot-card">
       <div class="icon-box">🔐</div>
 
-      <h1>Esqueceu sua senha?</h1>
-      <p>
-        Fica tranquila(o), acontece! <br>
-        Digite seu e-mail abaixo para receber o link de redefinição.
-      </p>
+      <h1>Trocar Senha</h1>
 
-      <form action="/esquecisenha" method="POST">
-        <label for="email">E-mail</label>
-        <input type="email" id="email" name="email" placeholder="Digite seu e-mail" required>
+      <form action="/trocarsenha" method="POST">
+        <input type="hidden" name="token" value="<?= htmlspecialchars($_GET['token'] ?? '') ?>">
+        
+        <label>Senha</label>
+        <input type="password" name="pwd" placeholder="Crie uma senha forte" required>
 
-        <button type="submit">Enviar link de recuperação</button>
+        <label>Confirmar Senha</label>
+        <input type="password" name="pwdRepeat" placeholder="Confirme sua senha" required>
+
+        <button type="submit">Trocar senha</button>
       </form>
 
       <a href="/login" class="back-link">← Voltar para o login</a>

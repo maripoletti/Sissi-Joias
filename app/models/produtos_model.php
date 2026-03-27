@@ -233,8 +233,8 @@ class Produtos_model extends Dbh {
             $stmt->bindParam(":id", $data["id"]);
             $stmt->bindParam(":tamanho", $data["tamanho"]);
             $stmt->bindParam(":cor", $data["cor"]);
-            $stmt->bindParam(":peso_banho", $data["peso_banho"]);
-            $stmt->bindParam(":milesimos_banho", $data["milesimos_banho"]);
+            $stmt->bindValue(":peso_banho", $data["peso_banho"], $data["peso_banho"] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
+            $stmt->bindValue(":milesimos_banho", $data["milesimos_banho"], $data["milesimos_banho"] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
 
             if (!empty($data["photo"])) {
                 $stmt->bindParam(":photo", $data["photo"]);
@@ -264,8 +264,8 @@ class Produtos_model extends Dbh {
             $page  = $data["page"]  ?? 0;
             $tamanho = $data["tamanho"] ?? "";
             $cor = $data["cor"] ?? "";
-            $peso_banho = $data["peso_banho"] ?? "";
-            $milesimos_banho = $data["milesimos_banho"] ?? "";
+            $peso_banho = $data["peso_banho"] ?? null;
+            $milesimos_banho = $data["milesimos_banho"] ?? null;
             $offset = $page * $limit;
 
             $params = [];

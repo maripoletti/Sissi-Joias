@@ -11,8 +11,8 @@ class prodValidator {
         null|string $photo,
         string $tamanho,
         string $cor,
-        string $peso_banho,
-        string $milesimos_banho
+        int|null $peso_banho,
+        int|null $milesimos_banho
     ) {
         $errors = [];
         $clean = [
@@ -23,8 +23,8 @@ class prodValidator {
             'photo' => $photo,
             'tamanho' => trim($tamanho),
             'cor' => trim($cor),
-            'peso_banho' => trim($peso_banho),
-            'milesimos_banho' => trim($milesimos_banho)
+            'peso_banho' => $peso_banho,
+            'milesimos_banho' => $milesimos_banho
         ];
 
         if(empty($clean['name']) || $clean['price'] <= 0) {
@@ -50,8 +50,8 @@ class prodValidator {
         null|string $photo,
         string $tamanho,
         string $cor,
-        string $peso_banho,
-        string $milesimos_banho
+        null|int $peso_banho,
+        null|int $milesimos_banho
     ) {
         $errors = [];
         $clean = [
@@ -62,8 +62,8 @@ class prodValidator {
             'photo' => $photo,
             'tamanho' => trim($tamanho),
             'cor' => trim($cor),
-            'peso_banho' => trim($peso_banho),
-            'milesimos_banho' => trim($milesimos_banho)
+            'peso_banho' => $peso_banho,
+            'milesimos_banho' => $milesimos_banho
         ];
         if (empty($clean['id'])) {
             $errors['product_wrong'] = 'Algo deu errado.';

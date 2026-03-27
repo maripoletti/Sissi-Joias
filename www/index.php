@@ -313,7 +313,24 @@ switch ($uri) {
     }
 
   case '/esquecisenha':
-    require_once '../app/views/esquecisenha_view.php';
+    if ($method === "GET") {
+      require_once '../app/views/esquecisenha_view.php';
+      break;
+    }
+    if ($method === "POST") {
+      require_once '../app/controllers/esquecisenha_contr.php';
+      break;
+    }
+  
+  case '/trocarsenha':
+    require_once '../app/controllers/trocarsenha_contr.php';
+    $controller = new trocarsenha_contr();
+
+    if($method === "GET") {
+      $controller->show();
+    } elseif ($method === "POST") {
+      $controller->update();
+    }
     break;
   default:
     require_once '../app/views/404.html';
