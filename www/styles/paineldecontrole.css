@@ -686,3 +686,57 @@ body {
   cursor: pointer;
   color: #4b0d4f;
 }
+
+.cal-days {
+  padding: 8px;
+  gap: 6px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+.day {
+  min-height: 90px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 10px;
+  background: #fff;
+  padding: 6px;
+  position: relative;
+  cursor: pointer;
+  transition: 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day:hover {
+  background: #f8f3fb;
+  transform: translateY(-1px);
+}
+
+.day.muted {
+  background: #fafafa;
+  opacity: 0.45;
+}
+
+.num {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4b0d4f;
+  align-self: flex-start;
+}
+
+.pill {
+  font-size: 11px;
+  padding: 4px 6px;
+  border-radius: 999px;
+  background: #4b0d4f;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pill.aniver {
+  background: #d7b343;
+  color: #2b2b2b;
+}
