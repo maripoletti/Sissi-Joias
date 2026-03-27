@@ -84,10 +84,19 @@ class Produtos_model extends Dbh {
         $pdo = $this->connect();
 
         try {
+            $pdo->beginTransaction();
+
             $stmt = $pdo->prepare("UPDATE Sales_Products SET Status = '0' WHERE ProductID = :id");
             $stmt->bindParam(":id", $id, PDO::PARAM_INT);
             $stmt->execute();
+            
+            $stmt = $pdo->prepare("DELETE FROM Sales_EmployeeProducts WHERE ProductID = :id");
+            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $pdo->commit();
         } catch (PDOException $e) {
+            $pdo->rollBack();
             http_response_code(500);
             echo json_encode(["produtos"=>[], "total"=>0, "erro"=>$e->getMessage()]);
             exit;
@@ -266,10 +275,22 @@ class Produtos_model extends Dbh {
             $cor = $data["cor"] ?? "";
             $peso_banho = $data["peso_banho"] ?? null;
             $milesimos_banho = $data["milesimos_banho"] ?? null;
+            $UserID = $_SESSION["user_id"] ?? null;
+            $role   = $_SESSION["role"] ?? null;
             $offset = $page * $limit;
 
             $params = [];
             $whereParts = [];
+
+            $joinEmployee = "";
+
+            if ($role != 2 && $UserID) {
+                $joinEmployee = "JOIN Sales_EmployeeProducts sep 
+                                ON sep.ProductID = p.ProductID 
+                                AND sep.UserID = ?";
+                
+                $params[] = $UserID;
+            }
 
             $whereParts[] = "p.Status = 1";
 
@@ -331,6 +352,7 @@ class Produtos_model extends Dbh {
                 FROM (
                     SELECT p.ProductID
                     FROM Sales_Products p
+                    $joinEmployee
                     $joinTags
                     $where
                     GROUP BY p.ProductID
@@ -368,11 +390,16 @@ class Produtos_model extends Dbh {
                     break;
             }
 
+            $stockField = ($role == 2)
+                ? "p.StockQuantity"
+                : "sep.UsableStock";
+
+
             $query = "
                 SELECT
                     p.ProductID AS id,
                     p.ProductName AS nome,
-                    p.StockQuantity AS estoque,
+                    $stockField AS estoque,
                     p.Price AS preco,
                     p.ImagePath AS img,
                     p.Barcode AS cdb,
@@ -381,6 +408,7 @@ class Produtos_model extends Dbh {
                     p.BathWeight AS peso_banho,
                     p.BathThickness AS milesimos_banho
                 FROM Sales_Products p
+                $joinEmployee
                 $joinTags
                 $where
                 GROUP BY p.ProductID
@@ -410,6 +438,63 @@ class Produtos_model extends Dbh {
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(["produtos"=>[], "total"=>0, "erro"=>$e->getMessage()]);
+            exit;
+        }
+    }
+
+    public function get_employees() {
+        $pdo = $this->connect();
+        try {
+            $stmt = $pdo->prepare("SELECT UserID AS id, FullName AS nome FROM Sales_Employees");
+            $stmt->execute();
+
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+        }
+    }
+
+    public function send_to_employee($UserID, $ProductID, $StockSent) {
+        $pdo = $this->connect();
+        try {
+            if ($StockSent <= 0) {
+                return false;
+            }
+
+            $query = "
+            INSERT INTO Sales_EmployeeProducts (UserID, ProductID, UsableStock)
+            VALUES (?, ?, ?)
+            ON DUPLICATE KEY UPDATE
+            UsableStock = UsableStock + VALUES(UsableStock)
+            ";
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([$UserID, $ProductID, $StockSent]);
+
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+        }
+    }
+
+    public function remove_products($ProductID, $UserID) {
+        $pdo = $this->connect();
+        try {
+            $query = "
+            DELETE FROM Sales_EmployeeProducts
+            WHERE ProductID = ? AND UserID = ?";
+
+            $stmt=$pdo->prepare($query);
+            $stmt->execute([$ProductID, $UserID]);
+
+            return $stmt->rowCount();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
             exit;
         }
     }

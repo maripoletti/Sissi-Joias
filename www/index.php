@@ -180,6 +180,22 @@ switch ($uri) {
   }
   break;
 
+  case '/api/produtos/revendedoras':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRev_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/produtos/envios_revendedoras':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosEnvio_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
   case '/api/produtos/xml':
     if(isset($_SESSION["user_id"])) {
       require_once '../app/controllers/produtosXml_contr.php';
@@ -213,7 +229,8 @@ switch ($uri) {
       require_once '../app/controllers/produtosDel_contr.php';
       break;
     } else {
-      AuthMiddleware::user();
+      require_once '../app/controllers/produtosDel_contr.php';
+      break;
     }
   case '/impressoras':
     if (isset($_SESSION['user_id'])) {

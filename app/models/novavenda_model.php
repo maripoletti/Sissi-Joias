@@ -8,6 +8,9 @@ class novavenda_model extends Dbh {
         $pdo = $this->connect();
 
         try {
+            $role   = $_SESSION["role"] ?? null;
+            $userId = $_SESSION["user_id"] ?? null;
+
             $pdo->beginTransaction();
 
             $query = "SELECT EmployeeID FROM Sales_Employees WHERE UserID = :userid";
@@ -38,11 +41,32 @@ class novavenda_model extends Dbh {
                         StockQuantity = StockQuantity - :qty,
                         Relevancy = Relevancy + :qty
                     WHERE ProductID = :pid AND StockQuantity >= :qty";
-
             $stmt = $pdo->prepare($query);
             $stmt->bindParam(":qty", $produto["quantidade"], PDO::PARAM_INT);
             $stmt->bindParam(":pid", $produto["id"], PDO::PARAM_INT);
             $stmt->execute();
+
+            if ($role != 2 && $userId) {
+                $query = "
+                    UPDATE Sales_EmployeeProducts
+                    SET UsableStock = UsableStock - :qty
+                    WHERE ProductID = :pid 
+                    AND UserID = :uid
+                    AND UsableStock >= :qty
+                ";
+
+                $stmt = $pdo->prepare($query);
+                $stmt->bindParam(":qty", $produto["quantidade"], PDO::PARAM_INT);
+                $stmt->bindParam(":pid", $produto["id"], PDO::PARAM_INT);
+                $stmt->bindParam(":uid", $userId, PDO::PARAM_INT);
+                $stmt->execute();
+
+                if ($stmt->rowCount() === 0) {
+                    $pdo->rollBack();
+                    echo "Estoque insuficiente para a funcionária.";
+                    return false;
+                }
+            }
 
             if ($stmt->rowCount() === 0) {
                 $pdo->rollBack();
@@ -61,17 +85,41 @@ class novavenda_model extends Dbh {
         $pdo = $this->connect();
 
         try {
-            $query = "SELECT 
-            ProductID AS id,
-            ProductName AS nome,
-            Price AS preco,
-            StockQuantity AS estoque
-            FROM Sales_Products WHERE MATCH (ProductName) AGAINST (? IN BOOLEAN MODE)
-            AND Status = 1
-            LIMIT 7";
+            $role = $_SESSION["role"] ?? null;
+            $userId = $_SESSION["user_id"] ?? null;
+
+            $joinEmployee = "";
+            $stockField = "p.StockQuantity";
+
+            $params = [$nome . "*"];
+
+            if ($role != 2 && $userId) {
+                $joinEmployee = "JOIN Sales_EmployeeProducts sep 
+                                ON sep.ProductID = p.ProductID 
+                                AND sep.UserID = ?";
+                
+                $stockField = "IFNULL(sep.UsableStock, 0)";
+                $params[] = $userId;
+            }
+
+            $query = "
+            SELECT 
+                p.ProductID AS id,
+                p.ProductName AS nome,
+                p.Price AS preco,
+                $stockField AS estoque
+            FROM Sales_Products p
+            $joinEmployee
+            WHERE MATCH (p.ProductName) AGAINST (? IN BOOLEAN MODE)
+            AND p.Status = 1
+            LIMIT 7
+            ";
+
             $stmt = $pdo->prepare($query);
-            $stmt->execute([$nome . "*"]);
+            $stmt->execute(array_reverse($params)); // ajusta ordem
+
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
         } catch (PDOException $e) {
             echo "Erro na conexão: " . $e->getMessage();
         }

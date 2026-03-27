@@ -42,16 +42,19 @@
 
           <div class="top-actions">
             <a href="/novavenda" class="btn-primary">+ Nova venda</a>
-            <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
-            <button type="button" class="btn-primary" onclick="abrirModalEnvio()">Enviar produtos para revendedoras</button>
 
-            <form action="/api/produtos/xml" method="post" enctype="multipart/form-data" class="xml-form">
-              <label class="btn-primary file-btn">
-                Escolher XML
-                <input type="file" name="xmlfile" accept=".xml" required hidden>
-              </label>
-              <button type="submit" class="btn-primary">Importar XML</button>
-            </form>
+            <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+              <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
+              <button type="button" class="btn-primary" onclick="abrirModalEnvio()">Enviar produtos para revendedoras</button>
+
+              <form action="/api/produtos/xml" method="post" enctype="multipart/form-data" class="xml-form">
+                <label class="btn-primary file-btn">
+                  Escolher XML
+                  <input type="file" name="xmlfile" accept=".xml" required hidden>
+                </label>
+                <button type="submit" class="btn-primary">Importar XML</button>
+              </form>
+            <?php endif; ?>
           </div>
         </header>
 
@@ -325,10 +328,7 @@
   let itensEnvio = [];
 
   const revendedorasMock = [
-    { id: 1, nome: "Ana Souza" },
-    { id: 2, nome: "Beatriz Lima" },
-    { id: 3, nome: "Carla Mendes" },
-    { id: 4, nome: "Juliana Alves" }
+    { id: 1000000000, nome: "?" }
   ];
 
   async function render(reset = false) {
@@ -404,7 +404,9 @@
             <div class="price">R$ ${parseFloat(p.preco).toFixed(2).replace(".", ",")}</div>
 
             <div class="actions">
-              <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
+              <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+                <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
+              <?php endif; ?>
 
               <button class="btn btn-outline" type="button" onclick="imprimirEtiqueta(${p.id})">
                 Etiqueta
@@ -700,7 +702,7 @@
 
   async function carregarRevendedoras() {
     try {
-      const res = await fetch("/api/revendedoras");
+      const res = await fetch("/api/produtos/revendedoras");
       if (!res.ok) throw new Error("Erro ao buscar revendedoras");
 
       const data = await res.json();
@@ -876,15 +878,13 @@
     };
 
     try {
-      const res = await fetch("/api/envios-revendedoras", {
+      const res = await fetch("/api/produtos/envios_revendedoras", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
 
-      if (!res.ok) throw new Error("Back ainda não pronto");
-
-      alert("Produtos enviados com sucesso.");
+      if (!res.ok) throw new Error("Erro ao enviar");
       formEnvio.reset();
       itensEnvio = [];
       atualizarListaProdutosEnvio();
@@ -892,8 +892,6 @@
       fecharModalEnvio();
 
     } catch (err) {
-      console.warn("Envio simulado no front:", payload);
-      alert("Tela pronta. O back do teu sócio só precisa receber esse envio depois.");
       formEnvio.reset();
       itensEnvio = [];
       atualizarListaProdutosEnvio();
