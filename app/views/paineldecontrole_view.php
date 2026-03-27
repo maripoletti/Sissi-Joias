@@ -35,7 +35,7 @@
         </label>
 
         <div class="user-meta">
-          <strong class="user-name" id="userName">Carregando...</strong>
+          <strong class="user-name" id="userName"> <?php echo isset($_SESSION['usuario_nome']) ? $_SESSION['usuario_nome'] : 'Usuário'; ?></strong>
 
           <div class="user-group-badge ametista" id="userGroupBadge">
             Ametista
@@ -64,9 +64,11 @@
 
           <a class="btn-contrato" href="contrato.pdf" download>
             ↓ Contrato
-          </a>
+        </a>
 
           <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
+
+          <a href="/views/logout.php" class="btn-sair">🔐 Sair</a>
         </div>
       </header>
 
