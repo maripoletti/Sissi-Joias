@@ -18,7 +18,7 @@
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <h2>Sissi Semi Joias</h2>
+    <h2>Sissi Semi Joias e Acessórios</h2>
 
    <nav>
           <a href="/paineldecontrole">Painel de Controle</a>
