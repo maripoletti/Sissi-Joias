@@ -349,6 +349,12 @@ switch ($uri) {
       $controller->update();
     }
     break;
+  
+  case '/logout':
+    session_unset();
+    session_destroy();
+    header("Location: /login");
+    break;
   default:
     require_once '../app/views/404.html';
 }
