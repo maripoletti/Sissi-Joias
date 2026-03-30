@@ -632,7 +632,7 @@
     <style>
       @media print {
         @page {
-          size: 40mm 25mm;
+          size: 40mm 35mm;
           margin: 0;
         }
 
@@ -650,7 +650,7 @@
 
       .etiqueta{
         width:40mm;
-        height:25mm;
+        height:35mm;
         padding:2mm;
         box-sizing:border-box;
         display:flex;
@@ -726,8 +726,13 @@
     `;
   }
 
-  function abrirModalEnvio() {
+  async function abrirModalEnvio() {
     modalEnvio.classList.remove("hidden");
+
+    if (!produtosEnvio.length) {
+      await carregarProdutosEnvio();
+    }
+
     atualizarListaProdutosEnvio();
     atualizarResumoEnvio();
   }
@@ -740,10 +745,50 @@
     if (e.target === modalEnvio) fecharModalEnvio();
   });
 
+  let produtosEnvio = [];
+
+  async function carregarProdutosEnvio() {
+    produtosEnvio = [];
+    let pageEnvio = 0;
+    let acabouEnvio = false;
+
+    while (!acabouEnvio) {
+      const res = await fetch("/api/produtos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text: "",
+          tags: [],
+          price: "all",
+          sort: "relevancia",
+          tamanho: "",
+          cor: "",
+          peso_banho: "",
+          milesimos_banho: "",
+          page: pageEnvio,
+          limit: 100
+        })
+      });
+
+      if (!res.ok) break;
+
+      const data = await res.json();
+      const novos = Array.isArray(data.produtos) ? data.produtos : [];
+
+      produtosEnvio.push(...novos);
+
+      if (novos.length < 100) {
+        acabouEnvio = true;
+      } else {
+        pageEnvio++;
+      }
+    }
+  }
+
   function atualizarListaProdutosEnvio() {
     const termo = (buscaEnvio.value || "").trim().toLowerCase();
 
-    const filtrados = produtos.filter(p => {
+    const filtrados = produtosEnvio.filter(p => {
       const nome = (p.nome || "").toLowerCase();
       return nome.includes(termo);
     });
