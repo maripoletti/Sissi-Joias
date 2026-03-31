@@ -23,6 +23,7 @@
           <a href="/controledeusuarios">Controle de Revendedores</a>
           <a href="/fornecedores">Fornecedores</a>
           <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+          <a href="/produtosrevendedores">Produtos dos Revendedores</a>
         <?php endif; ?>
       </nav>
 
@@ -68,7 +69,7 @@
 
           <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
 
-          <a href="/views/logout.php" class="btn-sair">🔐 Sair</a>
+          <a href="logout.php" class="btn-sair">🔐 Sair</a>
         </div>
       </header>
 

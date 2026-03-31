@@ -12,6 +12,7 @@
   --topazio: #f59e0b;
   --esmeralda: #16a34a;
   --rubi: #ef4444;
+  --rubi-black: #0f172a;
 
   --ok: #16a34a;
   --danger: #ef4444;
@@ -102,7 +103,7 @@ html, body {
 
 .levels{
   display:grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 14px;
 }
 
@@ -110,6 +111,7 @@ html, body {
   display:flex;
   flex-direction: column;
   gap: 6px;
+  align-items: center;
 }
 
 .level-bar{
@@ -125,11 +127,24 @@ html, body {
   text-align: center;
 }
 
+.level-name.rubi-black-name{
+  color: #0f172a;
+}
+
+.level-info{
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
 .level-bar.ametista{ background: var(--ametista); }
 .level-bar.safira{ background: var(--safira); }
 .level-bar.topazio{ background: var(--topazio); }
 .level-bar.esmeralda{ background: var(--esmeralda); }
 .level-bar.rubi{ background: var(--rubi); }
+.level-bar.rubi-black{ background: var(--rubi-black); }
 
 .tabs{
   display:inline-flex;
@@ -305,6 +320,9 @@ html, body {
 .rubi-pill{ background:#fff1f2; color:#be123c; border-color:#fecdd3; }
 .rubi-dot{ background: var(--rubi); }
 
+.rubi-black-pill{ background:#0f172a; color:#fff; border-color:#0f172a; }
+.rubi-black-dot{ background: var(--rubi-black); }
+
 .link{
   background: transparent;
   border: 0;
@@ -448,17 +466,18 @@ html, body {
   .meta{ flex-direction: column; gap:6px; }
 }
 
-.level{
-  display:flex;
+.user-actions-right{
+  display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 6px;
-  align-items: center;
 }
 
-.level-info{
-  font-size: 14px;
-  color: var(--muted);
-  text-align: center;
-  line-height: 1.4;
-  font-weight: 700;
+.link-danger{
+  color: #ef4444;
+  font-weight: 800;
+}
+
+.link-danger:hover{
+  text-decoration: underline;
 }

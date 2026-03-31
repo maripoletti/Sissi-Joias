@@ -20,21 +20,21 @@
   <aside class="sidebar">
     <h2>Sissi Semi Joias e Acessórios</h2>
 
-   <nav>
-          <a href="/paineldecontrole">Painel de Controle</a>
-          <a href="/produtos">Produtos</a>
-          <a href="/vendas">Vendas</a>
-          <a href="/impressoras">Impressoras</a>
-          
-          <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-            <a href="/relatorios">Relatórios</a>
-            <a href="/controledeusuarios" class="active">Controle de Revendedores</a>
-            <a href="/fornecedores">Fornecedores</a>
-            <a href="/cadastrarimpressora">Cadastrar Impressora</a>
-          <?php endif; ?>
-
-        </nav>
-      </aside>
+    <nav>
+      <a href="/paineldecontrole">Painel de Controle</a>
+      <a href="/produtos">Produtos</a>
+      <a href="/vendas">Vendas</a>
+      <a href="/impressoras">Impressoras</a>
+      
+      <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+        <a href="/relatorios">Relatórios</a>
+        <a href="/controledeusuarios" class="active">Controle de Revendedores</a>
+        <a href="/fornecedores">Fornecedores</a>
+        <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+        <a href="/produtosrevendedores">Produtos dos Revendedores</a>
+      <?php endif; ?>
+    </nav>
+  </aside>
 
   <!-- MAIN -->
   <main class="main">
@@ -49,7 +49,7 @@
       </div>
     </div>
 
-    <!-- 🔥 NÍVEIS -->
+    <!-- NÍVEIS -->
     <div class="panel">
       <div class="panel-title">NÍVEIS — INICIANTE AO PRO</div>
 
@@ -58,31 +58,37 @@
         <div class="level">
           <div class="level-bar ametista"></div>
           <div class="level-name">🔮 Ametista</div>
-          <div class="level-info">Até R$999 → 20%</div>
+          <div class="level-info">de R$300,00 a R$799,00 → 20%</div>
         </div>
 
         <div class="level">
           <div class="level-bar safira"></div>
           <div class="level-name">🔵 Safira</div>
-          <div class="level-info">R$1.000 a R$1.999 → 25%</div>
+          <div class="level-info">de R$800,00 a R$1.299,00 → 25%</div>
         </div>
 
         <div class="level">
           <div class="level-bar topazio"></div>
           <div class="level-name">🟡 Topázio</div>
-          <div class="level-info">R$2.000 a R$2.999 → 30%</div>
+          <div class="level-info">de R$1.300,00 a R$1.799,00 → 30%</div>
         </div>
 
         <div class="level">
           <div class="level-bar esmeralda"></div>
           <div class="level-name">🟢 Esmeralda</div>
-          <div class="level-info">R$3.000 a R$3.999 → 35%</div>
+          <div class="level-info">de R$1.800,00 a R$2.299,00 → 35%</div>
         </div>
 
         <div class="level">
           <div class="level-bar rubi"></div>
           <div class="level-name">🔴 Rubi</div>
-          <div class="level-info">Acima de R$4.000 → 40%</div>
+          <div class="level-info">de R$2.300,00 a R$4.299,00 → 40%</div>
+        </div>
+
+        <div class="level">
+          <div class="level-bar rubi-black"></div>
+          <div class="level-name rubi-black-name">⚫ Rubi Black</div>
+          <div class="level-info">Acima de R$5.000,00 → 50%</div>
         </div>
 
       </div>
@@ -117,6 +123,7 @@
     <option value="topazio">Topázio</option>
     <option value="esmeralda">Esmeralda</option>
     <option value="rubi">Rubi</option>
+    <option value="rubi-black">Rubi Black</option>
   </select>
 
   <div class="modal-actions">
