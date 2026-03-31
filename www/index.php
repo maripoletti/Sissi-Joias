@@ -286,6 +286,16 @@ switch ($uri) {
     break;
   }
 
+  case '/produtosrevendedores':
+    if ($_SESSION['role'] == '2') {
+    require_once '../app/views/produtosrevendedores_view.php';
+    break;
+  } else {
+    AuthMiddleware::user();
+    header('Location: /login');
+    break;
+  }
+
   case '/api/relatorios': 
     require_once '../app/controllers/relatorios_contr.php';
     break;

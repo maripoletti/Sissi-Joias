@@ -11,7 +11,7 @@
 <body>
 
 <div class="container">
-  <div class="card">
+  <div class="card app">
 
     <aside class="sidebar">
       <h2>Sissi Semi Joias e Acessórios</h2>
@@ -30,6 +30,7 @@
           <a href="/produtosrevendedores">Produtos dos Revendedores</a>
         <?php endif; ?>
       </nav>
+    </aside>
 
     <main class="main">
       <header class="top">
