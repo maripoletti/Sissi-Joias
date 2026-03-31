@@ -69,7 +69,7 @@
 
           <a class="btn-primary" href="/novavenda">+ Nova Venda</a>
 
-          <a href="logout.php" class="btn-sair">🔐 Sair</a>
+          <a href="/logout" class="btn-sair">🔐 Sair</a>
         </div>
       </header>
 
