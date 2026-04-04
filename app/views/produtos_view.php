@@ -837,7 +837,7 @@
   }
 
   function toggleProdutoEnvio(id) {
-    const prod = produtos.find(p => Number(p.id) === Number(id));
+    const prod = produtosEnvio.find(p => Number(p.id) === Number(id));
     if (!prod) return;
 
     const idx = itensEnvio.findIndex(item => Number(item.id) === Number(id));

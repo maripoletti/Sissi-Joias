@@ -24,10 +24,6 @@
           <a href="/vendas">Vendas</a>
           <a href="/impressoras" class="active">Impressoras</a>
           
-          <?php
-          $_SESSION["user_id"] = 1;
-          ?>
-          
           <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
             <a href="/relatorios">Relatórios</a>
             <a href="/controledeusuarios">Controle de Revendedores</a>
