@@ -21,9 +21,9 @@
         <a href="/paineldecontrole">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-        <a href="/impressoras">Impressoras</a>
         
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/impressoras">Impressoras</a>
         <a href="/relatorios">Relatórios</a>
         <a href="/controledeusuarios">Controle de Revendedores</a>
           <a href="/fornecedores">Fornecedores</a>

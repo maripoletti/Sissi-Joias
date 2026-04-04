@@ -45,6 +45,13 @@ switch ($uri) {
       break;
     }
 
+  case '/api/usuario/upload': 
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/usuarioUpload_contr.php';
+      AuthMiddleware::user();
+      break;
+    }
+
   case '/api/eventos':
     if (isset($_SESSION['user_id'])) {
       require_once '../app/controllers/eventosGet.php';

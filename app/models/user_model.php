@@ -23,15 +23,30 @@ class user_model extends Dbh {
                     SUM(so.Sales) AS total,
                     se.FullName AS nome,
                     se.Photo AS foto 
-                FROM `sales_orders` so
-                RIGHT JOIN sales_customers sc
+                FROM Sales_Orders so
+                RIGHT JOIN Sales_Customers sc
                 ON so.CustomerID = sc.CustomerID
-                LEFT JOIN sales_employees se
+                LEFT JOIN Sales_Employees se
                 ON sc.EmployeeID = se.EmployeeID
                 WHERE so.Status = 1 AND se.UserID = ?;";
 
             $stmt=$pdo->prepare($query);
             $stmt->execute([$userId]);
+
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+        }
+    }
+
+    public function set_image(int $userId, string $fotoPath) {
+        $pdo = $this->connect();
+
+        try {
+            $stmt = $pdo->prepare("UPDATE Sales_Employees SET Photo=? WHERE UserID = ?");
+            $stmt->execute([$fotoPath, $userId]);
 
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch (PDOException $e) {

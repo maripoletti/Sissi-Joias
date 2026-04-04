@@ -681,44 +681,5 @@ if (scanner) {
   }, 500);
 }
 
-let cropper;
-let imagemFinalBlob;
-
-// quando selecionar imagem
-addFoto.addEventListener("change", () => {
-  const file = addFoto.files[0];
-  if (!file) return;
-
-  const url = URL.createObjectURL(file);
-
-  document.getElementById("cropImage").src = url;
-  document.getElementById("modalCrop").classList.remove("hidden");
-
-  if (cropper) cropper.destroy();
-
-  cropper = new Cropper(document.getElementById("cropImage"), {
-    aspectRatio: 1,
-    viewMode: 1,
-    movable: true,
-    zoomable: true
-  });
-});
-
-function confirmarCrop() {
-  const canvas = cropper.getCroppedCanvas({
-    width: 500,
-    height: 500
-  });
-
-  canvas.toBlob((blob) => {
-    imagemFinalBlob = blob;
-  });
-
-  fecharCrop();
-}
-
-function fecharCrop() {
-  document.getElementById("modalCrop").classList.add("hidden");
-}
 
 carregarVendas();

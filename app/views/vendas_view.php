@@ -21,9 +21,9 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos">Produtos</a>
           <a href="/vendas" class="active">Vendas</a>
-          <a href="/impressoras">Impressoras</a>
-
+          
           <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/impressoras">Impressoras</a>
             <a href="/relatorios">Relatórios</a>
             <a href="/controledeusuarios">Controle de Revendedores</a>
             <a href="/fornecedores">Fornecedores</a>
@@ -55,13 +55,15 @@
                 >
               </div>
 
-              <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data" class="xml-form">
-                <label for="xmlfile" class="btn-primary file-btn">Escolher XML</label>
-                <input type="file" id="xmlfile" name="xmlfile" accept=".xml" required>
-                <span id="file-name" class="file-name">Nenhum arquivo escolhido</span>
-                <button type="submit" class="btn-primary">Importar XML</button>
-              </form>
-
+              <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+                <form action="/api/novavenda/xml" method="post" enctype="multipart/form-data" class="xml-form">
+                  <label for="xmlfile" class="btn-primary file-btn">Escolher XML</label>
+                  <input type="file" id="xmlfile" name="xmlfile" accept=".xml" required>
+                  <span id="file-name" class="file-name">Nenhum arquivo escolhido</span>
+                  <button type="submit" class="btn-primary">Importar XML</button>
+                </form>
+              <?php endif; ?>
+              
               <button class="btn-primary" id="btnRegistrar">
                 + Registrar Venda
               </button>
