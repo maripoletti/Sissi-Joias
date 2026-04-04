@@ -101,13 +101,24 @@
               </span>
             </div>
 
-            <button
-              class="link btn-alterar-nivel"
-              type="button"
-              data-action="nivel"
-              data-nivel="${u.nivel}">
-              Alterar nível
-            </button>
+            <div class="user-actions-right">
+
+              <button
+                class="link link-danger"
+                type="button"
+                data-action="delete">
+                Excluir
+              </button>
+
+              <button
+                class="link"
+                type="button"
+                data-action="nivel"
+                data-nivel="${u.nivel}">
+                Alterar nível
+              </button>
+
+            </div>
           </div>
 
           <div class="actions">
@@ -125,7 +136,8 @@
           </div>
 
         </article>
-      `}).join("");
+      `;
+      }).join("");
 
     } catch (err) {
       console.error(err);
@@ -158,7 +170,8 @@
       safira: "Safira",
       topazio: "Topázio",
       esmeralda: "Esmeralda",
-      rubi: "Rubi"
+      rubi: "Rubi",
+      "rubi-black": "Rubi Black"
     }[n] || "Ametista");
   }
 
@@ -173,8 +186,6 @@
     if (dot) dot.className = `dot ${nivel}-dot`;
     if (text) text.textContent = nomeNivel(nivel);
     if (btnNivel) btnNivel.dataset.nivel = nivel;
-
-
   }
 
   document.addEventListener("click", (e) => {
@@ -201,6 +212,11 @@
       return;
     }
 
+    if (action === "delete") {
+      excluirUsuario(card);
+      return;
+    }
+
   });
 
   btnSalvar.addEventListener("click", async () => {
@@ -210,7 +226,7 @@
     const nivel = nivelSelect.value;
 
     try {
-        const res = await fetch("/api/controledeusuarios/alterarnivel", {
+      const res = await fetch("/api/controledeusuarios/alterarnivel", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -264,28 +280,28 @@
 
   async function aceitarUsuario(card) {
 
-  const id = card.dataset.id;
+    const id = card.dataset.id;
 
-  try {
+    try {
 
-    const res = await fetch("/api/controledeusuarios/aprovar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id })
-    });
+      const res = await fetch("/api/controledeusuarios/aprovar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id })
+      });
 
-    if (!res.ok) throw new Error("Erro ao aprovar usuário");
+      if (!res.ok) throw new Error("Erro ao aprovar usuário");
 
-    moverCard(card, "aprovadas");
-    abrirAba("aprovadas");
+      moverCard(card, "aprovadas");
+      abrirAba("aprovadas");
 
-  } catch (err) {
-    console.error(err);
+    } catch (err) {
+      console.error(err);
+    }
+
   }
-
-}
 
   async function rejeitarUsuario(card) {
 
@@ -310,6 +326,32 @@
       console.error(err);
     }
 
+  }
+
+  async function excluirUsuario(card) {
+
+    const id = card.dataset.id;
+
+    if (!confirm("Tem certeza que deseja excluir esta usuária?")) return;
+
+    try {
+
+      const res = await fetch("/api/controledeusuarios/excluir", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ id })
+      });
+
+      if (!res.ok) throw new Error("Erro ao excluir usuário");
+
+      card.remove();
+
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao excluir usuário");
+    }
   }
 
   abrirAba("pendentes");

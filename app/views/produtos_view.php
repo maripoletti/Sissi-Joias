@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="styles/global.css">
   <link rel="stylesheet" href="styles/produtos.css" />
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://unpkg.com/cropperjs/dist/cropper.css">
+  <script src="https://unpkg.com/cropperjs"></script>
 </head>
 <body>
 
@@ -27,6 +29,7 @@
             <a href="/controledeusuarios">Controle de Revendedores</a>
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+            <a href="/produtosrevendedores">Produtos dos Revendedores</a>
           <?php endif; ?>
 
         </nav>
@@ -978,6 +981,22 @@
   carregarRevendedoras();
   render(true);
 </script>
+
+<div id="modalCrop" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Ajustar imagem</h2>
+      <button class="modal-close" onclick="fecharCrop()">✕</button>
+    </div>
+
+    <img id="cropImage" style="width:100%; max-height:400px;">
+
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="fecharCrop()">Cancelar</button>
+      <button class="btn" onclick="confirmarCrop()">Confirmar</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>

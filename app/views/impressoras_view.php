@@ -29,6 +29,7 @@
             <a href="/controledeusuarios">Controle de Revendedores</a>
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
+              
           <?php endif; ?>
 
         </nav>
