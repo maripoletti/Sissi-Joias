@@ -681,7 +681,6 @@ if (scanner) {
   }, 500);
 }
 
-// ====================== CROP IMAGEM ======================
 
 let cropper = null;
 let imagemFinalBlob = null;

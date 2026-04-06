@@ -37,6 +37,20 @@ switch ($uri) {
       header('Location: /login');
       break;
     }
+    
+  case '/api/usuario/perfil': 
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/usuarioGet_contr.php';
+      AuthMiddleware::user();
+      break;
+    }
+
+  case '/api/usuario/upload': 
+    if (isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/usuarioUpload_contr.php';
+      AuthMiddleware::user();
+      break;
+    }
 
   case '/api/eventos':
     if (isset($_SESSION['user_id'])) {

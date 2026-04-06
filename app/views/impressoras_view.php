@@ -22,18 +22,14 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos">Produtos</a>
           <a href="/vendas">Vendas</a>
-          <a href="/impressoras" class="active">Impressoras</a>
-          
-          <?php
-          $_SESSION["user_id"] = 1;
-          ?>
           
           <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/impressoras" class="active">Impressoras</a>
             <a href="/relatorios">Relatórios</a>
             <a href="/controledeusuarios">Controle de Revendedores</a>
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
-              
+            <a href="/produtosrevendedores">Produtos dos Revendedores</a>
           <?php endif; ?>
 
         </nav>

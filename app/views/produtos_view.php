@@ -22,9 +22,9 @@
           <a href="/paineldecontrole">Painel de Controle</a>
           <a href="/produtos" class="active">Produtos</a>
           <a href="/vendas">Vendas</a>
-          <a href="/impressoras">Impressoras</a>
           
           <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+            <a href="/impressoras">Impressoras</a>
             <a href="/relatorios">Relatórios</a>
             <a href="/controledeusuarios">Controle de Revendedores</a>
             <a href="/fornecedores">Fornecedores</a>
@@ -874,7 +874,7 @@
   }
 
   function toggleProdutoEnvio(id) {
-    const prod = produtos.find(p => Number(p.id) === Number(id));
+    const prod = produtosEnvio.find(p => Number(p.id) === Number(id));
     if (!prod) return;
 
     const idx = itensEnvio.findIndex(item => Number(item.id) === Number(id));

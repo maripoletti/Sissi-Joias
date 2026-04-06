@@ -16,14 +16,14 @@
         <a href="/paineldecontrole" class="active">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
-
+        
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <a href="/impressoras">Impressoras</a>
           <a href="/relatorios">Relatórios</a>
           <a href="/controledeusuarios">Controle de Revendedores</a>
           <a href="/fornecedores">Fornecedores</a>
           <a href="/cadastrarimpressora">Cadastrar Impressora</a>
           <a href="/produtosrevendedores">Produtos dos Revendedores</a>
-          <a href="/impressoras">Impressoras</a>
         <?php endif; ?>
       </nav>
 
@@ -181,19 +181,30 @@
   const badge = document.getElementById("userGroupBadge");
   const userRecadoEl = document.getElementById("userRecado");
 
-  inputFoto.addEventListener("change", function () {
-    const arquivo = this.files[0];
+  inputFoto.addEventListener("change", async () => {
+    const file = inputFoto.files[0];
+    if (!file) return;
 
-    if (arquivo) {
-      const leitor = new FileReader();
+    const formData = new FormData();
+    formData.append("imagem", file);
 
-      leitor.onload = function (e) {
-        avatarPreview.src = e.target.result;
-        avatarPreview.style.display = "block";
-        avatarIcon.style.display = "none";
-      };
+    try {
+        const response = await fetch("/api/usuario/upload", {
+            method: "POST",
+            body: formData
+        });
 
-      leitor.readAsDataURL(arquivo);
+        const text = await response.text();
+
+        if (!text) {
+            throw new Error("Resposta vazia do servidor");
+        }
+
+        const data = JSON.parse(text);
+
+        await carregarDadosUsuario();
+    } catch (err) {
+        console.error(err);
     }
   });
 
