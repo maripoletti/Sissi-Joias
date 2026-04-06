@@ -22,7 +22,6 @@
             <a href="/paineldecontrole">Painel de Controle</a>
             <a href="/produtos">Produtos</a>
             <a href="/vendas">Vendas</a>
-            <a href="/impressoras">Impressoras</a>
             
             <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
               <a href="/relatorios">Relatórios</a>
@@ -30,6 +29,7 @@
               <a href="/fornecedores" class="active">Fornecedores</a>
               <a href="/cadastrarimpressora">Cadastrar Impressora</a>
               <a href="/produtosrevendedores">Produtos dos Revendedores</a>
+              <a href="/impressoras">Impressoras</a>
             <?php endif; ?>
 
         </nav>

@@ -681,44 +681,82 @@ if (scanner) {
   }, 500);
 }
 
-let cropper;
-let imagemFinalBlob;
+// ====================== CROP IMAGEM ======================
 
-// quando selecionar imagem
-addFoto.addEventListener("change", () => {
-  const file = addFoto.files[0];
-  if (!file) return;
+let cropper = null;
+let imagemFinalBlob = null;
+let imagemFinalFile = null;
 
-  const url = URL.createObjectURL(file);
+const inputAddFoto = document.getElementById("addFoto");
+const modalCrop = document.getElementById("modalCrop");
+const cropImage = document.getElementById("cropImage");
+const addPreview = document.getElementById("addPreview");
 
-  document.getElementById("cropImage").src = url;
-  document.getElementById("modalCrop").classList.remove("hidden");
+if (inputAddFoto) {
+  inputAddFoto.addEventListener("change", () => {
+    const file = inputAddFoto.files && inputAddFoto.files[0];
+    if (!file) return;
 
-  if (cropper) cropper.destroy();
+    const url = URL.createObjectURL(file);
+    cropImage.src = url;
+    modalCrop.classList.remove("hidden");
 
-  cropper = new Cropper(document.getElementById("cropImage"), {
-    aspectRatio: 1,
-    viewMode: 1,
-    movable: true,
-    zoomable: true
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+
+    cropImage.onload = () => {
+      cropper = new Cropper(cropImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: "move",
+        autoCropArea: 1,
+        responsive: true,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        rotatable: false,
+        background: false
+      });
+    };
   });
-});
+}
 
 function confirmarCrop() {
+  if (!cropper) return;
+
   const canvas = cropper.getCroppedCanvas({
-    width: 500,
-    height: 500
+    width: 800,
+    height: 800,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: "high"
   });
 
   canvas.toBlob((blob) => {
-    imagemFinalBlob = blob;
-  });
+    if (!blob) return;
 
-  fecharCrop();
+    imagemFinalBlob = blob;
+    imagemFinalFile = new File([blob], "produto.jpg", { type: "image/jpeg" });
+
+    const previewUrl = URL.createObjectURL(blob);
+    addPreview.src = previewUrl;
+    addPreview.style.display = "block";
+
+    fecharCrop();
+  }, "image/jpeg", 0.92);
 }
 
 function fecharCrop() {
-  document.getElementById("modalCrop").classList.add("hidden");
+  modalCrop.classList.add("hidden");
+
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
 }
+
+window.confirmarCrop = confirmarCrop;
+window.fecharCrop = fecharCrop;
 
 carregarVendas();
