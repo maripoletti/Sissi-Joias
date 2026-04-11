@@ -682,4 +682,80 @@ if (scanner) {
 }
 
 
+let cropper = null;
+let imagemFinalBlob = null;
+let imagemFinalFile = null;
+
+const inputAddFoto = document.getElementById("addFoto");
+const modalCrop = document.getElementById("modalCrop");
+const cropImage = document.getElementById("cropImage");
+const addPreview = document.getElementById("addPreview");
+
+if (inputAddFoto) {
+  inputAddFoto.addEventListener("change", () => {
+    const file = inputAddFoto.files && inputAddFoto.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    cropImage.src = url;
+    modalCrop.classList.remove("hidden");
+
+    if (cropper) {
+      cropper.destroy();
+      cropper = null;
+    }
+
+    cropImage.onload = () => {
+      cropper = new Cropper(cropImage, {
+        aspectRatio: 1,
+        viewMode: 1,
+        dragMode: "move",
+        autoCropArea: 1,
+        responsive: true,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        rotatable: false,
+        background: false
+      });
+    };
+  });
+}
+
+function confirmarCrop() {
+  if (!cropper) return;
+
+  const canvas = cropper.getCroppedCanvas({
+    width: 800,
+    height: 800,
+    imageSmoothingEnabled: true,
+    imageSmoothingQuality: "high"
+  });
+
+  canvas.toBlob((blob) => {
+    if (!blob) return;
+
+    imagemFinalBlob = blob;
+    imagemFinalFile = new File([blob], "produto.jpg", { type: "image/jpeg" });
+
+    const previewUrl = URL.createObjectURL(blob);
+    addPreview.src = previewUrl;
+    addPreview.style.display = "block";
+
+    fecharCrop();
+  }, "image/jpeg", 0.92);
+}
+
+function fecharCrop() {
+  modalCrop.classList.add("hidden");
+
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+}
+
+window.confirmarCrop = confirmarCrop;
+window.fecharCrop = fecharCrop;
+
 carregarVendas();
