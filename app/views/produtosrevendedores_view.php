@@ -50,12 +50,13 @@
               <th>Revendedor</th>
               <th>Quantidade</th>
               <th>Preço</th>
-              <th>Status</th>
               <th>Data</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
+        
+        <div id="sentinela"></div>
       </div>
 
     </main>
