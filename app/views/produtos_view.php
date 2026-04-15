@@ -724,7 +724,9 @@
           format:"CODE128",
           width:2,
           height:60,
-          displayValue:true
+          displayValue:true,
+          fontSize: 28,
+          textMargin: 2
         });
 
         window.print();
