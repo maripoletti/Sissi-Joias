@@ -423,6 +423,7 @@
             <h3 title="${p.nome}">${p.nome}</h3>
             <div class="meta">
               <p>• Estoque: ${p.estoque}</p>
+              ${p.cat ? `<p>• Categoria(s): ${p.cat}</p>` : ``}
               ${p.tamanho ? `<p>• Tamanho: ${p.tamanho}</p>` : ``}
               ${p.cor ? `<p>• Cor: ${p.cor}</p>` : ``}
               ${p.peso_banho ? `<p>• Peso banho: ${p.peso_banho}</p>` : ``}
@@ -667,118 +668,117 @@
   const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
 
   const html = `
-  <html>
-  <head>
-  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
-  <style>
-    @media print {
-      @page {
-        size: 40mm 35mm;
-        margin: 0;
-      }
-      body {
-        margin: 0;
-        padding: 0;
-      }
-    }
-
-    body {
-      font-family: Arial;
-      margin: 0;
-    }
-
-    .etiqueta {
-      width: 40mm;
-      height: 35mm;
-      padding: 2mm;
-      box-sizing: border-box;
-
-      display: flex;
-      flex-direction: column;
-    }
-
-    .nome {
-      font-size: 7pt;
-      line-height: 1.1;
-      text-align: center;
-
-      max-height: 8mm;
-      overflow: hidden;
-      word-break: break-word;
-    }
-
-    .preco {
-      font-size: 10pt;
-      font-weight: bold;
-      text-align: center;
-
-      height: 5mm;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .barcode-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    svg {
-      width: 100%;
-      height: 100%;
-    }
-  </style>
-  </head>
-
-  <body>
-    <div class="etiqueta">
-      <div class="nome">${prod.nome}</div>
-      <div class="preco">R$ ${preco}</div>
-
-      <div class="barcode-container">
-        <svg id="barcode"></svg>
-      </div>
-    </div>
-
-    <script>
-      function ajustarFonteNome() {
-        const el = document.querySelector(".nome");
-
-        let fontSize = 9; // começa maior
-        const minFont = 5; // limite mínimo
-
-        el.style.fontSize = fontSize + "pt";
-
-        // reduz até caber no espaço permitido
-        while (el.scrollHeight > el.clientHeight && fontSize > minFont) {
-          fontSize -= 0.5;
-          el.style.fontSize = fontSize + "pt";
+    <html>
+    <head>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
+    <style>
+      @media print {
+        @page {
+          size: 40mm 35mm;
+          margin: 0;
+        }
+        body {
+          margin: 0;
+          padding: 0;
         }
       }
-        
-      JsBarcode("#barcode", "${prod.cdb || prod.id}", {
-        format: "CODE128",
-        width: 2,
-        height: 100,
-        displayValue: true,
-        fontSize: 18,
-        textMargin: 0,
-        margin: 0
-      });
 
-      ajustarFonteNome();
+      body {
+        font-family: Arial;
+        margin: 0;
+      }
 
-      window.print();
-    <\/script>
-  </body>
-  </html>
-  `;
+      .etiqueta {
+        width: 40mm;
+        height: 35mm;
+        padding: 2mm;
+        box-sizing: border-box;
 
-  const win = window.open();
-  win.document.write(html);
-}
+        display: flex;
+        flex-direction: column;
+      }
+
+      .nome {
+        font-size: 7pt;
+        line-height: 1.1;
+        text-align: center;
+
+        max-height: 8mm;
+        overflow: hidden;
+        word-break: break-word;
+      }
+
+      .preco {
+        font-size: 10pt;
+        font-weight: bold;
+        text-align: center;
+
+        height: 5mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .barcode-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+    </head>
+
+    <body>
+      <div class="etiqueta">
+        <div class="nome">${prod.nome}</div>
+        <div class="preco">R$ ${preco}</div>
+
+        <div class="barcode-container">
+          <svg id="barcode"></svg>
+        </div>
+      </div>
+
+      <script>
+        function ajustarFonteNome() {
+          const el = document.querySelector(".nome");
+
+          let fontSize = 9; // começa maior
+          const minFont = 5; // limite mínimo
+
+          el.style.fontSize = fontSize + "pt";
+
+          while (el.scrollHeight > el.clientHeight && fontSize > minFont) {
+            fontSize -= 0.5;
+            el.style.fontSize = fontSize + "pt";
+          }
+        }
+
+        JsBarcode("#barcode", "${prod.cdb || prod.id}", {
+          format: "CODE128",
+          width: 2,
+          height: 100,
+          displayValue: true,
+          fontSize: 18,
+          textMargin: 0,
+          margin: 0
+        });
+
+        ajustarFonteNome();
+
+        window.print();
+      <\/script>
+    </body>
+    </html>
+    `;
+
+    const win = window.open();
+    win.document.write(html);
+  }
 
   async function carregarRevendedoras() {
     try {

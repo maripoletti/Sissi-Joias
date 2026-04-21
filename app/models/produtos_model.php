@@ -334,16 +334,32 @@ class Produtos_model extends Dbh {
             $joinTags = "";
             $havingCount = "";
 
+            $joinTags = "
+                LEFT JOIN Prod_ProductsTags pt ON pt.ProductID = p.ProductID
+                LEFT JOIN Prod_Tags t ON t.TagID = pt.TagID
+            ";
+
+            $havingCount = "";
+
             if (!empty($tags)) {
-                $joinTags = "JOIN Prod_ProductsTags pt ON pt.ProductID = p.ProductID
-                            JOIN Prod_Tags t ON t.TagID = pt.TagID";
+                $subParts = [];
 
-                $placeholders = implode(", ", array_fill(0, count($tags), "?"));
-                $whereParts[] = "t.TagName IN ($placeholders)";
-                $params = array_merge($params, $tags);
+                foreach ($tags as $tag) {
+                    $subParts[] = "
+                        EXISTS (
+                            SELECT 1
+                            FROM Prod_ProductsTags pt2
+                            JOIN Prod_Tags t2 ON t2.TagID = pt2.TagID
+                            WHERE pt2.ProductID = p.ProductID
+                            AND t2.TagName LIKE ?
+                        )
+                    ";
+                    $params[] = $tag . "%";
+                }
 
-                $havingCount = "HAVING COUNT(DISTINCT t.TagName) = " . count($tags);
+                $whereParts[] = implode(" AND ", $subParts);
             }
+            
 
             $where = !empty($whereParts) ? "WHERE " . implode(" AND ", $whereParts) : "";
 
@@ -406,7 +422,8 @@ class Produtos_model extends Dbh {
                     p.Size AS tamanho,
                     p.Color AS cor,
                     p.BathWeight AS peso_banho,
-                    p.BathThickness AS milesimos_banho
+                    p.BathThickness AS milesimos_banho,
+                    GROUP_CONCAT(DISTINCT t.TagName) AS cat
                 FROM Sales_Products p
                 $joinEmployee
                 $joinTags
