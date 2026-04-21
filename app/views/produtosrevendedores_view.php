@@ -17,7 +17,7 @@
       <h2>Sissi Semi Joias e Acessórios</h2>
 
         <nav>
-        <a href="/paineldecontrole" class="active">Painel de Controle</a>
+        <a href="/paineldecontrole">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
         
@@ -27,7 +27,7 @@
           <a href="/controledeusuarios">Controle de Revendedores</a>
           <a href="/fornecedores">Fornecedores</a>
           <a href="/cadastrarimpressora">Cadastrar Impressora</a>
-          <a href="/produtosrevendedores">Produtos dos Revendedores</a>
+          <a href="/produtosrevendedores" class="active">Produtos dos Revendedores</a>
         <?php endif; ?>
       </nav>
     </aside>

@@ -56,6 +56,7 @@
                 </label>
                 <button type="submit" class="btn-primary">Importar XML</button>
               </form>
+
             <?php endif; ?>
           </div>
         </header>
@@ -583,6 +584,9 @@
     if (e.target === modalAdd) fecharModalAdicionar();
   });
 
+  let imagemFinalFile = null;
+  let imagemFinalBlob = null;
+
   formAdd.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -657,87 +661,124 @@
   }
 
   function imprimirEtiqueta(id){
-    const prod = produtos.find(p => Number(p.id) === Number(id));
-    if(!prod) return;
+  const prod = produtos.find(p => Number(p.id) === Number(id));
+  if(!prod) return;
 
-    const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
+  const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
 
-    const html = `
-    <html>
-    <head>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
-    <style>
-      @media print {
-        @page {
-          size: 40mm 35mm;
-          margin: 0;
-        }
-
-        body {
-          margin: 0;
-          padding: 0;
-        }
+  const html = `
+  <html>
+  <head>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
+  <style>
+    @media print {
+      @page {
+        size: 40mm 35mm;
+        margin: 0;
       }
-
-      body{
-        font-family: Arial;
-        text-align:center;
-        margin:0;
+      body {
+        margin: 0;
+        padding: 0;
       }
+    }
 
-      .etiqueta{
-        width:40mm;
-        height:35mm;
-        padding:2mm;
-        box-sizing:border-box;
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
-      }
+    body {
+      font-family: Arial;
+      margin: 0;
+    }
 
-      .nome{
-        font-size:8pt;
-      }
+    .etiqueta {
+      width: 40mm;
+      height: 35mm;
+      padding: 2mm;
+      box-sizing: border-box;
 
-      .preco{
-        font-size:12pt;
-        font-weight:bold;
-      }
+      display: flex;
+      flex-direction: column;
+    }
 
-      svg{
-        width:100%;
-        height:10mm;
-      }
-    </style>
-    </head>
+    .nome {
+      font-size: 7pt;
+      line-height: 1.1;
+      text-align: center;
 
-    <body>
-      <div class="etiqueta">
-        <div class="nome">${prod.nome}</div>
-        <div class="preco">R$ ${preco}</div>
+      max-height: 8mm;
+      overflow: hidden;
+      word-break: break-word;
+    }
+
+    .preco {
+      font-size: 10pt;
+      font-weight: bold;
+      text-align: center;
+
+      height: 5mm;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .barcode-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    svg {
+      width: 100%;
+      height: 100%;
+    }
+  </style>
+  </head>
+
+  <body>
+    <div class="etiqueta">
+      <div class="nome">${prod.nome}</div>
+      <div class="preco">R$ ${preco}</div>
+
+      <div class="barcode-container">
         <svg id="barcode"></svg>
       </div>
+    </div>
 
-      <script>
-        JsBarcode("#barcode", "${prod.cdb || prod.id}", {
-          format:"CODE128",
-          width:2,
-          height:60,
-          displayValue:true,
-          fontSize: 28,
-          textMargin: 2
-        });
+    <script>
+      function ajustarFonteNome() {
+        const el = document.querySelector(".nome");
 
-        window.print();
-      <\/script>
-    </body>
-    </html>
-    `;
+        let fontSize = 9; // começa maior
+        const minFont = 5; // limite mínimo
 
-    const win = window.open();
-    win.document.write(html);
-  }
+        el.style.fontSize = fontSize + "pt";
+
+        // reduz até caber no espaço permitido
+        while (el.scrollHeight > el.clientHeight && fontSize > minFont) {
+          fontSize -= 0.5;
+          el.style.fontSize = fontSize + "pt";
+        }
+      }
+        
+      JsBarcode("#barcode", "${prod.cdb || prod.id}", {
+        format: "CODE128",
+        width: 2,
+        height: 100,
+        displayValue: true,
+        fontSize: 18,
+        textMargin: 0,
+        margin: 0
+      });
+
+      ajustarFonteNome();
+
+      window.print();
+    <\/script>
+  </body>
+  </html>
+  `;
+
+  const win = window.open();
+  win.document.write(html);
+}
 
   async function carregarRevendedoras() {
     try {

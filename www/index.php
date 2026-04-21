@@ -251,7 +251,7 @@ switch ($uri) {
       require_once '../app/controllers/produtosDel_contr.php';
       break;
     } else {
-      require_once '../app/controllers/produtosDel_contr.php';
+      require_once '../app/controllers/produtosRevendedoresDel_contr.php';
       break;
     }
   case '/impressoras':

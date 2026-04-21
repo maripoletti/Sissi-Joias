@@ -315,8 +315,8 @@ class Produtos_model extends Dbh {
             }
 
             if (!empty($text)) {
-                $whereParts[] = "MATCH(p.ProductName) AGAINST (? IN BOOLEAN MODE)";
-                $params[] = $text . "*";
+                $whereParts[] = "p.ProductName LIKE ?";
+                $params[] = $text . "%";
             }
 
             if ($min !== null && $max !== null) {
@@ -466,8 +466,6 @@ class Produtos_model extends Dbh {
             $query = "
             INSERT INTO Sales_EmployeeProducts (UserID, ProductID, UsableStock)
             VALUES (?, ?, ?)
-            ON DUPLICATE KEY UPDATE
-            UsableStock = UsableStock + VALUES(UsableStock)
             ";
 
             $stmt = $pdo->prepare($query);
