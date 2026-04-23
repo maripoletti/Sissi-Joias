@@ -17,7 +17,7 @@
       <h2>Sissi Semi Joias e Acessórios</h2>
 
         <nav>
-        <a href="/paineldecontrole" class="active">Painel de Controle</a>
+        <a href="/paineldecontrole">Painel de Controle</a>
         <a href="/produtos">Produtos</a>
         <a href="/vendas">Vendas</a>
         
@@ -51,12 +51,13 @@
               <th>Revendedor</th>
               <th>Quantidade</th>
               <th>Preço</th>
-              <th>Status</th>
               <th>Data</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
+        
+        <div id="sentinela"></div>
       </div>
 
     </main>

@@ -3,7 +3,6 @@ declare(strict_types=1);
 require_once __DIR__ . "/../models/user_model.php";
 header("Content-Type: application/json; charset=UTF-8");
 
-
 $userId = (int) $_SESSION["user_id"];
 
 if (!isset($userId)) {

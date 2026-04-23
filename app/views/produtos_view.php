@@ -58,6 +58,7 @@
                 </label>
                 <button type="submit" class="btn-primary">Importar XML</button>
               </form>
+
             <?php endif; ?>
           </div>
         </header>
@@ -395,6 +396,7 @@
             <h3 title="${p.nome}">${p.nome}</h3>
             <div class="meta">
               <p>• Estoque: ${p.estoque}</p>
+              ${p.cat ? `<p>• Categoria(s): ${p.cat}</p>` : ``}
               ${p.tamanho ? `<p>• Tamanho: ${p.tamanho}</p>` : ``}
               ${p.cor ? `<p>• Cor: ${p.cor}</p>` : ``}
               ${p.peso_banho ? `<p>• Peso banho: ${p.peso_banho}</p>` : ``}
@@ -556,6 +558,9 @@
     if (e.target === modalAdd) fecharModalAdicionar();
   });
 
+  let imagemFinalFile = null;
+  let imagemFinalBlob = null;
+
   formAdd.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -619,12 +624,12 @@
   }
 
   function imprimirEtiqueta(id){
-    const prod = produtos.find(p => Number(p.id) === Number(id));
-    if(!prod) return;
+  const prod = produtos.find(p => Number(p.id) === Number(id));
+  if(!prod) return;
 
-    const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
+  const preco = parseFloat(prod.preco).toFixed(2).replace(".", ",");
 
-    const html = `
+  const html = `
     <html>
     <head>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode/dist/JsBarcode.all.min.js"><\/script>
@@ -634,42 +639,58 @@
           size: 40mm 35mm;
           margin: 0;
         }
-
         body {
           margin: 0;
           padding: 0;
         }
       }
 
-      body{
+      body {
         font-family: Arial;
-        text-align:center;
-        margin:0;
+        margin: 0;
       }
 
-      .etiqueta{
-        width:40mm;
-        height:35mm;
-        padding:2mm;
-        box-sizing:border-box;
-        display:flex;
-        flex-direction:column;
-        justify-content:center;
-        align-items:center;
+      .etiqueta {
+        width: 40mm;
+        height: 35mm;
+        padding: 2mm;
+        box-sizing: border-box;
+
+        display: flex;
+        flex-direction: column;
       }
 
-      .nome{
-        font-size:8pt;
+      .nome {
+        font-size: 7pt;
+        line-height: 1.1;
+        text-align: center;
+
+        max-height: 8mm;
+        overflow: hidden;
+        word-break: break-word;
       }
 
-      .preco{
-        font-size:12pt;
-        font-weight:bold;
+      .preco {
+        font-size: 10pt;
+        font-weight: bold;
+        text-align: center;
+
+        height: 5mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
       }
 
-      svg{
-        width:100%;
-        height:10mm;
+      .barcode-container {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      svg {
+        width: 100%;
+        height: 100%;
       }
     </style>
     </head>
@@ -678,16 +699,38 @@
       <div class="etiqueta">
         <div class="nome">${prod.nome}</div>
         <div class="preco">R$ ${preco}</div>
-        <svg id="barcode"></svg>
+
+        <div class="barcode-container">
+          <svg id="barcode"></svg>
+        </div>
       </div>
 
       <script>
+        function ajustarFonteNome() {
+          const el = document.querySelector(".nome");
+
+          let fontSize = 9; // começa maior
+          const minFont = 5; // limite mínimo
+
+          el.style.fontSize = fontSize + "pt";
+
+          while (el.scrollHeight > el.clientHeight && fontSize > minFont) {
+            fontSize -= 0.5;
+            el.style.fontSize = fontSize + "pt";
+          }
+        }
+
         JsBarcode("#barcode", "${prod.cdb || prod.id}", {
-          format:"CODE128",
-          width:2,
-          height:60,
-          displayValue:true
+          format: "CODE128",
+          width: 2,
+          height: 100,
+          displayValue: true,
+          fontSize: 18,
+          textMargin: 0,
+          margin: 0
         });
+
+        ajustarFonteNome();
 
         window.print();
       <\/script>

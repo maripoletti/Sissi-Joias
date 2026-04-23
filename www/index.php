@@ -210,6 +210,14 @@ switch ($uri) {
       AuthMiddleware::user();
     }
 
+  case '/api/produtosRevendedores':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedores_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
   case '/api/produtos/xml':
     if(isset($_SESSION["user_id"])) {
       require_once '../app/controllers/produtosXml_contr.php';
@@ -243,7 +251,7 @@ switch ($uri) {
       require_once '../app/controllers/produtosDel_contr.php';
       break;
     } else {
-      require_once '../app/controllers/produtosDel_contr.php';
+      require_once '../app/controllers/produtosRevendedoresDel_contr.php';
       break;
     }
   case '/impressoras':
