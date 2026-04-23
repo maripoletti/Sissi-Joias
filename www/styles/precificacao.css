@@ -1,0 +1,194 @@
+.precificacao-page {
+  padding: 24px;
+}
+
+.precificacao-header {
+  margin-bottom: 20px;
+}
+
+.precificacao-header h1 {
+  font-size: 28px;
+  color: #2d1240;
+  margin-bottom: 6px;
+  font-weight: 700;
+}
+
+.precificacao-header p {
+  color: #7b7284;
+  font-size: 15px;
+}
+
+.precificacao-card {
+  background: #ffffff;
+  border: 1px solid #ece7f2;
+  border-radius: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  box-shadow: 0 8px 24px rgba(45, 18, 64, 0.06);
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.checks {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.checks label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  color: #2d1240;
+  font-weight: 500;
+}
+
+.checks input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #6f2381;
+}
+
+.row {
+  display: grid;
+  gap: 16px;
+}
+
+.row-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.row-5 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+.row-6 {
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+}
+
+.field {
+  background: #faf9fc;
+  border: 1.5px solid #d9dde3;
+  border-radius: 18px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease, transform 0.2s ease;
+}
+
+.field:hover {
+  border-color: #cdbfda;
+  background: #ffffff;
+}
+
+.field:focus-within {
+  border-color: #6f2381;
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgba(111, 35, 129, 0.12);
+}
+
+.field label {
+  font-size: 13px;
+  color: #7b7284;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.field input,
+.field select,
+.field textarea {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  color: #2d1240;
+  width: 100%;
+  font-family: inherit;
+  padding: 2px 0;
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: #a395b1;
+}
+
+.field select {
+  cursor: pointer;
+}
+
+.field input[readonly] {
+  color: #5f5568;
+  cursor: default;
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+.destaque {
+  border: 2px solid #7b7284;
+  background: #fffafa;
+}
+
+.destaque:focus-within {
+  border-color: #7b7284;
+  box-shadow: 0 0 0 4px rgba(123, 114, 132, 0.12);
+}
+
+.precificacao-info {
+  background: #f5f0fa;
+  border: 1px solid #eadcf4;
+  color: #6f2381;
+  padding: 14px 16px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 1200px) {
+  .row-6 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .row-5 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .row-3,
+  .row-5,
+  .row-6 {
+    grid-template-columns: 1fr;
+  }
+
+  .precificacao-page {
+    padding: 16px;
+  }
+
+  .precificacao-card {
+    padding: 16px;
+    border-radius: 20px;
+  }
+
+  .field {
+    padding: 12px 14px;
+  }
+
+  .field input,
+  .field select,
+  .field textarea {
+    font-size: 15px;
+  }
+}

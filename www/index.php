@@ -326,6 +326,10 @@ switch ($uri) {
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/fornecedoresGet_contr.php';
       break;
+    }    case '/precificacao': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/views/precificacao_view.php';
+      break;
     }
   case '/api/fornecedores/add': 
     if ($_SESSION['role'] == '2') {

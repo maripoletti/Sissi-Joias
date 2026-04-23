@@ -30,7 +30,7 @@
               <a href="/fornecedores" class="active">Fornecedores</a>
               <a href="/cadastrarimpressora">Cadastrar Impressora</a>
               <a href="/produtosrevendedores">Produtos dos Revendedores</a>
-              <a href="/impressoras">Impressoras</a>
+              <a href="/precificacao">Precificação</a>
             <?php endif; ?>
 
         </nav>
