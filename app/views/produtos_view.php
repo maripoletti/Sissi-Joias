@@ -661,7 +661,7 @@
       }
 
       .nome {
-        font-size: 7pt;
+        font-size: 8pt;
         line-height: 1.1;
         text-align: center;
 
@@ -709,7 +709,7 @@
         function ajustarFonteNome() {
           const el = document.querySelector(".nome");
 
-          let fontSize = 9; // começa maior
+          let fontSize = 18; // começa maior
           const minFont = 5; // limite mínimo
 
           el.style.fontSize = fontSize + "pt";
@@ -722,10 +722,10 @@
 
         JsBarcode("#barcode", "${prod.cdb || prod.id}", {
           format: "CODE128",
-          width: 2,
-          height: 100,
+          width: 1,
+          height: 30,
           displayValue: true,
-          fontSize: 18,
+          fontSize: 12,
           textMargin: 0,
           margin: 0
         });

@@ -18,7 +18,7 @@
 
         <nav>
           <a href="/paineldecontrole">Painel de Controle</a>
-          <a href="/produtos" class="active">Produtos</a>
+          <a href="/produtos">Produtos</a>
           <a href="/vendas">Vendas</a>
 
           <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
@@ -28,7 +28,7 @@
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
             <a href="/produtosrevendedores">Produtos dos Revendedores</a>
-            <a href="/precificacao">Precificação</a>
+            <a href="/precificacao" class="active">Precificação</a>
           <?php endif; ?>
         </nav>
       </aside>
