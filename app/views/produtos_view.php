@@ -30,9 +30,7 @@
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
             <a href="/produtosrevendedores">Produtos dos Revendedores</a>
-            <a href="/precificacao">Precificação</a>
           <?php endif; ?>
-
         </nav>
       </aside>
 
@@ -41,7 +39,7 @@
         <header class="top">
           <div>
             <h1>Produtos</h1>
-            <span class="subtitle">Gerencie seus itens e encontre rapidinho</span>
+            <span class="subtitle">Gerencie seus itens</span>
           </div>
 
           <div class="top-actions">
@@ -177,7 +175,12 @@
 
         <label>Foto</label>
         <input type="file" id="editFoto" accept="image/*" />
-        
+
+        <div class="modal-preview">
+          <p>Preview:</p>
+          <img id="editPreview" alt="Preview da foto" />
+        </div>
+
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" onclick="fecharModal()">Cancelar</button>
           <button type="submit" class="btn">Salvar</button>
@@ -187,48 +190,54 @@
   </div>
 
   <!-- MODAL ADD -->
-  <div id="modalAdd" class="modal hidden">
-    <div class="modal-card">
-      <div class="modal-header">
-        <h2>Adicionar produto</h2>
-        <button type="button" class="modal-close" onclick="fecharModalAdicionar()">✕</button>
+<div id="modalAdd" class="modal hidden">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h2>Adicionar produto</h2>
+      <button type="button" class="modal-close" onclick="fecharModalAdicionar()">✕</button>
+    </div>
+
+    <form id="formAdd" class="modal-form">
+      <label>Nome</label>
+      <input type="text" id="addNome" required />
+
+      <label>Categoria</label>
+      <input type="text" id="addCategoria">
+
+      <label>Preço</label>
+      <input type="number" id="addPreco" step="0.01" min="0" required />
+
+      <label>Estoque</label>
+      <input type="number" id="addEstoque" min="0" required />
+
+      <label>Tamanho da peça</label>
+      <input type="text" id="addTamanho" placeholder="Ex: 12, 14, P, M, G, Ajustável" />
+
+      <label>Cor</label>
+      <input type="text" id="addCor" placeholder="Ex: Dourado, Prata, Rosé" />
+
+      <label>Peso do banho</label>
+      <input type="number" id="addPesoBanho" placeholder="Ex: 5g" />
+
+      <label>Milésimos de banho</label>
+      <input type="number" id="addMilesimosBanho" placeholder="Ex: 3 milésimos" />
+
+      <!-- FOTO COM PREVIEW -->
+      <label>Foto</label>
+      <input type="file" id="addFoto" accept="image/*" />
+
+      <div class="modal-preview">
+        <p>Preview:</p>
+        <img id="addPreview" alt="Preview da foto" />
       </div>
 
-      <form id="formAdd" class="modal-form">
-        <label>Nome</label>
-        <input type="text" id="addNome" required />
-
-        <label>Categoria</label>
-        <input type="text" id="addCategoria">
-
-        <label>Preço</label>
-        <input type="number" id="addPreco" step="0.01" min="0" required />
-
-        <label>Estoque</label>
-        <input type="number" id="addEstoque" min="0" required />
-
-        <label>Tamanho da peça</label>
-        <input type="text" id="addTamanho" placeholder="Ex: 12, 14, P, M, G, Ajustável" />
-
-        <label>Cor</label>
-        <input type="text" id="addCor" placeholder="Ex: Dourado, Prata, Rosé" />
-
-        <label>Peso do banho</label>
-        <input type="number" id="addPesoBanho" placeholder="Ex: 5g" />
-
-        <label>Milésimos de banho</label>
-        <input type="number" id="addMilesimosBanho" placeholder="Ex: 3 milésimos" />
-
-        <label>Foto</label>
-        <input type="file" id="addFoto" accept="image/*"/>
-
-        <div class="modal-actions">
-          <button type="button" class="btn btn-outline" onclick="fecharModalAdicionar()">Cancelar</button>
-          <button type="submit" class="btn">Cadastrar</button>
-        </div>
-      </form>
-    </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="fecharModalAdicionar()">Cancelar</button>
+        <button type="submit" class="btn">Cadastrar</button>
+      </div>
+    </form>
   </div>
+</div>
 
   <!-- MODAL ENVIAR PRODUTOS -->
   <div id="modalEnvio" class="modal hidden">
@@ -265,6 +274,24 @@
           <button type="submit" class="btn">Confirmar envio</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div id="modalCrop" class="modal hidden">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Ajustar imagem</h2>
+        <button type="button" class="modal-close" onclick="fecharCrop()">✕</button>
+      </div>
+
+      <div class="crop-container">
+        <img id="cropImage" alt="Imagem para recorte" style="width:100%; max-height:400px;">
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="fecharCrop()">Cancelar</button>
+        <button type="button" class="btn" onclick="confirmarCrop()">Confirmar</button>
+      </div>
     </div>
   </div>
 
@@ -583,7 +610,9 @@
     data.append("peso_banho", addPesoBanho.value.trim());
     data.append("milesimos_banho", addMilesimosBanho.value.trim());
 
-    if (addFoto.files[0]) {
+    if (imagemFinalFile) {
+      data.append("foto", imagemFinalFile);
+    } else if (addFoto.files[0]) {
       data.append("foto", addFoto.files[0]);
     }
 
@@ -598,6 +627,15 @@
     }
 
     formAdd.reset();
+
+    if (addPreview) {
+      addPreview.src = "";
+      addPreview.style.display = "none";
+    }
+
+    imagemFinalBlob = null;
+    imagemFinalFile = null;
+
     fecharModalAdicionar();
     render(true);
   });
@@ -661,7 +699,7 @@
       }
 
       .nome {
-        font-size: 8pt;
+        font-size: 7pt;
         line-height: 1.1;
         text-align: center;
 
@@ -709,7 +747,7 @@
         function ajustarFonteNome() {
           const el = document.querySelector(".nome");
 
-          let fontSize = 18; // começa maior
+          let fontSize = 9; // começa maior
           const minFont = 5; // limite mínimo
 
           el.style.fontSize = fontSize + "pt";
@@ -722,10 +760,10 @@
 
         JsBarcode("#barcode", "${prod.cdb || prod.id}", {
           format: "CODE128",
-          width: 1,
-          height: 30,
+          width: 2,
+          height: 100,
           displayValue: true,
-          fontSize: 12,
+          fontSize: 18,
           textMargin: 0,
           margin: 0
         });
@@ -1025,17 +1063,16 @@
   <div class="modal-card">
     <div class="modal-header">
       <h2>Ajustar imagem</h2>
-      <button class="modal-close" onclick="fecharCrop()">✕</button>
+      <button type="button" class="modal-close" onclick="fecharCrop()">✕</button>
     </div>
 
-    <img id="cropImage" style="width:100%; max-height:400px;">
+    <div class="crop-container">
+      <img id="cropImage" alt="Imagem para recorte">
+    </div>
 
     <div class="modal-actions">
-      <button class="btn btn-outline" onclick="fecharCrop()">Cancelar</button>
-      <button class="btn" onclick="confirmarCrop()">Confirmar</button>
+      <button type="button" class="btn btn-outline" onclick="fecharCrop()">Cancelar</button>
+      <button type="button" class="btn" onclick="confirmarCrop()">Confirmar</button>
     </div>
   </div>
 </div>
-
-</body>
-</html>
