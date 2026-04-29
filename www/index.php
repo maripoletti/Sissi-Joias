@@ -224,6 +224,11 @@ switch ($uri) {
       break;
     }
 
+  case '/produtos/importados':
+    if(isset($_SESSION["user_id"])) {
+      require_once '../app/views/importados_view.php';
+      break;
+    }
 
   case '/api/produtos':
     if(isset($_SESSION['user_id'])) {
