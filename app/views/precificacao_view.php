@@ -65,11 +65,6 @@
               </div>
 
               <div class="field">
-                <label>Marca</label>
-                <input type="text" id="marca" placeholder="Digite a marca do produto">
-              </div>
-
-              <div class="field">
                 <label>Custo Total</label>
                 <input id="custoTotal" type="text" readonly>
               </div>
@@ -87,20 +82,25 @@
               </div>
 
               <div class="field">
-                <label>NCM</label>
-                <input type="text" id="ncm" placeholder="Digite o NCM do produto">
-              </div>
-
-              <div class="field">
                 <label>Un. estoque</label>
                 <input type="text" id="unidadeEstoque" placeholder="Digite a unidade de estoque do produto">
               </div>
 
               <div class="field">
-                <label>Categoria Vitrine</label>
+                <label>Peso</label>
+                <input type="text" id="peso" placeholder="Digite o peso do produto">
+              </div>
+
+              <div class="field">
+                <label>Categoria</label>
                 <input type="text" id="categoriaVitrine" placeholder="Digite a categoria de vitrine do produto">
               </div>
             </div>
+
+            <div class="field">
+                <label>Metal</label>
+                <input type="text" id="metal" placeholder="Digite o metal do produto">
+              </div>
 
             <div class="row row-6">
               <div class="field">
@@ -115,7 +115,7 @@
 
               <div class="field">
                 <label>Milésimos</label>
-                <input type="text" class="money custo">
+                <input type="text" id="milésimos" placeholder="Digite os milésimos do produto">
               </div>
 
               <div class="field">

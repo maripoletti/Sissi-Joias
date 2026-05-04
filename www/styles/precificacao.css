@@ -136,11 +136,6 @@
   min-height: 90px;
 }
 
-.destaque {
-  border: 2px solid #7b7284;
-  background: #fffafa;
-}
-
 .destaque:focus-within {
   border-color: #7b7284;
   box-shadow: 0 0 0 4px rgba(123, 114, 132, 0.12);
