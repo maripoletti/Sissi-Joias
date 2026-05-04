@@ -224,6 +224,11 @@ switch ($uri) {
       break;
     }
 
+  case '/produtos/importados':
+    if(isset($_SESSION["user_id"])) {
+      require_once '../app/views/importados_view.php';
+      break;
+    }
 
   case '/api/produtos':
     if(isset($_SESSION['user_id'])) {
@@ -334,7 +339,8 @@ switch ($uri) {
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/fornecedoresGet_contr.php';
       break;
-    }    case '/precificacao': 
+    }    
+  case '/precificacao': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/precificacao_view.php';
       break;
