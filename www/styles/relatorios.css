@@ -114,9 +114,9 @@
 .rel-sellers{ display:flex; flex-direction:column; gap:16px; }
 .seller{
   display:grid;
-  grid-template-columns: 36px 1fr auto;
-  gap: 12px;
+  grid-template-columns: 36px minmax(0,1fr) auto;
   align-items:center;
+  gap:12px;
 }
 .rank{
   width:32px; height:32px;
@@ -127,18 +127,23 @@
   font-weight: 800;
   color:#fff;
 }
+.rank{ background:#999; }
 .rank.gold{ background:#c9a23a; }
 .rank.purple{ background:#ab0dc0; }
 .rank.purple2{ background:#880988; }
 
 .info strong{ display:block; color:#2b1140; margin-bottom: 8px; }
+.info{
+  width:100%;
+}
+
 .seller-track{
   height: 8px;
   background:#f1ecfb;
   border-radius: 999px;
   overflow:hidden;
 }
-.seller-fill{ height:100%; border-radius:999px; }
+.seller-fill{ height:100%; border-radius:999px; background:#ccc;}
 .seller-fill.gold{ background:#c9a23a; }
 .seller-fill.purple{ background:#ab0dc0; }
 .seller-fill.purple2{ background:#880988; }

@@ -83,7 +83,7 @@
         <div class="level">
           <div class="level-bar rubi"></div>
           <div class="level-name">🔴 Rubi</div>
-          <div class="level-info">de R$2.300,00 a R$4.299,00 → 40%</div>
+          <div class="level-info">de R$2.300,00 a R$4.999,00 → 40%</div>
         </div>
 
         <div class="level">

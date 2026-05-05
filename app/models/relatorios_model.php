@@ -38,7 +38,7 @@ class relatorios_model extends Dbh {
                 AND so.Status = '1'
                 GROUP BY se.EmployeeID
                 ORDER BY valor DESC
-                LIMIT 4
+                LIMIT 5
             ");
             $stmt->execute();
             $vendedoras = $stmt->fetchAll(PDO::FETCH_ASSOC);
