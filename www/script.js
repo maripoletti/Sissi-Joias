@@ -469,18 +469,22 @@
 
             let rankClass = "";
             if (i === 0) rankClass = "gold";
-            else if (i === 1) rankClass = "roxo";
-            else if (i === 2) rankClass = "lilas";
-            else rankClass = "cinza";
+            else if (i === 1) rankClass = "purple";
+            else if (i === 2) rankClass = "purple2";
+            else rankClass = "";
 
             const itemHTML = `
-              <div class="top-item">
-                <span class="rank ${rankClass}">${i + 1}</span>
-                <span class="name">${v.nome}</span>
-                <span class="valor">R$ ${valor.toFixed(0)}</span>
-              </div>
-              <div class="barra">
-                <span class="fill ${rankClass}" style="width:${percentual}%"></span>
+              <div class="seller">
+                <div class="rank ${rankClass}">${i + 1}</div>
+
+                <div class="info">
+                  <strong>${v.nome}</strong>
+                  <div class="seller-track">
+                    <div class="seller-fill ${rankClass}" style="width:${percentual}%"></div>
+                  </div>
+                </div>
+
+                <div class="money">R$ ${valor.toFixed(2)}</div>
               </div>
             `;
 

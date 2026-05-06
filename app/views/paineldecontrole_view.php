@@ -212,29 +212,34 @@
   function definirGrupoEMeta(total) {
     let grupoNome = "Ametista";
     let proximoGrupo = "Safira";
-    let proximaMeta = 1000;
+    let proximaMeta = 800;
     let classeGrupo = "ametista";
 
-    if (total >= 1000 && total < 2000) {
+    if (total >= 800 && total < 1300) {
       grupoNome = "Safira";
       proximoGrupo = "Topázio";
-      proximaMeta = 2000;
+      proximaMeta = 1800;
       classeGrupo = "safira";
-    } else if (total >= 2000 && total < 3000) {
+    } else if (total >= 1300 && total < 1800) {
       grupoNome = "Topázio";
       proximoGrupo = "Esmeralda";
-      proximaMeta = 3000;
+      proximaMeta = 1800;
       classeGrupo = "topazio";
-    } else if (total >= 3000 && total < 4000) {
+    } else if (total >= 1800 && total < 2300) {
       grupoNome = "Esmeralda";
       proximoGrupo = "Rubi";
-      proximaMeta = 4000;
+      proximaMeta = 2300;
       classeGrupo = "esmeralda";
-    } else if (total >= 4000) {
+    } else if (total >= 2300 && total < 5000) {
       grupoNome = "Rubi";
+      proximoGrupo = "Rubi Black";
+      proximaMeta = 5000;
+      classeGrupo = "rubi";
+    } else if (total >= 5000) {
+      grupoNome = "Rubi Black";
       proximoGrupo = null;
       proximaMeta = null;
-      classeGrupo = "rubi";
+      classeGrupo = "rubiblack";
     }
 
     return { grupoNome, proximoGrupo, proximaMeta, classeGrupo };
@@ -262,7 +267,7 @@
         recado = `Seu próximo objetivo é o grupo <span>${proximoGrupo}</span>.`;
       }
     } else {
-      recado = `Parabéns! Você está no grupo <span>Rubi</span> e bateu a meta máxima. 🔥`;
+      recado = `Parabéns! Você está no grupo <span>Rubi Black</span> e bateu a meta máxima. 🔥`;
     }
 
     return { grupoNome, recado, classeGrupo };

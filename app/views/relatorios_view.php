@@ -191,7 +191,7 @@ async function carregarRelatorios(){
                   <div class="info">
                       <strong>${v.nome}</strong>
                       <div class="seller-track">
-                          <div class="seller-fill gold" style="width:${percentual}%"></div>
+                          <div class="seller-fill ${rankClass}" style="width:${percentual}%"></div>
                       </div>
                   </div>
                   <div class="money">R$ ${valor.toFixed(2)}</div>
