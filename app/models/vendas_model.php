@@ -54,18 +54,34 @@ class vendas_model extends Dbh {
         try {
 
             $query = "
-            SELECT so.OrderID, p.ProductName, so.Quantity, so.Sales, so.OrderDate,
-                   e.EmployeeID, e.FullName AS EmployeeName,
-                   c.FullName AS ClienteName, so.PaymentMethod
-            FROM Sales_Orders so
-            LEFT JOIN Sales_Customers c ON so.CustomerID = c.CustomerID
-            LEFT JOIN Sales_Employees e ON c.EmployeeID = e.EmployeeID
-            LEFT JOIN Sales_Products p ON so.ProductID = p.ProductID
-            WHERE so.Status = '1'";
+                SELECT 
+                    so.OrderID,
+                    so.OrderDate,
+                    e.EmployeeID,
+                    e.FullName AS EmployeeName,
+                    c.FullName AS ClienteName,
+                    so.PaymentMethod,
+                    SUM(soi.Quantity * soi.Price) AS Sales,
+                    GROUP_CONCAT(
+                        CONCAT(
+                            p.ProductName, '|',
+                            soi.Quantity, '|',
+                            soi.Price
+                        ) SEPARATOR ';;'
+                    ) AS produtos
+                FROM Sales_Orders so
+                JOIN Sales_OrderItems soi ON soi.OrderID = so.OrderID
+                LEFT JOIN Sales_Customers c ON so.CustomerID = c.CustomerID
+                LEFT JOIN Sales_Employees e ON c.EmployeeID = e.EmployeeID
+                LEFT JOIN Sales_Products p ON soi.ProductID = p.ProductID
+                WHERE so.Status = '1'
+            ";
 
             if ($role !== 2) {
                 $query .= " AND e.UserID = :uid";
             }
+
+            $query .= " GROUP BY so.OrderID";
 
             $query .= " ORDER BY so.OrderDate DESC LIMIT :limit OFFSET :offset";
 
@@ -80,7 +96,29 @@ class vendas_model extends Dbh {
 
             $stmt->execute();
 
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            foreach ($data as &$row) {
+                $produtos = [];
+
+                if (!empty($row["produtos"])) {
+                    $itens = explode(';;', $row["produtos"]);
+
+                    foreach ($itens as $item) {
+                        [$nome, $qtd, $preco] = explode('|', $item);
+
+                        $produtos[] = [
+                            "nome" => $nome,
+                            "qtd" => (int)$qtd,
+                            "preco" => (float)$preco
+                        ];
+                    }
+                }
+
+                $row["produtos"] = $produtos;
+            }
+
+            return $data;
 
         } catch (PDOException $e) {
             echo "Erro na conexão: " . $e->getMessage();

@@ -225,11 +225,6 @@ function adicionarAoCarrinho(produto) {
 
     } else {
 
-        if (carrinho.length > 0) {
-            alert("Só é possível adicionar um tipo de produto por venda.");
-            return;
-        }
-
         carrinho.push({
             ...produto,
             quantidade: 1

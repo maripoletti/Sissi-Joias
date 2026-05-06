@@ -698,29 +698,36 @@
         flex-direction: column;
       }
 
+      /* NOME ocupa o espaço restante */
       .nome {
-        font-size: 7pt;
-        line-height: 1.1;
-        text-align: center;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
 
-        max-height: 8mm;
-        overflow: hidden;
+        text-align: center;
+        line-height: 1.1;
         word-break: break-word;
+        overflow: hidden;
       }
 
+      /* PREÇO fixo */
       .preco {
+        height: 5mm;
+        flex-shrink: 0;
+
         font-size: 10pt;
         font-weight: bold;
-        text-align: center;
-
-        height: 5mm;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
+      /* BARCODE fixo */
       .barcode-container {
-        flex: 1;
+        height: 12mm;
+        flex-shrink: 0;
+
         display: flex;
         align-items: center;
         justify-content: center;
@@ -728,7 +735,8 @@
 
       svg {
         width: 100%;
-        height: 100%;
+        height: auto;
+        max-height: 100%;
       }
     </style>
     </head>
@@ -747,8 +755,8 @@
         function ajustarFonteNome() {
           const el = document.querySelector(".nome");
 
-          let fontSize = 9; // começa maior
-          const minFont = 5; // limite mínimo
+          let fontSize = 100; // começa maior
+          const minFont = 6;
 
           el.style.fontSize = fontSize + "pt";
 
@@ -761,7 +769,7 @@
         JsBarcode("#barcode", "${prod.cdb || prod.id}", {
           format: "CODE128",
           width: 2,
-          height: 100,
+          height: 50,
           displayValue: true,
           fontSize: 18,
           textMargin: 0,
