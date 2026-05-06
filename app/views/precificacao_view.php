@@ -61,7 +61,7 @@
             <div class="row row-3">
               <div class="field">
                 <label>Nome do produto</label>
-                <input type="text" id="nome" placeholder="Digite o nome do produto">
+                <input type="text" id="nomeProduto" placeholder="Digite o nome do produto">
               </div>
 
               <div class="field">
@@ -177,6 +177,10 @@
             <div class="precificacao-info">
               O cálculo de lucro é baseado no custo total do produto.
             </div>
+            
+            <button onclick="salvarPrecificacao()" class="btn-salvar">
+              Salvar
+            </button>
           </div>
         </section>
       </main>

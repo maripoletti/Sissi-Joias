@@ -144,8 +144,6 @@ async function excluirLinha(botao) {
   }
 }
 
-
-// ✏️ EDITAR COM BACKEND
 async function editarQuantidade(botao) {
   const linha = botao.closest("tr");
   const tdQuantidade = linha.children[2];
