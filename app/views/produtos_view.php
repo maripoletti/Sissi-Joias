@@ -30,6 +30,7 @@
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
             <a href="/produtosrevendedores">Produtos dos Revendedores</a>
+            <a href="/precificacao">Precificação</a>
           <?php endif; ?>
         </nav>
       </aside>
@@ -755,7 +756,7 @@
         function ajustarFonteNome() {
           const el = document.querySelector(".nome");
 
-          let fontSize = 100; // começa maior
+          let fontSize = 100;
           const minFont = 6;
 
           el.style.fontSize = fontSize + "pt";
