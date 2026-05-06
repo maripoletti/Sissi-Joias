@@ -28,11 +28,14 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   padding: 0%;
 }
 
-.sidebar{
+.sidebar {
   width: 290px;
   background: #4b0d4f;
   padding: 28px 22px;
   color: #fff;
+
+  display: flex;
+  flex-direction: column;
 }
 .sidebar h2{
   font-size: 22px;

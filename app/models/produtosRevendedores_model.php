@@ -27,8 +27,10 @@ class produtosRevendedores_model extends Dbh {
             $where = !empty($whereParts) ? "WHERE " . implode(" AND ", $whereParts) : "";
  
             $query = "SELECT 
+                sp.ProductID ProdId,
                 sp.ProductName produto,
                 se.FullName revendedor,
+                se.UserID RevId,
                 sep.UsableStock quantidade, 
                 sp.Price preco_revenda,
                 sep.SendAt data_envio

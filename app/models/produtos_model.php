@@ -513,4 +513,21 @@ class Produtos_model extends Dbh {
             exit;
         }
     }
+
+    public function update_employee_products($ProductID, $UserID, $NewStock) {
+        $pdo = $this->connect();
+        try{
+            $query = "UPDATE Sales_EmployeeProducts SET UsableStock = ? 
+            WHERE ProductID = ? AND UserID = ?";
+
+            $stmt=$pdo->prepare($query);
+            $stmt->execute([$NewStock, $ProductID, $UserID]);
+
+            return $stmt->rowCount();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+        }
+    }
 }

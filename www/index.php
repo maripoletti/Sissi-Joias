@@ -181,6 +181,14 @@ switch ($uri) {
       AuthMiddleware::user();
     }
 
+  case '/api/controledeusuarios/excluir':
+    if($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledeusuariosDel_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
   case '/produtos':
     if(isset($_SESSION['user_id'])) {
     if ($method === 'GET') {
@@ -218,6 +226,22 @@ switch ($uri) {
       AuthMiddleware::user();
     }
 
+  case '/api/produtosRevendedores/deletar':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresDelTo_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/produtosRevendedores/editar':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresUpdate_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+    
   case '/api/produtos/xml':
     if(isset($_SESSION["user_id"])) {
       require_once '../app/controllers/produtosXml_contr.php';
