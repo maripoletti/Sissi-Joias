@@ -52,6 +52,7 @@
               <th>Quantidade</th>
               <th>Preço</th>
               <th>Data</th>
+              <th>Ações</th>
             </tr>
           </thead>
           <tbody></tbody>

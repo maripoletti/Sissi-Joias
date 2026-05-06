@@ -164,8 +164,3 @@
 .ni-btn-primary:hover{
   filter: brightness(.96);
 }
-
-@media (max-width: 860px){
-  .ni-grid{ grid-template-columns: 1fr; }
-  .ni-card{ max-width: 100%; }
-}

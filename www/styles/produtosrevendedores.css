@@ -74,3 +74,25 @@ tbody tr:hover {
 #sentinela {
   height: 1px;
 }
+
+.acoes {
+  display: flex;
+  gap: 8px;
+}
+
+.btn-editar,
+.btn-excluir {
+  border: none;
+  padding: 5px 8px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.btn-editar {
+  background: #ffc107;
+}
+
+.btn-excluir {
+  background: #dc3545;
+  color: white;
+}

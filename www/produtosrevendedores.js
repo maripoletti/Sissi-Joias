@@ -56,11 +56,10 @@ function renderizarTabela(dados, append = false) {
   }
 
   dados.forEach(item => {
-    let classeStatus = "status-ativo";
-    if (item.status === "vendido") classeStatus = "status-vendido";
-    if (item.status === "devolvido") classeStatus = "status-devolvido";
-
     const tr = document.createElement("tr");
+
+    // 🔥 ID para backend
+    tr.dataset.id = item.id;
 
     tr.innerHTML = `
       <td>${item.produto}</td>
@@ -68,6 +67,10 @@ function renderizarTabela(dados, append = false) {
       <td>${item.quantidade}</td>
       <td>R$ ${parseFloat(item.preco_revenda).toFixed(2)}</td>
       <td>${formatarData(item.data_envio)}</td>
+      <td class="acoes">
+        <button class="btn-editar" onclick="editarQuantidade(this)">✏️</button>
+        <button class="btn-excluir" onclick="excluirLinha(this)">🗑️</button>
+      </td>
     `;
 
     tbody.appendChild(tr);
@@ -110,4 +113,76 @@ const observer = new IntersectionObserver((entries) => {
 
 observer.observe(sentinela);
 
-carregarProdutos()
+
+// 🗑️ EXCLUIR COM BACKEND
+async function excluirLinha(botao) {
+  const linha = botao.closest("tr");
+  const id = linha.dataset.id;
+
+  if (!confirm("Excluir esse produto?")) return;
+
+  try {
+    const response = await fetch("/api/excluirProdutoRevendedor", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      linha.remove();
+    } else {
+      alert("Erro ao excluir no servidor");
+    }
+
+  } catch (erro) {
+    console.error(erro);
+    alert("Erro na requisição");
+  }
+}
+
+
+// ✏️ EDITAR COM BACKEND
+async function editarQuantidade(botao) {
+  const linha = botao.closest("tr");
+  const tdQuantidade = linha.children[2];
+  const id = linha.dataset.id;
+
+  const valorAtual = tdQuantidade.innerText;
+  const novoValor = prompt("Nova quantidade:", valorAtual);
+
+  if (novoValor === null || novoValor === "" || isNaN(novoValor)) {
+    alert("Digite um número válido");
+    return;
+  }
+
+  try {
+    const response = await fetch("/api/editarQuantidadeProdutoRevendedor", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        id,
+        quantidade: parseInt(novoValor)
+      })
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      tdQuantidade.innerText = novoValor;
+    } else {
+      alert("Erro ao atualizar no servidor");
+    }
+
+  } catch (erro) {
+    console.error(erro);
+    alert("Erro na requisição");
+  }
+}
+
+carregarProdutos();
