@@ -8,13 +8,13 @@
 
 .precificacao-header h1 {
   font-size: 28px;
-  color: #2d1240;
+  color: #4c1c6d;
   margin-bottom: 6px;
   font-weight: 700;
 }
 
 .precificacao-header p {
-  color: #7b7284;
+  color: #3d063c;
   font-size: 15px;
 }
 
@@ -191,7 +191,7 @@
 .btn-salvar {
   margin-top: 20px;
   padding: 10px 20px;
-  background: #28a745;
+  background: #950895;
   color: white;
   border: none;
   border-radius: 6px;
@@ -199,5 +199,5 @@
 }
 
 .btn-salvar:hover {
-  background: #218838;
+  background: #660659;
 }
