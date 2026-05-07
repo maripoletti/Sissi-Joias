@@ -88,9 +88,17 @@
               </div>
 
               <div class="field">
-                <label>Peso</label>
-                <input type="text" id="peso" placeholder="Digite o peso do produto">
+                <label for="peso">Peso em gramas</label>
+                <div class="input-peso">
+                <input
+                type="number"
+                id="peso"
+                placeholder="Digite o peso do produto"
+                min="0"
+                step="0.01"
+                >
               </div>
+             </div>
 
               <div class="field">
                 <label>Categoria</label>
@@ -100,7 +108,15 @@
 
             <div class="field">
                 <label>Metal</label>
-                <input type="text" id="metal" placeholder="Digite o metal do produto">
+                <select id="metal" name="metal">
+                  <option>Ouro</option>
+                  <option>Prata</option>
+                  <option>Ródio</option>
+                  <option>Aço inox</option>
+                  <option>Níquel</option>
+                  <option>Tungstênio</option>
+                  <option>Outro</option>
+                </select>
               </div>
 
             <div class="row row-6">
