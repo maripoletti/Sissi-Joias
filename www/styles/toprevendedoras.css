@@ -1,0 +1,296 @@
+.top-revendedoras {
+  width: 100%;
+  min-height: 100vh;
+  padding: 30px;
+  background: #f1e7f1;
+  border-radius: 20px;
+}
+
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.title-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.title-area i {
+  font-size: 24px;
+  color: #641369;
+}
+
+.title-area h1 {
+  font-size: 28px;
+  color: #1f1f1f;
+}
+
+.btn-campanhas {
+  border: none;
+  background: #570f5c;
+  color: white;
+  padding: 14px 22px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.btn-campanhas:hover {
+  opacity: 0.9;
+}
+
+.filtros {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 35px;
+}
+
+.grupo-filtro span {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  color: #444;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.filter-btn {
+  border: none;
+  background: #f2f2f2;
+  color: #333;
+  padding: 12px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: 0.3s;
+  font-weight: 600;
+}
+
+.filter-btn:hover {
+  background: #e5d6ff;
+}
+
+.filter-btn.active {
+  background: #a11d96;
+  color: white;
+}
+
+.ranking-container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.card-revendedora {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  background: #faf7ff;
+
+  border: 1px solid #ece3ff;
+
+  border-radius: 18px;
+
+  padding: 22px;
+}
+
+.ranking-posicao {
+  display: inline-block;
+  margin-bottom: 8px;
+  color: #a11d96;
+  font-weight: bold;
+}
+
+.nome-revendedora {
+  font-size: 18px;
+  color: #1f1f1f;
+}
+
+.valor-revendedora {
+  font-size: 18px;
+  font-weight: bold;
+  color: #a11d96;
+}
+
+.empty-text {
+  text-align: center;
+  color: #888;
+  margin-top: 100px;
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.5);
+
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  z-index: 999;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-campanhas {
+  width: 700px;
+
+  max-height: 90vh;
+
+  overflow-y: auto;
+
+  background: white;
+
+  border-radius: 22px;
+
+  padding: 28px;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 25px;
+}
+
+.modal-header h2 {
+  color: #1f1f1f;
+}
+
+.modal-header button {
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.campanha-card {
+  background: #faf7ff;
+
+  border: 1px solid #ece3ff;
+
+  border-radius: 18px;
+
+  padding: 18px;
+
+  margin-bottom: 18px;
+}
+
+.campanha-top {
+  display: flex;
+  gap: 10px;
+}
+
+.campanha-top button {
+  width: 50px;
+
+  border: none;
+
+  border-radius: 12px;
+
+  background: #ffeded;
+
+  color: #ff3c3c;
+
+  cursor: pointer;
+}
+
+.campanha-card input,
+.campanha-card textarea {
+  width: 100%;
+
+  border: 1px solid #ddd;
+
+  border-radius: 12px;
+
+  padding: 14px;
+
+  margin-top: 12px;
+
+  resize: none;
+}
+
+.datas {
+  display: flex;
+  gap: 16px;
+  margin-top: 15px;
+}
+
+.datas div {
+  flex: 1;
+}
+
+.datas label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+
+.btn-add,
+.btn-salvar {
+  width: 100%;
+
+  border: none;
+
+  padding: 16px;
+
+  border-radius: 14px;
+
+  cursor: pointer;
+
+  font-weight: bold;
+
+  margin-top: 18px;
+}
+
+.btn-add {
+  background: #f2ebff;
+  color: #a11d96;
+}
+
+.btn-salvar {
+  background: #7c1474;
+  color: white;
+}
+
+@media(max-width: 768px) {
+
+  .top-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .card-revendedora {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .datas {
+    flex-direction: column;
+  }
+
+  .modal-campanhas {
+    width: 95%;
+  }
+}

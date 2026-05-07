@@ -30,6 +30,8 @@
             <a href="/fornecedores">Fornecedores</a>
             <a href="/cadastrarimpressora">Cadastrar Impressora</a>
             <a href="/produtosrevendedores">Produtos dos Revendedores</a>
+            <a href="/precificacao">Precificação</a>
+            <a href="/toprevendedoras">Top Revendedoras</a>
           <?php endif; ?>
         </nav>
       </aside>
