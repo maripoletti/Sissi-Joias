@@ -160,4 +160,18 @@ class ControledeusuariosModel extends Dbh {
             echo "Erro na conexão: " . $e->getMessage();
         }
     }
+
+    public function delete_user(int $id) {
+        $pdo = $this->connect();
+
+        try {
+            $query = "DELETE FROM Temp_PendingUsers WHERE PendUserID = ?";
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute([$id]);
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            echo "Erro na conexão: " . $e->getMessage();
+        }
+    }
 }

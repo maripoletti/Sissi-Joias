@@ -115,9 +115,10 @@ class relatorios_model extends Dbh {
             $stmt = $pdo->prepare("
                 SELECT 
                     p.ProductName AS nome,
-                    SUM(so.Quantity) AS vendidos
-                FROM Sales_Orders so
-                JOIN Sales_Products p ON so.ProductID = p.ProductID
+                    SUM(soi.Quantity) AS vendidos
+                FROM Sales_OrderItems soi
+                JOIN Sales_Products p ON soi.ProductID = p.ProductID
+                JOIN Sales_Orders so ON soi.OrderID = so.OrderID
                 WHERE so.Status = '1'
                 GROUP BY p.ProductID
                 ORDER BY vendidos DESC

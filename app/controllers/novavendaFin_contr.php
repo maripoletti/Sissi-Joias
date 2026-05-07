@@ -20,7 +20,7 @@ if($validate['errors']) {
     $_SESSION['error_order_sale'] = $validate['errors'];
     exit;
 } else {
-    $result = $db->realizar_venda($validate['data']['produto'], $validate['data']['cliente'], $validate['data']['pagamento']);
+    $result = $db->realizar_venda($validate['data']['produtos'], $validate['data']['cliente'], $validate['data']['pagamento']);
 
     if ($result === false) {
         exit;

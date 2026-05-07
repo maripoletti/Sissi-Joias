@@ -59,7 +59,9 @@ function renderizarTabela(dados, append = false) {
     const tr = document.createElement("tr");
 
     // 🔥 ID para backend
-    tr.dataset.id = item.id;
+    tr.dataset.prodId = item.ProdId;
+    tr.dataset.revId = item.RevId;
+    
 
     tr.innerHTML = `
       <td>${item.produto}</td>
@@ -114,20 +116,20 @@ const observer = new IntersectionObserver((entries) => {
 observer.observe(sentinela);
 
 
-// 🗑️ EXCLUIR COM BACKEND
 async function excluirLinha(botao) {
   const linha = botao.closest("tr");
-  const id = linha.dataset.id;
+  const prodId = linha.dataset.prodId;
+  const revId = linha.dataset.revId;
 
   if (!confirm("Excluir esse produto?")) return;
 
   try {
-    const response = await fetch("/api/excluirProdutoRevendedor", {
+    const response = await fetch("/api/produtosRevendedores/deletar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ id })
+      body: JSON.stringify({ prodId, revId })
     });
 
     const result = await response.json();
@@ -147,7 +149,8 @@ async function excluirLinha(botao) {
 async function editarQuantidade(botao) {
   const linha = botao.closest("tr");
   const tdQuantidade = linha.children[2];
-  const id = linha.dataset.id;
+  const prodId = linha.dataset.prodId;
+  const revId = linha.dataset.revId;
 
   const valorAtual = tdQuantidade.innerText;
   const novoValor = prompt("Nova quantidade:", valorAtual);
@@ -158,13 +161,14 @@ async function editarQuantidade(botao) {
   }
 
   try {
-    const response = await fetch("/api/editarQuantidadeProdutoRevendedor", {
+    const response = await fetch("/api/produtosRevendedores/editar", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        id,
+        prodId,
+        revId,
         quantidade: parseInt(novoValor)
       })
     });

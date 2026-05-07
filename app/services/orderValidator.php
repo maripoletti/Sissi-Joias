@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 class orderValidator {
 
-    public static function validate(array $cliente, string $pagamento, array $produto) {
+    public static function validate(array $cliente, string $pagamento, array $produtos) {
 
         $errors = [];
 
@@ -14,7 +14,7 @@ class orderValidator {
                 "cpf" => preg_replace('/\D/', '', $cliente["cpf"] ?? null)
             ],
             "pagamento" => trim($pagamento ?? ""),
-            "produto" => null
+            "produtos" => []
         ];
 
         if ($clean["cliente"]["nome"] === "") {
@@ -35,28 +35,33 @@ class orderValidator {
             $errors["pagamento_invalid"] = "Pagamento inválido.";
         }
 
-        $id = (int)($produto[0]["id"] ?? null);
-        $quantidade = (int)($produto[0]["quantidade"] ?? null);
-        $preco = (float)($produto[0]["preco"] ?? null);
+        if (empty($produtos) || !is_array($produtos)) {
+            $errors["produto_empty"] = "Nenhum produto enviado.";
+        } else {
+            foreach ($produtos as $i => $p) {
 
-        if (!is_int($id) || $id <= 0) {
-            $errors["produto_invalid"] = "Produto inválido.";
-        }
+                $id = (int)($p["id"] ?? 0);
+                $quantidade = (int)($p["quantidade"] ?? 0);
+                $preco = (float)($p["preco"] ?? 0);
 
-        if (!is_int($quantidade) || $quantidade < 1) {
-            $errors["quantidade_invalid"] = "Quantidade inválida.";
-        }
+                if ($id <= 0) {
+                    $errors["produto_{$i}_id"] = "Produto inválido.";
+                }
 
-        if (!is_numeric($preco) || $preco <= 0) {
-            $errors["preco_invalid"] = "Preço inválido.";
-        }
+                if ($quantidade < 1) {
+                    $errors["produto_{$i}_quantidade"] = "Quantidade inválida.";
+                }
 
-        if (empty($errors)) {
-            $clean["produto"] = [
-                "id" => $id,
-                "quantidade" => $quantidade,
-                "preco" => (float)$preco
-            ];
+                if ($preco <= 0) {
+                    $errors["produto_{$i}_preco"] = "Preço inválido.";
+                }
+
+                $clean["produtos"][] = [
+                    "id" => $id,
+                    "quantidade" => $quantidade,
+                    "preco" => $preco
+                ];
+            }
         }
 
         return [

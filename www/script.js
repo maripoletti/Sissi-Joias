@@ -543,14 +543,9 @@ async function carregarVendas() {
     }
 
     const html = vendas.map((v) => criarCard({
-      id: v.OrderID,
-      produto: v.ProductName,
-      pagamento: v.PaymentMethod,
-      vendedora: v.EmployeeName,
-      cliente: v.ClienteName,
-      qtd: v.Quantity,
-      data: new Date(v.OrderDate).toLocaleDateString("pt-BR"),
-      valor: parseFloat(v.Sales)
+      ...v,
+      OrderDate: new Date(v.OrderDate).toLocaleDateString("pt-BR"),
+      Sales: parseFloat(v.Sales)
     })).join("");
 
     lista.insertAdjacentHTML("beforeend", html);
@@ -570,24 +565,32 @@ async function carregarVendas() {
 }
 
 function criarCard(v) {
+  const produtos = Array.isArray(v.produtos) ? v.produtos : [];
+
+  const nomes = produtos.length
+    ? produtos.map(p => `${p.nome} x ${p.qtd}`).join("<br>")
+    : "Sem produtos";
+
+  const qtdTotal = produtos.reduce((acc, p) => acc + Number(p.qtd || 0), 0);
+
   return `
-    <article class="sale-card" data-id="${v.id}">
+    <article class="sale-card" data-id="${v.OrderID}">
       <div class="card-left">
         <div class="title-row">
-          <h3 class="prod-title">${v.produto}</h3>
-          <span class="pill">${v.pagamento}</span>
+          <h3 class="prod-title">${nomes}</h3>
+          <span class="pill">${v.PaymentMethod || "-"}</span>
         </div>
 
         <div class="meta">
-          <b>${v.vendedora}</b> · Cliente: <b>${v.cliente}</b> · Qtd: <b>${v.qtd}</b>
+          <b>${v.EmployeeName || "-"}</b> · Cliente: <b>${v.ClienteName || "-"}</b> · Qtd: <b>${qtdTotal}</b>
         </div>
 
-        <div class="date">${v.data}</div>
+        <div class="date">${v.OrderDate || "-"}</div>
       </div>
 
       <div class="card-right">
-        <div class="price">${formatBRL(v.valor)}</div>
-        <button class="btn-delete" type="button" onclick="delVenda(${v.id})">🗑 Apagar</button>
+        <div class="price">${formatBRL(Number(v.Sales || 0))}</div>
+        <button class="btn-delete" type="button" onclick="delVenda(${v.OrderID})">🗑 Apagar</button>
       </div>
     </article>
   `;

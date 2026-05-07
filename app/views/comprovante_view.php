@@ -3,46 +3,51 @@
 <head>
 <meta charset="UTF-8">
 <style>
-*{ margin:0; padding:0; box-sizing:border-box; }
+* { margin:0; padding:0; box-sizing:border-box; }
 
 @media print {
   @page {
-    size: 58mm 70mm;
+    size: 58mm;
     margin: 0;
-    }
+  }
 
   body {
     margin: 0;
+    padding: 0;
   }
 }
 
-body{
-  width:58mm;
+body {
   font-family: monospace;
-  font-size:12px;
+  font-size: 10px;
+  margin: 0;
 }
 
-.ticket{
-  width:100%;
-  padding:4px;
+.ticket {
+  width: 58mm;
+  padding: 4px;
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
 }
 
-.center{ text-align:center; }
+.center { text-align: center; }
 
-.divisor{
-  border-top:1px dashed black;
-  margin:4px 0;
+.divisor {
+  border-top: 1px dashed black;
+  margin: 4px 0;
 }
 
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap:4px;
+.row {
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
 }
 
-.total{
-  font-weight:bold;
-  font-size:13px;
+.total {
+  font-weight: bold;
+  font-size: 13px;
 }
 </style>
 </head>
@@ -50,46 +55,42 @@ body{
 
 <div class="ticket">
 
-<div class="center">
-<b>SISSI SEMIJOIAS E ACESSÓRIOS</b><br>
-CNPJ: 49.455.057/0001-74
-Comprovante de Venda
-</div>
+  <div class="center">
+    <b>SISSI SEMIJOIAS E ACESSÓRIOS</b><br>
+    CNPJ: 49.455.057/0001-74<br>
+    Comprovante de Venda
+  </div>
 
-<div class="divisor"></div>
+  <?php
+  $total = 0;
+  foreach ($venda as $item): 
+    $subtotal = $item['Price'] * $item['Quantity'];
+    $total += $subtotal;
+  ?>
+    <div>
+      <div><?= $item['ProductName'] ?></div>
+      <div class="row">
+        <span><?= $item['Quantity'] ?> x <?= number_format($item['Price'],2,",",".") ?></span>
+        <span>R$ <?= number_format($subtotal,2,",",".") ?></span>
+      </div>
+    </div>
+  <?php endforeach; ?>
 
-<div class="row">
-<span>Produto:</span>
-<span><?= $venda['ProductName'] ?></span>
-</div>
+  <div class="divisor"></div>
+  <div class="row total">
+    <span>TOTAL</span>
+    <span>R$ <?= number_format($total,2,",",".") ?></span>
+  </div>
+  <div class="divisor"></div>
 
-<div class="row">
-<span>Qtd:</span>
-<span><?= $venda['Quantity'] ?></span>
-</div>
+  <div class="center">
+    Pagamento: <?= $venda[0]['PaymentMethod'] ?><br>
+    Data: <?= date("d/m/Y H:i", strtotime($venda[0]['OrderDate'])) ?>
+  </div>
 
-<div class="row">
-<span>Preço unit:</span>
-<span>R$ <?= number_format($venda['Price'],2,",",".") ?></span>
-</div>
-
-<div class="divisor"></div>
-
-<div class="row total">
-<span>TOTAL</span>
-<span>R$ <?= number_format($venda['Sales'],2,",",".") ?></span>
-</div>
-
-<div class="divisor"></div>
-
-<div class="center">
-Pagamento: <?= $venda['PaymentMethod'] ?><br>
-Data: <?= date("d/m/Y H:i", strtotime($venda['OrderDate'])) ?>
-</div>
-
-<div class="center" style="margin-top:6px;">
-Obrigado pela preferência
-</div>
+  <div class="center" style="margin-top:6px;">
+    Obrigado pela preferência
+  </div>
 
 </div>
 
