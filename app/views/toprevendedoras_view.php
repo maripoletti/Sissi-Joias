@@ -133,9 +133,7 @@
     </div>
 
   </div>
-
-  <!-- MODAL CAMPANHAS -->
-
+  
   <div class="modal-overlay" id="modalOverlay">
 
     <div class="modal-campanhas">

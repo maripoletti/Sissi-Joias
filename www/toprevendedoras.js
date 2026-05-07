@@ -33,10 +33,6 @@ const modalOverlay = document.getElementById(
   'modalOverlay'
 );
 
-/* =========================
-   CRIAR FILTROS
-========================= */
-
 function criarFiltros() {
 
   mesesContainer.innerHTML = '';
