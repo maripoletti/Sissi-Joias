@@ -6,7 +6,13 @@ const meses = [
   'Set', 'Out', 'Nov', 'Dez'
 ];
 
-const anos = [2025, 2026, 2027, 2028];
+const anoAtual = new Date().getFullYear();
+
+const anos = [];
+
+for (let i = 2026; i <= anoAtual; i++) {
+  anos.push(i);
+}
 
 let campanhas = [];
 
@@ -86,10 +92,6 @@ function criarFiltros() {
     anosContainer.appendChild(btn);
   });
 }
-
-/* =========================
-   CAMPANHAS FILTRO
-========================= */
 
 function renderizarCampanhasFiltro() {
 
