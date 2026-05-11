@@ -45,29 +45,35 @@
 
             <div class="status-row">
               <div class="checks">
-                <label><input type="checkbox" checked> Acabado</label>
-                <label><input type="checkbox" checked> Ativo</label>
-                <label><input type="checkbox" checked> Compartilhar</label>
+                <label><input type="checkbox" id="acabado" checked> Acabado</label>
+                <label><input type="checkbox" id="ativo" checked> Ativo</label>
+                <label><input type="checkbox" id="compartilhar" checked> Compartilhar</label>
               </div>
 
               <div class="field">
                 <label>Sincronizar com a Up vendas?</label>
-                <select>
-                  <option>Não</option>
-                  <option>Sim</option>
+                <select id="sincronizarUpVendas">
+                  <option value="nao">Não</option>
+                  <option value="sim">Sim</option>
                 </select>
               </div>
             </div>
 
             <div class="row row-3">
-              <div class="field">
+              <div class="field field-produto-busca">
                 <label>Nome do produto</label>
-                <input type="text" id="nomeProduto" placeholder="Digite o nome do produto">
+                <input type="text" id="nomeProduto" placeholder="Digite o nome do produto" autocomplete="off">
+                <div id="resultadoBuscaProduto" class="produto-sugestoes"></div>
               </div>
 
               <div class="field">
                 <label>Custo Total</label>
                 <input id="custoTotal" type="text" readonly>
+              </div>
+
+              <div class="field">
+                <label>Metal selecionado</label>
+                <select id="metal" name="metal"></select>
               </div>
             </div>
 
@@ -89,16 +95,8 @@
 
               <div class="field">
                 <label for="peso">Peso em gramas</label>
-                <div class="input-peso">
-                <input
-                type="number"
-                id="peso"
-                placeholder="Digite o peso do produto"
-                min="0"
-                step="0.01"
-                >
+                <input type="number" id="peso" placeholder="Digite o peso do produto" min="0" step="0.01">
               </div>
-             </div>
 
               <div class="field">
                 <label>Categoria</label>
@@ -106,57 +104,101 @@
               </div>
             </div>
 
-            <div class="field">
-                <label>Metal</label>
-                <select id="metal" name="metal">
-                  <option>Ouro</option>
-                  <option>Prata</option>
-                  <option>Ródio</option>
-                  <option>Aço inox</option>
-                  <option>Níquel</option>
-                  <option>Tungstênio</option>
-                  <option>Outro</option>
-                </select>
+            <div class="metal-card">
+              <div class="metal-card-header">
+                <div>
+                  <h3>Metais e valor por grama</h3>
+                  <p>Cadastre, remova e use o valor por grama no custo do produto.</p>
+                </div>
               </div>
+
+              <div class="row row-3">
+                <div class="field">
+                  <label>Novo metal</label>
+                  <input type="text" id="novoMetal" placeholder="Ex: Ouro 18k">
+                </div>
+
+                <div class="field">
+                  <label>Valor por grama</label>
+                  <input type="text" id="valorGramaMetal" class="money" placeholder="R$ 0,00">
+                </div>
+
+                <button type="button" class="btn-add-metal" onclick="adicionarMetal()">
+                  Adicionar metal
+                </button>
+              </div>
+
+              <div class="row row-3">
+                <div class="field">
+                  <label>Valor/g do metal selecionado</label>
+                  <input id="valorGramaSelecionado" type="text" readonly>
+                </div>
+
+                <div class="field destaque">
+                  <label>Custo do metal no produto</label>
+                  <input id="custoMetal" type="text" class="custo" readonly>
+                </div>
+              </div>
+
+              <div id="listaMetais" class="lista-metais"></div>
+            </div>
 
             <div class="row row-6">
               <div class="field">
                 <label>Custo Compra Bruto</label>
-                <input type="text" class="money custo">
+                <input type="text" id="custoCompraBruto" class="money custo">
               </div>
 
               <div class="field">
                 <label>Custo Insumo</label>
-                <input type="text" class="money custo">
+                <input type="text" id="custoInsumo" class="money custo">
               </div>
 
               <div class="field">
                 <label>Milésimos</label>
-                <input type="text" id="milésimos" placeholder="Digite os milésimos do produto">
+                <input type="text" id="milesimos" placeholder="Digite os milésimos do produto">
               </div>
 
               <div class="field">
                 <label>Banho Ouro</label>
-                <input type="text" class="money custo">
+                <input type="text" id="banhoOuro" class="money custo">
               </div>
 
               <div class="field">
                 <label>Banho Prata</label>
-                <input type="text" class="money custo">
+                <input type="text" id="banhoPrata" class="money custo">
               </div>
 
               <div class="field">
                 <label>Banho Ródio</label>
-                <input type="text" class="money custo">
+                <input type="text" id="banhoRodio" class="money custo">
+              </div>
+            </div>
+
+            <div class="lucro-config">
+              <div class="precificacao-info">
+                Configure o lucro padrão. Quando a tabela for ATACADO, o sistema usa o percentual de atacado. Quando for VAREJO, usa o percentual de varejo.
+              </div>
+
+              <div class="row row-2">
+                <div class="field destaque">
+                  <label>% lucro atacado</label>
+                  <input type="number" id="percentualAtacado" value="40" min="0" step="0.01">
+                </div>
+
+                <div class="field destaque">
+                  <label>% lucro varejo</label>
+                  <input type="number" id="percentualVarejo" value="60" min="0" step="0.01">
+                </div>
               </div>
             </div>
 
             <div class="row row-3">
               <div class="field">
                 <label>Tabela Preço 1</label>
-                <select>
-                  <option>VAREJO</option>
-                  <option>ATACADO</option>
+                <select id="tipoTabela1">
+                  <option value="VAREJO">VAREJO</option>
+                  <option value="ATACADO">ATACADO</option>
                 </select>
               </div>
 
@@ -167,34 +209,30 @@
 
               <div class="field">
                 <label>Valor Tabela 1</label>
-                <input id="valor1" type="text" class="money">
+                <input id="valor1" type="text" readonly>
               </div>
             </div>
 
             <div class="row row-3">
               <div class="field">
                 <label>Tabela Preço 2</label>
-                <select>
-                  <option>ATACADO</option>
-                  <option>VAREJO</option>
+                <select id="tipoTabela2">
+                  <option value="ATACADO">ATACADO</option>
+                  <option value="VAREJO">VAREJO</option>
                 </select>
               </div>
 
-              <div class="field">
+              <div class="field destaque">
                 <label>% Lucro Tabela 2</label>
                 <input id="lucro2" type="text" readonly>
               </div>
 
               <div class="field">
                 <label>Valor Tabela 2</label>
-                <input id="valor2" type="text" class="money">
+                <input id="valor2" type="text" readonly>
               </div>
             </div>
 
-            <div class="precificacao-info">
-              O cálculo de lucro é baseado no custo total do produto.
-            </div>
-            
             <button onclick="salvarPrecificacao()" class="btn-salvar">
               Salvar
             </button>
