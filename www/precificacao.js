@@ -1,8 +1,15 @@
-const API_BUSCAR_PRODUTO = "/api/buscarProduto";
-const API_SALVAR_PRECIFICACAO = "/api/salvarPrecificacao";
+const API_BUSCAR_PRODUTO = "/api/precificacao/buscarproduto";
+const API_SALVAR_PRECIFICACAO = "/api/precificacao/salvarproduto";
+
+const API_LISTAR_METAIS = "/api/metais/get";
+const API_CRIAR_METAL = "/api/metais/add";
+const API_DELETAR_METAL = "/api/metais/del";
 
 // ================== ELEMENTOS ==================
+let modoEdicao = false;
+let produtoIdAtual = null;
 
+const precoFinalInput = document.getElementById("precoFin");
 const custoTotalInput = document.getElementById("custoTotal");
 const valor1Input = document.getElementById("valor1");
 const valor2Input = document.getElementById("valor2");
@@ -18,6 +25,7 @@ const pesoInput = document.getElementById("peso");
 const categoriaVitrineInput = document.getElementById("categoriaVitrine");
 
 const metalSelect = document.getElementById("metal");
+const metalBanhoSelect = document.getElementById("metalBanho");
 const novoMetalInput = document.getElementById("novoMetal");
 const valorGramaMetalInput = document.getElementById("valorGramaMetal");
 const valorGramaSelecionadoInput = document.getElementById("valorGramaSelecionado");
@@ -31,10 +39,15 @@ const tipoTabela2Select = document.getElementById("tipoTabela2");
 
 const custoCompraBrutoInput = document.getElementById("custoCompraBruto");
 const custoInsumoInput = document.getElementById("custoInsumo");
-const banhoOuroInput = document.getElementById("banhoOuro");
-const banhoPrataInput = document.getElementById("banhoPrata");
-const banhoRodioInput = document.getElementById("banhoRodio");
+const banhoCustoInput = document.getElementById("banhoCusto");
 const milesimosInput = document.getElementById("milesimos");
+const milesimosBanhoInput = document.getElementById("milesimosBanho");
+
+function setModoEdicao(valor, id = null) {
+  modoEdicao = valor;
+  produtoIdAtual = id;
+  atualizarTextoBotao();
+}
 
 // ================== MOEDA ==================
 
@@ -144,20 +157,30 @@ const METAIS_PADRAO = [
   { nome: "Tungstênio", valorGrama: 0 }
 ];
 
-let metais = carregarMetais();
+let metais = [];
 
-function carregarMetais() {
+async function carregarMetais() {
+
   try {
-    const salvos = JSON.parse(localStorage.getItem(METAIS_STORAGE_KEY));
 
-    if (Array.isArray(salvos) && salvos.length > 0) {
-      return salvos;
+    const response = await fetch(API_LISTAR_METAIS);
+
+    if (!response.ok) {
+      throw new Error("Erro ao carregar metais.");
     }
-  } catch (erro) {
-    console.warn("Não foi possível carregar os metais do navegador.", erro);
-  }
 
-  return [...METAIS_PADRAO];
+    metais = await response.json();
+
+    renderizarMetais();
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    metais = [...METAIS_PADRAO];
+
+    renderizarMetais();
+  }
 }
 
 function salvarMetaisLocalmente() {
@@ -189,27 +212,57 @@ function garantirMetal(nome, valorGrama = 0) {
   renderizarMetais(nomeTratado);
 }
 
-function renderizarMetais(metalSelecionadoAtual = metalSelect ? metalSelect.value : "") {
-  if (!metalSelect || !listaMetais) return;
+function renderizarMetais(
+  metalSelecionadoAtual = metalSelect ? metalSelect.value : "",
+  metalBanhoSelecionadoAtual = metalBanhoSelect ? metalBanhoSelect.value : ""
+) {
+
+  if (!metalSelect || !metalBanhoSelect || !listaMetais) return;
 
   metalSelect.innerHTML = "";
+  metalBanhoSelect.innerHTML = "";
 
   if (metais.length === 0) {
     metalSelect.innerHTML = '<option value="">Nenhum metal cadastrado</option>';
-    listaMetais.innerHTML = '<div class="produto-sugestao-vazio">Nenhum metal cadastrado.</div>';
+    metalBanhoSelect.innerHTML = '<option value="">Nenhum metal cadastrado</option>';
+
+    listaMetais.innerHTML =
+      '<div class="produto-sugestao-vazio">Nenhum metal cadastrado.</div>';
+
     recalcularPrecificacao();
     return;
   }
 
   metais.forEach(metal => {
-    const option = document.createElement("option");
-    option.value = metal.nome;
-    option.textContent = `${metal.nome} - ${formatarMoedaBR(metal.valorGrama)}/g`;
-    metalSelect.appendChild(option);
+
+    const option1 = document.createElement("option");
+    option1.value = metal.nome;
+    option1.textContent =
+      `${metal.nome} - ${formatarMoedaBR(metal.valorGrama)}/g`;
+
+    metalSelect.appendChild(option1);
+
+    const option2 = document.createElement("option");
+    option2.value = metal.nome;
+    option2.textContent =
+      `${metal.nome} - ${formatarMoedaBR(metal.valorGrama)}/g`;
+
+    metalBanhoSelect.appendChild(option2);
   });
 
-  const metalAindaExiste = metais.some(metal => metal.nome === metalSelecionadoAtual);
-  metalSelect.value = metalAindaExiste ? metalSelecionadoAtual : metais[0].nome;
+  const metalExiste = metais.some(
+    metal => metal.nome === metalSelecionadoAtual
+  );
+
+  const metalBanhoExiste = metais.some(
+    metal => metal.nome === metalBanhoSelecionadoAtual
+  );
+
+  metalSelect.value =
+    metalExiste ? metalSelecionadoAtual : metais[0].nome;
+
+  metalBanhoSelect.value =
+    metalBanhoExiste ? metalBanhoSelecionadoAtual : metais[0].nome;
 
   listaMetais.innerHTML = metais.map((metal, index) => `
     <div class="metal-item">
@@ -218,7 +271,11 @@ function renderizarMetais(metalSelecionadoAtual = metalSelect ? metalSelect.valu
         <span>${formatarMoedaBR(metal.valorGrama)} por grama</span>
       </div>
 
-      <button type="button" class="btn-remover-metal" onclick="removerMetal(${index})">
+      <button
+        type="button"
+        class="btn-remover-metal"
+        onclick="removerMetal(${index})"
+      >
         Remover
       </button>
     </div>
@@ -227,9 +284,12 @@ function renderizarMetais(metalSelecionadoAtual = metalSelect ? metalSelect.valu
   recalcularPrecificacao();
 }
 
-function adicionarMetal() {
+async function adicionarMetal() {
+
   const nome = novoMetalInput.value.trim();
-  const valorGrama = limparMoeda(valorGramaMetalInput.value);
+
+  const valorGrama =
+    limparMoeda(valorGramaMetalInput.value);
 
   if (!nome) {
     alert("Digite o nome do metal.");
@@ -237,54 +297,169 @@ function adicionarMetal() {
   }
 
   if (valorGrama <= 0) {
-    alert("Digite o valor por grama do metal.");
+    alert("Digite o valor por grama.");
     return;
   }
 
-  const existe = metais.some(
-    metal => metal.nome.toLowerCase() === nome.toLowerCase()
-  );
+  try {
 
-  if (existe) {
-    alert("Esse metal já existe. Remova ou altere o nome antes de cadastrar novamente.");
-    return;
+    const response = await fetch(API_CRIAR_METAL, {
+
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify({
+        nome,
+        valorGrama
+      })
+    });
+
+    const result = await response.json();
+
+    if (!result.success) {
+      alert(result.message || "Erro.");
+      return;
+    }
+
+    metais.push({
+      id: result.id,
+      nome,
+      valorGrama
+    });
+
+    novoMetalInput.value = "";
+    valorGramaMetalInput.value = "";
+
+    renderizarMetais(nome);
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    alert("Erro ao adicionar metal.");
   }
-
-  metais.push({ nome, valorGrama });
-  salvarMetaisLocalmente();
-
-  novoMetalInput.value = "";
-  valorGramaMetalInput.value = "";
-
-  renderizarMetais(nome);
 }
 
-function removerMetal(index) {
-  if (!metais[index]) return;
+async function removerMetal(index) {
 
-  const confirmar = confirm(`Remover o metal "${metais[index].nome}"?`);
+  const metal = metais[index];
+
+  if (!metal) return;
+
+  const confirmar = confirm(
+    `Remover "${metal.nome}"?`
+  );
+
   if (!confirmar) return;
 
-  metais.splice(index, 1);
-  salvarMetaisLocalmente();
-  renderizarMetais();
+  try {
+
+    const response = await fetch(
+      API_DELETAR_METAL,
+      {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json"
+        },
+
+        body: JSON.stringify({
+          id: metal.id
+        })
+      }
+    );
+
+    const result = await response.json();
+
+    if (!result.success) {
+      alert("Erro ao remover.");
+      return;
+    }
+
+    metais.splice(index, 1);
+
+    renderizarMetais();
+
+  } catch (erro) {
+
+    console.error(erro);
+
+    alert("Erro ao remover metal.");
+  }
 }
 
 function atualizarCustoMetal() {
+
   const metal = getMetalSelecionado();
-  const peso = limparNumero(pesoInput ? pesoInput.value : 0);
-  const valorGrama = metal ? limparNumero(metal.valorGrama) : 0;
-  const custoMetal = peso * valorGrama;
+
+  const metalBanho = metais.find(
+    item => item.nome === metalBanhoSelect.value
+  );
+
+  const peso = limparNumero(pesoInput.value);
+
+  const milesimos = limparNumero(milesimosInput.value);
+
+  const milesimosBanho = limparNumero(milesimosBanhoInput.value);
+
+  const valorGramaMetal =
+    metal ? limparNumero(metal.valorGrama) : 0;
+
+  const valorGramaBanho =
+    metalBanho ? limparNumero(metalBanho.valorGrama) : 0;
+
+  // metal principal
+  const custoMetal =
+    peso *
+    valorGramaMetal *
+    (milesimos / 1000);
+
+  // banho
+  const custoBanho =
+    peso *
+    valorGramaBanho *
+    (milesimosBanho / 1000);
 
   if (valorGramaSelecionadoInput) {
+
     valorGramaSelecionadoInput.value = metal
-      ? `${formatarMoedaBR(valorGrama)}/g`
+      ? `${formatarMoedaBR(valorGramaMetal)}/g`
       : formatarMoedaBR(0);
   }
 
-  if (custoMetalInput) {
-    custoMetalInput.value = formatarMoedaBR(custoMetal);
+  custoMetalInput.value =
+    formatarMoedaBR(custoMetal);
+
+  banhoCustoInput.value =
+    formatarMoedaBR(custoBanho);
+}
+
+function atualizarTextoBotao() {
+  const btn = document.getElementById("btnSalvar");
+  if (!btn) return;
+
+  const sincronizar = document.getElementById("sincronizarUpVendas").value;
+
+  if (sincronizar === "nao") {
+    btn.textContent = "Criar";
+  } else {
+    btn.textContent = "Salvar";
   }
+}
+
+document.getElementById("sincronizarUpVendas").addEventListener("change", (e) => {
+  if (e.target.value === "nao") {
+    setModoEdicao(false, null);
+  }
+
+  atualizarTextoBotao();
+});
+
+function resetarFormulario() {
+  setModoEdicao(false, null);
 }
 
 // ================== CÁLCULO ==================
@@ -345,7 +520,7 @@ if (nomeProdutoInput) {
 
     timeoutBusca = setTimeout(() => {
       buscarProduto(nomeProdutoInput.value);
-    }, 500);
+    }, 20);
   });
 }
 
@@ -366,7 +541,7 @@ function extrairListaProdutos(dados) {
 async function buscarProduto(nome) {
   const nomeTratado = nome.trim();
 
-  if (nomeTratado.length < 2) {
+  if (nomeTratado.length < 1) {
     esconderSugestoesProduto();
     return;
   }
@@ -425,12 +600,10 @@ function mostrarSugestoesProduto(produtos, mensagemVazia = "Nenhum produto encon
 
   resultadoBuscaProduto.innerHTML = produtos.map((produto, index) => {
     const nome = pegarValor(produto, "nome", "nome_produto", "produto") || "Produto sem nome";
-    const referencia = pegarValor(produto, "referencia", "referência", "ref") || "";
-    const complemento = referencia ? ` - Ref: ${referencia}` : "";
 
     return `
       <button type="button" class="produto-sugestao-item" onclick="selecionarProdutoEncontrado(${index})">
-        ${escapeHTML(nome + complemento)}
+        ${escapeHTML(nome)}
       </button>
     `;
   }).join("");
@@ -453,31 +626,46 @@ function selecionarProdutoEncontrado(index) {
 }
 
 function preencherFormularioProduto(produto) {
+  setModoEdicao(true, pegarValor(produto, "ref", "id", "produto_id")); 
+  atualizarTextoBotao();
+  
   const custosProduto = produto.custos || produto;
   const tabelasProduto = produto.tabelas || produto;
 
   setTextoInput(nomeProdutoInput, pegarValor(produto, "nome", "nome_produto", "produto"));
   setTextoInput(referenciaInput, pegarValor(produto, "referencia", "referência", "ref"));
   setTextoInput(codigoExternoInput, pegarValor(produto, "codigo_externo", "codigoExterno", "código_externo"));
-  setTextoInput(unidadeEstoqueInput, pegarValor(produto, "unidade_estoque", "unidadeEstoque", "un_estoque"));
+  setTextoInput(unidadeEstoqueInput, pegarValor(produto, "unidade_estoque", "estoque", "un_estoque"));
   setTextoInput(pesoInput, pegarValor(produto, "peso", "peso_gramas", "gramas"));
   setTextoInput(categoriaVitrineInput, pegarValor(produto, "categoria", "categoria_vitrine", "categoriaVitrine"));
   setTextoInput(milesimosInput, pegarValor(produto, "milesimos", "milésimos", "milesimo"));
+  setTextoInput(milesimosBanhoInput, pegarValor(produto, "milesimosBanho", "milésimosBanho", "milesimoBanho"));
 
-  setMoedaInput(custoCompraBrutoInput, pegarValor(custosProduto, "custo_compra_bruto", "custoCompraBruto", "compra_bruto"));
+  setMoedaInput(precoFinalInput, pegarValor(produto, "preco", "preço", "precoReal"));
+
+  setMoedaInput(custoCompraBrutoInput, pegarValor(custosProduto, "custo_compra_bruto", "custoBruto", "compra_bruto"));
   setMoedaInput(custoInsumoInput, pegarValor(custosProduto, "custo_insumo", "custoInsumo", "insumo"));
-  setMoedaInput(banhoOuroInput, pegarValor(custosProduto, "banho_ouro", "banhoOuro"));
-  setMoedaInput(banhoPrataInput, pegarValor(custosProduto, "banho_prata", "banhoPrata"));
-  setMoedaInput(banhoRodioInput, pegarValor(custosProduto, "banho_rodio", "banhoRódio", "banhoRodio"));
+  setMoedaInput(banhoCustoInput, pegarValor(custosProduto, "banho_custo", "banhoCusto"));
 
-  const nomeMetal = pegarValor(produto, "metal", "nome_metal", "nomeMetal");
+
   const valorGramaMetal = limparNumero(
     pegarValor(produto, "valor_grama_metal", "valorGramaMetal", "valorGrama")
   );
+  const idMetal = pegarValor(produto, "metal", "metal_id", "idMetal");
+  const idMetalBanho = pegarValor(produto, "metalBanho", "metal_banho", "idMetalBanho");
 
-  if (nomeMetal) {
-    garantirMetal(nomeMetal, valorGramaMetal);
-    metalSelect.value = nomeMetal;
+  if (idMetal) {
+    const metalObj = metais.find(m => m.id === Number(idMetal));
+    if (metalObj) {
+      metalSelect.value = metalObj.nome; // seleciona pelo nome correspondente ao ID
+    }
+  }
+
+  if (idMetalBanho) {
+    const metalBanhoObj = metais.find(m => m.id === Number(idMetalBanho));
+    if (metalBanhoObj) {
+      metalBanhoSelect.value = metalBanhoObj.nome;
+    }
   }
 
   const percentualAtacado = pegarValor(
@@ -519,93 +707,59 @@ function preencherFormularioProduto(produto) {
 // ================== FETCH - SALVAR PRECIFICAÇÃO ==================
 
 async function salvarPrecificacao() {
-  const metalSelecionado = getMetalSelecionado();
-
-  const custoTotal = limparMoeda(custoTotalInput.value);
-  const percentualTabela1 = limparPercentual(lucro1Input.value);
-  const percentualTabela2 = limparPercentual(lucro2Input.value);
+  const sincronizar = document.getElementById("sincronizarUpVendas").value;
 
   const payload = {
-    status: {
-      acabado: document.getElementById("acabado")?.checked || false,
-      ativo: document.getElementById("ativo")?.checked || false,
-      compartilhar: document.getElementById("compartilhar")?.checked || false,
-      sincronizarUpVendas: document.getElementById("sincronizarUpVendas")?.value || "nao"
-    },
-
     produto: {
+      id: produtoIdAtual,
+      preco: limparMoeda(precoFinalInput.value),
       nome: nomeProdutoInput.value.trim(),
-      referencia: referenciaInput.value.trim(),
-      codigoExterno: codigoExternoInput.value.trim(),
       unidadeEstoque: unidadeEstoqueInput.value.trim(),
-      pesoGramas: limparNumero(pesoInput.value),
-      categoriaVitrine: categoriaVitrineInput.value.trim(),
-      milesimos: milesimosInput.value.trim()
-    },
+      peso: limparNumero(pesoInput.value),
+      milesimos: limparNumero(milesimosInput.value),
+      milesimosBanho: limparNumero(milesimosBanhoInput.value),
 
-    metaisCadastrados: metais,
-
-    metalSelecionado,
-
-    custos: {
       custoCompraBruto: limparMoeda(custoCompraBrutoInput.value),
       custoInsumo: limparMoeda(custoInsumoInput.value),
-      banhoOuro: limparMoeda(banhoOuroInput.value),
-      banhoPrata: limparMoeda(banhoPrataInput.value),
-      banhoRodio: limparMoeda(banhoRodioInput.value),
-      custoMetal: limparMoeda(custoMetalInput.value),
-      custoTotal
-    },
 
-    lucroPadrao: {
-      atacado: limparPercentual(percentualAtacadoInput.value),
-      varejo: limparPercentual(percentualVarejoInput.value)
-    },
+      metal: getMetalSelecionado()?.id || null,
+      metalBanho: metais.find(m => m.nome === metalBanhoSelect.value)?.id || null,
 
-    tabelas: {
-      tabela1: {
-        tipo: tipoTabela1Select.value,
-        percentualLucro: percentualTabela1,
-        valorVenda: limparMoeda(valor1Input.value)
-      },
-
-      tabela2: {
-        tipo: tipoTabela2Select.value,
-        percentualLucro: percentualTabela2,
-        valorVenda: limparMoeda(valor2Input.value)
-      }
+      categoria: categoriaVitrineInput.value.trim()
     }
   };
 
-  if (!payload.produto.nome) {
-    alert("Digite o nome do produto antes de salvar.");
-    return;
-  }
-
   try {
-    const response = await fetch(API_SALVAR_PRECIFICACAO, {
+    let url;
+
+    if (sincronizar === "sim") {
+      url = "/api/precificacao/update";
+    } else {
+      url = "/api/precificacao/add";
+    }
+
+    const response = await fetch(url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
-    if (!response.ok) {
-      throw new Error("Erro ao salvar precificação.");
-    }
-
     const result = await response.json();
 
-    if (result.success || result.sucesso) {
-      alert("Salvo com sucesso!");
-    } else {
-      alert(result.message || result.mensagem || "O backend respondeu, mas não confirmou o salvamento.");
+    if (!response.ok) throw new Error(result.message || "Erro");
+
+    alert(result.message || "Sucesso");
+
+    if (sincronizar === "nao") {
+      modoEdicao = true;
+      produtoIdAtual = result.id;
     }
-  } catch (erro) {
-    console.error(erro);
-    alert("Erro na requisição de salvar. Confirme o endpoint com o back.");
+
+    atualizarTextoBotao();
+
+  } catch (err) {
+    console.error(err);
+    alert("Falha ao salvar");
   }
 }
 
@@ -621,9 +775,7 @@ document.querySelectorAll(".money").forEach(input => {
 [
   custoCompraBrutoInput,
   custoInsumoInput,
-  banhoOuroInput,
-  banhoPrataInput,
-  banhoRodioInput
+  banhoCustoInput
 ].forEach(input => {
   if (input) {
     input.addEventListener("blur", recalcularPrecificacao);
@@ -636,7 +788,10 @@ document.querySelectorAll(".money").forEach(input => {
   tipoTabela1Select,
   tipoTabela2Select,
   pesoInput,
-  metalSelect
+  metalSelect,
+  metalBanhoSelect,
+  milesimosInput,
+  milesimosBanhoInput
 ].forEach(input => {
   if (input) {
     input.addEventListener("input", recalcularPrecificacao);
@@ -658,5 +813,5 @@ document.addEventListener("click", event => {
 
 // ================== INICIALIZAÇÃO ==================
 
-renderizarMetais();
+carregarMetais();
 recalcularPrecificacao();

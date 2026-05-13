@@ -364,16 +364,58 @@ switch ($uri) {
       require_once '../app/controllers/fornecedoresGet_contr.php';
       break;
     }    
-    case '/toprevendedoras': 
+  
+    
+  case '/toprevendedoras': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/toprevendedoras_view.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+      header('Location: /login');
       break;
     }    
   case '/precificacao': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/precificacao_view.php';
       break;
+    } else {
+      AuthMiddleware::user();
+      header('Location: /login');
+      break;
     }
+
+  case '/api/precificacao/buscarproduto': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/precificacaoGet_contr.php';
+      break;
+    }    
+
+  case '/api/precificacao/update': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/precificacaoUpdate_contr.php';
+      break;
+    }  
+  case '/api/precificacao/add': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/precificacaoAdd_contr.php';
+      break;
+    }  
+  case '/api/metais/get': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/precificacaoMetalGet_contr.php';
+      break;
+    }  
+  case '/api/metais/del': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/precificacaoMetalDel_contr.php';
+      break;
+    }  
+  case '/api/metais/add': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/precificacaoMetalAdd_contr.php';
+      break;
+    }  
   case '/api/fornecedores/add': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/fornecedoresAdd_contr.php';

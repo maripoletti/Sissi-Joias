@@ -44,17 +44,13 @@
           <div class="precificacao-card">
 
             <div class="status-row">
-              <div class="checks">
-                <label><input type="checkbox" id="acabado" checked> Acabado</label>
-                <label><input type="checkbox" id="ativo" checked> Ativo</label>
-                <label><input type="checkbox" id="compartilhar" checked> Compartilhar</label>
-              </div>
+              <div></div>
 
               <div class="field">
-                <label>Sincronizar com a Up vendas?</label>
+                <label>Sincronizar com <em>Produtos</em>?</label>
                 <select id="sincronizarUpVendas">
-                  <option value="nao">Não</option>
                   <option value="sim">Sim</option>
+                  <option value="nao">Não</option>
                 </select>
               </div>
             </div>
@@ -77,15 +73,15 @@
               </div>
             </div>
 
-            <div class="row row-5">
+            <div class="row row-6">
               <div class="field">
                 <label>Referência</label>
-                <input type="text" id="referencia" placeholder="Digite a referência do produto">
+                <input type="text" id="referencia" readonly>
               </div>
 
               <div class="field">
                 <label>Código Externo</label>
-                <input type="text" id="codigoExterno" placeholder="Digite o código externo do produto">
+                <input type="text" id="codigoExterno" readonly>
               </div>
 
               <div class="field">
@@ -96,6 +92,11 @@
               <div class="field">
                 <label for="peso">Peso em gramas</label>
                 <input type="number" id="peso" placeholder="Digite o peso do produto" min="0" step="0.01">
+              </div>
+
+              <div class="field">
+                <label for="milesimos">Milésimos</label>
+                <input type="number" id="milesimos" placeholder="Digite os milésimos do produto" min="0" step="1">
               </div>
 
               <div class="field">
@@ -115,7 +116,7 @@
               <div class="row row-3">
                 <div class="field">
                   <label>Novo metal</label>
-                  <input type="text" id="novoMetal" placeholder="Ex: Ouro 18k">
+                  <input type="text" id="novoMetal" placeholder="Ex: Ouro">
                 </div>
 
                 <div class="field">
@@ -143,7 +144,7 @@
               <div id="listaMetais" class="lista-metais"></div>
             </div>
 
-            <div class="row row-6">
+            <div class="row row-5">
               <div class="field">
                 <label>Custo Compra Bruto</label>
                 <input type="text" id="custoCompraBruto" class="money custo">
@@ -155,23 +156,18 @@
               </div>
 
               <div class="field">
-                <label>Milésimos</label>
-                <input type="text" id="milesimos" placeholder="Digite os milésimos do produto">
+                <label>Milésimos de Banho</label>
+                <input type="text" id="milesimosBanho" placeholder="Digite os milésimos de banho do produto">
               </div>
 
               <div class="field">
-                <label>Banho Ouro</label>
-                <input type="text" id="banhoOuro" class="money custo">
+                <label>Custo do Banho</label>
+                <input type="text" id="banhoCusto" class="money custo" readonly>
               </div>
 
               <div class="field">
-                <label>Banho Prata</label>
-                <input type="text" id="banhoPrata" class="money custo">
-              </div>
-
-              <div class="field">
-                <label>Banho Ródio</label>
-                <input type="text" id="banhoRodio" class="money custo">
+                <label>Metal do Banho selecionado</label>
+                <select id="metalBanho" name="metalBanho"></select>
               </div>
             </div>
 
@@ -233,7 +229,14 @@
               </div>
             </div>
 
-            <button onclick="salvarPrecificacao()" class="btn-salvar">
+            <div class="row row-1">
+              <div class="field">
+                <label>Preço Atual</label>
+                <input id="precoFin" type="text" class="money custo">
+              </div>
+            </div>
+
+            <button id="btnSalvar" onclick="salvarPrecificacao()" class="btn-salvar">
               Salvar
             </button>
           </div>
