@@ -375,6 +375,29 @@ switch ($uri) {
       header('Location: /login');
       break;
     }    
+
+  case '/api/toprevendedoras': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/toprevendedorasGet_contr.php';
+      break;
+    }
+  case '/api/campanhas/get': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/toprevendedorasCampGet_contr.php';
+      break;
+    }
+  case '/api/campanhas/del': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/toprevendedorasCampDel_contr.php';
+      break;
+    }
+
+  case '/api/campanhas/salvar': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/toprevendedorasCampSalvar_contr.php';
+      break;
+    }
+
   case '/precificacao': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/precificacao_view.php';

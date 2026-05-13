@@ -152,7 +152,7 @@ async function buscarCampanhas() {
   try {
 
     const response = await fetch(
-      `${API_URL}/campanhas.php`
+      `${API_URL}/campanhas/get`
     );
 
     const data = await response.json();
@@ -187,7 +187,7 @@ async function buscarRanking() {
   try {
 
     const response = await fetch(
-      `${API_URL}/top-revendedoras.php?mes=${mesSelecionado}&ano=${anoSelecionado}&campanha=${campanhaSelecionada}`
+      `${API_URL}/toprevendedoras?mes=${mesSelecionado}&ano=${anoSelecionado}&campanha=${campanhaSelecionada}`
     );
 
     const data = await response.json();
@@ -384,16 +384,34 @@ function adicionarCampanha() {
    REMOVER CAMPANHA
 ========================= */
 
-function removerCampanha(id) {
+async function removerCampanha(id) {
+  try {
+    const response = await fetch(`${API_URL}/campanhas/del`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    });
 
-  campanhas = campanhas.filter(
-    (campanha) => campanha.id !== id
-  );
+    const data = await response.json();
 
-  renderizarModalCampanhas();
+    if (data.success) {
+      campanhas = campanhas.filter(
+        (campanha) => campanha.id !== id
+      );
 
-  renderizarCampanhasFiltro();
+      renderizarModalCampanhas();
+      renderizarCampanhasFiltro();
+    } else {
+      alert(data.message || 'Erro ao remover campanha');
+    }
+  } catch (error) {
+    console.error('Erro ao remover campanha:', error);
+    alert('Erro ao remover campanha');
+  }
 }
+
 
 /* =========================
    SALVAR CAMPANHAS
@@ -404,7 +422,7 @@ async function salvarCampanhas() {
   try {
 
     const response = await fetch(
-      `${API_URL}/salvar-campanhas.php`,
+      `${API_URL}/campanhas/salvar`,
       {
         method: 'POST',
 
@@ -417,8 +435,6 @@ async function salvarCampanhas() {
     );
 
     const data = await response.json();
-
-    alert(data.message);
 
   } catch (error) {
 
