@@ -6,20 +6,10 @@ header("Content-Type: application/json");
 
 $db = new topRev_model();
 
-$mes = $_GET["mes"] ?? null;
-$ano = $_GET["ano"] ?? null;
-$campanha = $_GET["campanha"] ?? "Todas";
-
-if (!$mes || !$ano) {
-    echo json_encode([
-        "success" => false,
-        "message" => "Mês e ano são obrigatórios."
-    ]);
-    exit;
-}
+$campanhaId = (int) ($_GET["campanha"] ?? 0);
 
 try {
-    $response = $db->pegar_top_revendedoras($mes, (int)$ano, $campanha);
+    $response = $db->pegar_top_revendedoras($campanhaId);
     echo json_encode($response, JSON_UNESCAPED_UNICODE);
 } catch (Exception $e) {
     echo json_encode([
