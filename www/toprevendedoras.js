@@ -39,7 +39,27 @@ const modalOverlay = document.getElementById(
   'modalOverlay'
 );
 
+/* =========================
+   ABRIR / FECHAR MODAL
+========================= */
+
+function abrirModalCampanhas() {
+  modalOverlay.classList.add('active');
+}
+
+function fecharModalCampanhas() {
+  modalOverlay.classList.remove('active');
+}
+
+/* =========================
+   FILTROS
+========================= */
+
 function criarFiltros() {
+
+  if (!mesesContainer || !anosContainer) {
+    return;
+  }
 
   mesesContainer.innerHTML = '';
   anosContainer.innerHTML = '';
@@ -93,6 +113,10 @@ function criarFiltros() {
   });
 }
 
+/* =========================
+   FILTRO DE CAMPANHAS
+========================= */
+
 function renderizarCampanhasFiltro() {
 
   campanhasFiltroContainer.innerHTML = '';
@@ -124,7 +148,7 @@ function renderizarCampanhasFiltro() {
 
     btn.classList.add('filter-btn');
 
-    btn.innerText = campanha.nome;
+    btn.innerText = campanha.nome || 'Sem nome';
 
     if (campanhaSelecionada === campanha.nome) {
       btn.classList.add('active');
@@ -157,7 +181,7 @@ async function buscarCampanhas() {
 
     const data = await response.json();
 
-    campanhas = data;
+    campanhas = Array.isArray(data) ? data : [];
 
     renderizarCampanhasFiltro();
 
@@ -260,17 +284,18 @@ function renderizarModalCampanhas() {
 
     campanhasLista.innerHTML += `
     
-      <div class="campanha-card">
+      <div class="campanha-card" data-id="${campanha.id}">
 
         <div class="campanha-top">
 
           <input
             type="text"
-            value="${campanha.nome}"
+            value="${campanha.nome || ''}"
             placeholder="Nome da campanha"
-            onchange="
+            data-campo="nome"
+            oninput="
               editarCampanha(
-                ${campanha.id},
+                '${campanha.id}',
                 'nome',
                 this.value
               )
@@ -278,7 +303,7 @@ function renderizarModalCampanhas() {
           >
 
           <button
-            onclick="removerCampanha(${campanha.id})"
+            onclick="removerCampanha('${campanha.id}')"
           >
             <i class="fa-regular fa-trash-can"></i>
           </button>
@@ -287,9 +312,10 @@ function renderizarModalCampanhas() {
 
         <textarea
           placeholder="Descrição"
-          onchange="
+          data-campo="descricao"
+          oninput="
             editarCampanha(
-              ${campanha.id},
+              '${campanha.id}',
               'descricao',
               this.value
             )
@@ -305,9 +331,10 @@ function renderizarModalCampanhas() {
             <input
               type="date"
               value="${campanha.inicio || ''}"
-              onchange="
+              data-campo="inicio"
+              oninput="
                 editarCampanha(
-                  ${campanha.id},
+                  '${campanha.id}',
                   'inicio',
                   this.value
                 )
@@ -323,9 +350,10 @@ function renderizarModalCampanhas() {
             <input
               type="date"
               value="${campanha.fim || ''}"
-              onchange="
+              data-campo="fim"
+              oninput="
                 editarCampanha(
-                  ${campanha.id},
+                  '${campanha.id}',
                   'fim',
                   this.value
                 )
@@ -349,7 +377,7 @@ function editarCampanha(id, campo, valor) {
 
   campanhas = campanhas.map((campanha) => {
 
-    if (campanha.id === id) {
+    if (String(campanha.id) === String(id)) {
 
       return {
         ...campanha,
@@ -364,6 +392,38 @@ function editarCampanha(id, campo, valor) {
 }
 
 /* =========================
+   SINCRONIZAR DADOS DA TELA
+========================= */
+
+function sincronizarCampanhasDaTela() {
+
+  const cards = document.querySelectorAll('.campanha-card');
+
+  cards.forEach((card) => {
+
+    const id = card.getAttribute('data-id');
+
+    const campanha = campanhas.find(
+      (item) => String(item.id) === String(id)
+    );
+
+    if (!campanha) {
+      return;
+    }
+
+    const nome = card.querySelector('[data-campo="nome"]');
+    const descricao = card.querySelector('[data-campo="descricao"]');
+    const inicio = card.querySelector('[data-campo="inicio"]');
+    const fim = card.querySelector('[data-campo="fim"]');
+
+    campanha.nome = nome ? nome.value : '';
+    campanha.descricao = descricao ? descricao.value : '';
+    campanha.inicio = inicio ? inicio.value : '';
+    campanha.fim = fim ? fim.value : '';
+  });
+}
+
+/* =========================
    NOVA CAMPANHA
 ========================= */
 
@@ -374,7 +434,8 @@ function adicionarCampanha() {
     nome: '',
     descricao: '',
     inicio: '',
-    fim: ''
+    fim: '',
+    nova: true
   });
 
   renderizarModalCampanhas();
@@ -385,7 +446,25 @@ function adicionarCampanha() {
 ========================= */
 
 async function removerCampanha(id) {
+
+  const campanhaEncontrada = campanhas.find(
+    (campanha) => String(campanha.id) === String(id)
+  );
+
+  if (campanhaEncontrada && campanhaEncontrada.nova) {
+
+    campanhas = campanhas.filter(
+      (campanha) => String(campanha.id) !== String(id)
+    );
+
+    renderizarModalCampanhas();
+    renderizarCampanhasFiltro();
+
+    return;
+  }
+
   try {
+
     const response = await fetch(`${API_URL}/campanhas/del`, {
       method: 'POST',
       headers: {
@@ -397,21 +476,26 @@ async function removerCampanha(id) {
     const data = await response.json();
 
     if (data.success) {
+
       campanhas = campanhas.filter(
-        (campanha) => campanha.id !== id
+        (campanha) => String(campanha.id) !== String(id)
       );
 
       renderizarModalCampanhas();
       renderizarCampanhasFiltro();
+
     } else {
+
       alert(data.message || 'Erro ao remover campanha');
     }
+
   } catch (error) {
+
     console.error('Erro ao remover campanha:', error);
+
     alert('Erro ao remover campanha');
   }
 }
-
 
 /* =========================
    SALVAR CAMPANHAS
@@ -419,7 +503,27 @@ async function removerCampanha(id) {
 
 async function salvarCampanhas() {
 
+  sincronizarCampanhasDaTela();
+
+  const botaoSalvar = document.getElementById('salvarCampanhas');
+
   try {
+
+    botaoSalvar.disabled = true;
+    botaoSalvar.innerHTML = `
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      Salvando...
+    `;
+
+    const campanhasParaSalvar = campanhas.map((campanha) => {
+      return {
+        id: campanha.id,
+        nome: campanha.nome,
+        descricao: campanha.descricao,
+        inicio: campanha.inicio,
+        fim: campanha.fim
+      };
+    });
 
     const response = await fetch(
       `${API_URL}/campanhas/salvar`,
@@ -430,11 +534,26 @@ async function salvarCampanhas() {
           'Content-Type': 'application/json'
         },
 
-        body: JSON.stringify(campanhas)
+        body: JSON.stringify(campanhasParaSalvar)
       }
     );
 
-    const data = await response.json();
+    const texto = await response.text();
+
+    const data = texto ? JSON.parse(texto) : {};
+
+    if (!response.ok || data.success === false) {
+
+      alert(data.message || 'Erro ao salvar campanhas');
+
+      return;
+    }
+
+    fecharModalCampanhas();
+
+    await buscarCampanhas();
+
+    await buscarRanking();
 
   } catch (error) {
 
@@ -444,6 +563,15 @@ async function salvarCampanhas() {
     );
 
     alert('Erro ao salvar campanhas');
+
+  } finally {
+
+    botaoSalvar.disabled = false;
+
+    botaoSalvar.innerHTML = `
+      <i class="fa-regular fa-floppy-disk"></i>
+      Salvar
+    `;
   }
 }
 
@@ -453,17 +581,11 @@ async function salvarCampanhas() {
 
 document
   .getElementById('abrirModal')
-  .onclick = () => {
-
-    modalOverlay.classList.add('active');
-};
+  .onclick = abrirModalCampanhas;
 
 document
   .getElementById('fecharModal')
-  .onclick = () => {
-
-    modalOverlay.classList.remove('active');
-};
+  .onclick = fecharModalCampanhas;
 
 document
   .getElementById('novaCampanha')
@@ -472,6 +594,10 @@ document
 document
   .getElementById('salvarCampanhas')
   .onclick = salvarCampanhas;
+
+/* =========================
+   INICIAR PÁGINA
+========================= */
 
 criarFiltros();
 

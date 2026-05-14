@@ -88,22 +88,6 @@
 
             <div class="grupo-filtro">
 
-              <span>Mês:</span>
-
-              <div class="buttons" id="mesesContainer"></div>
-
-            </div>
-
-            <div class="grupo-filtro">
-
-              <span>Ano:</span>
-
-              <div class="buttons" id="anosContainer"></div>
-
-            </div>
-
-            <div class="grupo-filtro">
-
               <span>Campanha:</span>
 
               <div
