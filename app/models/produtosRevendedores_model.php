@@ -15,13 +15,13 @@ class produtosRevendedores_model extends Dbh {
             $whereParts[]= "sp.Status = 1";
 
             if(!empty($produto)) {
-                $whereParts[] = "MATCH(sp.ProductName) AGAINST (? IN BOOLEAN MODE)";
-                $params[] = $produto . "*";
+                $whereParts[] = "sp.ProductName LIKE ?";
+                $params[] = $produto . "%";
             }
 
             if(!empty($revendedor)) {
-                $whereParts[] = "MATCH(se.FullName) AGAINST (? IN BOOLEAN MODE)";
-                $params[] = $revendedor . "*";
+                $whereParts[] = "se.FullName LIKE ?";
+                $params[] = $revendedor . "%";
             }
 
             $where = !empty($whereParts) ? "WHERE " . implode(" AND ", $whereParts) : "";

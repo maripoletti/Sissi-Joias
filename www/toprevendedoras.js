@@ -150,13 +150,13 @@ function renderizarCampanhasFiltro() {
 
     btn.innerText = campanha.nome || 'Sem nome';
 
-    if (campanhaSelecionada === campanha.nome) {
+    if (campanhaSelecionada === campanha.id) {
       btn.classList.add('active');
     }
 
     btn.onclick = () => {
 
-      campanhaSelecionada = campanha.nome;
+      campanhaSelecionada = campanha.id;
 
       renderizarCampanhasFiltro();
 
@@ -211,7 +211,7 @@ async function buscarRanking() {
   try {
 
     const response = await fetch(
-      `${API_URL}/toprevendedoras?mes=${mesSelecionado}&ano=${anoSelecionado}&campanha=${campanhaSelecionada}`
+      `${API_URL}/toprevendedoras?campanha=${campanhaSelecionada}`
     );
 
     const data = await response.json();
