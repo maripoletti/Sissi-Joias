@@ -66,7 +66,7 @@
             ↓ Certificado de Garantia
           </a>
 
-          <a class="btn-contrato" href="contrato.pdf" download>
+          <a class="btn-contrato" href="contratoassinado.pdf" download>
             ↓ Contrato
         </a>
 
