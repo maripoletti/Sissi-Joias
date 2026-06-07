@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Impressoras - Sissi Semi Joias e Acessórios</title>
-
   <link rel="stylesheet" href="styles/global.css">
-  <link rel="stylesheet" href="styles/produtos.css">
   <link rel="stylesheet" href="styles/impressoras.css">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
@@ -15,27 +13,7 @@
   <div class="container">
     <div class="card app">
 
-      <aside class="sidebar">
-        <h2>Sissi Semi Joias e Acessórios</h2>
-
-        <nav>
-          <a href="/paineldecontrole">Painel de Controle</a>
-          <a href="/produtos">Produtos</a>
-          <a href="/vendas">Vendas</a>
-          
-          <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-            <a href="/impressoras" class="active">Impressoras</a>
-            <a href="/relatorios">Relatórios</a>
-            <a href="/controledeusuarios">Controle de Revendedores</a>
-            <a href="/fornecedores">Fornecedores</a>
-            <a href="/cadastrarimpressora">Cadastrar Impressora</a>
-            <a href="/produtosrevendedores">Produtos dos Revendedores</a>
-            <a href="/precificacao">Precificação</a>
-            <a href="/toprevendedoras">Top Revendedoras</a>
-          <?php endif; ?>
-
-        </nav>
-      </aside>
+      <aside class="sidebar"></aside>
 
       <main class="main">
 
@@ -156,6 +134,13 @@
     <span id="toast-msg">Ok!</span>
   </div>
 
-  <script src="impressoras.js"></script>
+  <script src="js/impressoras.js"></script>
+  <script>
+    window.userData = {
+        nome: <?= json_encode($_SESSION['usuario_nome'] ?? 'Usuário') ?>,
+        role: <?= json_encode($_SESSION['role'] ?? 0) ?>
+    };
+  </script>
+  <script src="js/global.js"></script>
 </body>
 </html>

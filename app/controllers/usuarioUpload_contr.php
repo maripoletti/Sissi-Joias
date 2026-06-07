@@ -1,6 +1,6 @@
 <?php
-
 declare(strict_types= 1);
+
 require_once __DIR__ . "/../models/user_model.php";
 require_once __DIR__ . "/../helpers/imageUpload.php";
 header("Content-Type: application/json");

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <title>Sissi Semi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/global.css">
-  <link rel="stylesheet" href="styles/paineldecontrole.css">
+  <link rel="stylesheet" href="styles/estilo2.css">
   <link rel="stylesheet" href="styles/precificacao.css">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
@@ -13,26 +13,7 @@
   <div class="container">
     <div class="card paineldecontrole">
 
-      <aside class="sidebar">
-        <h2>Sissi Semi Joias e Acessórios</h2>
-
-        <nav>
-          <a href="/paineldecontrole">Painel de Controle</a>
-          <a href="/produtos">Produtos</a>
-          <a href="/vendas">Vendas</a>
-
-          <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-            <a href="/impressoras">Impressoras</a>
-            <a href="/relatorios">Relatórios</a>
-            <a href="/controledeusuarios">Controle de Revendedores</a>
-            <a href="/fornecedores">Fornecedores</a>
-            <a href="/cadastrarimpressora">Cadastrar Impressora</a>
-            <a href="/produtosrevendedores">Produtos dos Revendedores</a>
-            <a href="/precificacao" class="active">Precificação</a>
-            <a href="/toprevendedoras">Top Revendedoras</a>
-          <?php endif; ?>
-        </nav>
-      </aside>
+      <aside class="sidebar"></aside>
 
       <main class="main">
         <section class="precificacao-page">
@@ -245,6 +226,13 @@
     </div>
   </div>
 
-  <script src="precificacao.js"></script>
+  <script src="js/precificacao.js"></script>
+  <script>
+    window.userData = {
+        nome: <?= json_encode($_SESSION['usuario_nome'] ?? 'Usuário') ?>,
+        role: <?= json_encode($_SESSION['role'] ?? 0) ?>
+    };
+  </script>
+  <script src="js/global.js"></script>
 </body>
 </html>

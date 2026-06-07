@@ -1,0 +1,393 @@
+const cpfClienteInput = document.getElementById("cpfCliente");
+
+cpfClienteInput.addEventListener("input", () => {
+    let v = cpfClienteInput.value.replace(/\D/g, "");
+    if (v.length > 11) v = v.slice(0, 11);
+
+
+    if (v.length > 9) {
+        v = v.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, "$1.$2.$3-$4");
+    } else if (v.length > 6) {
+        v = v.replace(/^(\d{3})(\d{3})(\d{0,3})$/, "$1.$2.$3");
+    } else if (v.length > 3) {
+        v = v.replace(/^(\d{3})(\d{0,3})$/, "$1.$2");
+    }
+
+    cpfClienteInput.value = v;
+});
+
+const buscar = document.getElementById("buscar");
+
+let produtosRenderizados = [];
+let carrinho = [];
+
+function formatarMoeda(valor) {
+
+    return Number(valor).toLocaleString("pt-BR", {
+        style: "currency",
+        currency: "BRL"
+    });
+
+}
+
+function atualizarResumo() {
+
+    const subtotalEl = document.getElementById("subtotal");
+    const totalEl = document.getElementById("total");
+
+    const subtotal = carrinho.reduce((acc, item) => {
+        return acc + (Number(item.preco) * item.quantidade);
+    }, 0);
+
+    subtotalEl.textContent = formatarMoeda(subtotal);
+    totalEl.textContent = formatarMoeda(subtotal);
+
+}
+
+
+function removerDoCarrinho(id) {
+
+    carrinho = carrinho.filter(item => String(item.id) !== String(id));
+
+    renderCarrinho();
+    renderListaProdutos();
+
+}
+
+
+function alterarQuantidade(id, delta) {
+
+    const item = carrinho.find(prod => String(prod.id) === String(id));
+
+    if (!item) return;
+
+    const estoqueMaximo = Number(item.estoque ?? 0);
+    const novaQuantidade = item.quantidade + delta;
+
+    if (novaQuantidade <= 0) {
+        removerDoCarrinho(id);
+        return;
+    }
+
+    if (novaQuantidade > estoqueMaximo) {
+        return;
+    }
+
+    item.quantidade = novaQuantidade;
+
+    renderCarrinho();
+    renderListaProdutos();
+
+}
+
+
+function adicionarAoCarrinho(produto) {
+
+    const itemExistente = carrinho.find(item => String(item.id) === String(produto.id));
+
+    if (itemExistente) {
+
+        if (itemExistente.quantidade < Number(produto.estoque ?? 0)) {
+            itemExistente.quantidade += 1;
+        }
+
+    } else {
+
+        carrinho.push({
+            ...produto,
+            quantidade: 1
+        });
+
+    }
+
+    renderCarrinho();
+    renderListaProdutos();
+
+}
+
+
+function renderCarrinho() {
+
+    const carrinhoEl = document.getElementById("carrinho-itens");
+
+    carrinhoEl.innerHTML = "";
+
+    if (carrinho.length === 0) {
+
+        carrinhoEl.innerHTML = `<div class="empty">Carrinho vazio</div>`;
+        atualizarResumo();
+        return;
+
+    }
+
+    carrinho.forEach(item => {
+
+        const div = document.createElement("div");
+
+        div.className = "item-carrinho";
+
+        div.innerHTML = `
+            <div class="carrinho-info">
+                <strong>${item.nome}</strong>
+                <span>${formatarMoeda(item.preco)} cada</span>
+                <small>Estoque: ${item.estoque ?? 0}</small>
+            </div>
+
+            <div class="carrinho-acoes">
+                <button type="button" onclick="alterarQuantidade('${item.id}', -1)">−</button>
+                <span>${item.quantidade}</span>
+                <button type="button" onclick="alterarQuantidade('${item.id}', 1)">+</button>
+                <button type="button" class="btn-remover" onclick="removerDoCarrinho('${item.id}')">
+                    Remover
+                </button>
+            </div>
+        `;
+
+        carrinhoEl.appendChild(div);
+
+    });
+
+    atualizarResumo();
+
+}
+
+
+
+function renderListaProdutos() {
+
+    const lista = document.getElementById("lista-produtos");
+    const msg = document.getElementById("mensagem-vazia");
+
+    lista.innerHTML = "";
+    msg.style.display = "none";
+
+    if (produtosRenderizados.length === 0) {
+
+        msg.style.display = "block";
+        return;
+
+    }
+
+    produtosRenderizados.forEach(produto => {
+
+        const estoque = Number(produto.estoque ?? 0);
+
+        const itemCarrinho = carrinho.find(item => String(item.id) === String(produto.id));
+
+        const quantidadeNoCarrinho = itemCarrinho ? itemCarrinho.quantidade : 0;
+
+        const semEstoque = estoque <= 0;
+
+        const esgotadoNoCarrinho = quantidadeNoCarrinho >= estoque;
+
+        const div = document.createElement("div");
+
+        div.className = "produto-item";
+
+        if (semEstoque) {
+            div.classList.add("sem-estoque");
+        }
+
+        div.innerHTML = `
+            <div class="produto-dados">
+                <strong>${produto.nome}</strong>
+                <span>${formatarMoeda(produto.preco)}</span>
+                <small>Estoque: ${estoque}</small>
+            </div>
+
+            <button type="button" ${semEstoque || esgotadoNoCarrinho ? "disabled" : ""}>
+                ${semEstoque ? "Sem estoque" : esgotadoNoCarrinho ? "Limite atingido" : "Adicionar"}
+            </button>
+        `;
+
+        const botao = div.querySelector("button");
+
+        if (!semEstoque && !esgotadoNoCarrinho) {
+
+            botao.addEventListener("click", () => adicionarAoCarrinho(produto));
+
+            div.addEventListener("click", (e) => {
+
+                if (e.target.tagName !== "BUTTON") {
+                    adicionarAoCarrinho(produto);
+                }
+
+            });
+
+        }
+
+        lista.appendChild(div);
+
+    });
+
+}
+
+
+
+async function render() {
+
+    const texto = buscar.value.trim();
+
+    const lista = document.getElementById("lista-produtos");
+
+    const msg = document.getElementById("mensagem-vazia");
+
+    lista.innerHTML = "";
+
+    msg.style.display = "none";
+
+    try {
+
+        const res = await fetch("/novavenda", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ texto })
+        });
+
+        if (!res.ok) {
+            throw new Error("Resposta inválida");
+        }
+
+        const data = await res.json();
+
+        produtosRenderizados = Array.isArray(data) ? data : [];
+
+    } catch (err) {
+
+        produtosRenderizados = [];
+
+    }
+
+    renderListaProdutos();
+
+}
+
+
+buscar.addEventListener("input", render);
+
+
+
+function atualizarBarra(indice) {
+
+    const steps = document.querySelectorAll(".progress .step");
+
+    steps.forEach((step, i) => {
+        step.classList.toggle("active", i === indice);
+    });
+
+}
+
+
+
+function irParaCliente() {
+
+    if (carrinho.length === 0) {
+        alert("Selecione pelo menos um produto para continuar.");
+        return;
+    }
+
+    document.getElementById("etapa-produtos").style.display = "none";
+
+    document.getElementById("etapa-cliente").style.display = "block";
+
+    document.getElementById("etapa-finalizacao").style.display = "none";
+
+    atualizarBarra(1);
+
+}
+
+
+
+function irParaFinalizacao() {
+
+    const nomeCliente = document.getElementById("nomeCliente").value.trim();
+
+    if (!nomeCliente) {
+
+        alert("Preencha o nome do cliente.");
+
+        return;
+
+    }
+
+    document.getElementById("etapa-produtos").style.display = "none";
+
+    document.getElementById("etapa-cliente").style.display = "none";
+
+    document.getElementById("etapa-finalizacao").style.display = "block";
+
+    atualizarBarra(2);
+
+}
+
+
+
+document.getElementById("finalizarVenda").addEventListener("click", async function () {
+
+    const formaPagamento = document.getElementById("formaPagamento").value;
+    const nomeCliente = document.getElementById("nomeCliente").value.trim();
+
+    let cpfCliente = document.getElementById("cpfCliente").value;
+    cpfCliente = cpfCliente.replace(/\D/g, "");
+
+    if (carrinho.length === 0) {
+        alert("O carrinho está vazio.");
+        return;
+    }
+
+    if (!nomeCliente) {
+        alert("Preencha os dados do cliente.");
+        return;
+    }
+
+    if (!formaPagamento) {
+        alert("Selecione a forma de pagamento.");
+        return;
+    }
+
+    const produtos = carrinho.map(item => ({
+        id: item.id,
+        quantidade: item.quantidade,
+        preco: item.preco
+    }));
+
+    try {
+
+        const res = await fetch("/api/novavenda/finalizar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                cliente: {
+                    nome: nomeCliente,
+                    cpf: cpfCliente
+                },
+                pagamento: formaPagamento,
+                produtos: produtos
+            })
+        });
+
+        if (!res.ok) {
+            throw new Error("Erro na venda");
+        }
+
+        const data = await res.json();
+
+        window.open("/comprovante?id=" + data.order_id, "_blank");
+
+        window.location.href = "/vendas";
+
+    } catch (err) {
+
+        console.error(err);
+        alert("Erro ao finalizar venda");
+
+    }
+
+});
+
+
+atualizarBarra(0);
+
+render();

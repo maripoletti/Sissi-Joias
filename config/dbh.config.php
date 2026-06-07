@@ -7,7 +7,7 @@ class Dbh {
             $dbusername = 'root';
             $dbpassword = '';
 
-            $pdo = new PDO("mysql:host=localhost;dbname=sissisemijoiaseacessorios", $dbusername, $dbpassword, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"]);
+            $pdo = new PDO("mysql:host=127.0.0.1;dbname=sissisemijoiaseacessorios", $dbusername, $dbpassword, [PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8mb4"]);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $pdo;
