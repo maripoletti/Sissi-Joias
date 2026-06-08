@@ -19,7 +19,7 @@ class prodValidator {
             'name' => trim($name ?? ''),
             'tags' => array_map(fn($v) => mb_strtolower($v, 'UTF-8'), $tags) ?? [],
             'price' => abs($price ?? 0),
-            'stock' => is_int(abs($stock ?? 0)),
+            'stock' => abs($stock ?? 0),
             'photo' => $photo,
             'tamanho' => trim($tamanho),
             'cor' => trim($cor),
@@ -35,6 +35,10 @@ class prodValidator {
         }
         if (!is_float($clean['price'])) {
             $errors['price_not_number'] = 'Algo deu errado.';
+        }
+
+        if (!is_int($clean['stock'])) {
+            $errors['stock_not_number'] = 'Algo deu errado.';
         }
 
         return [

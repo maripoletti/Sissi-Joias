@@ -455,6 +455,16 @@ switch ($uri) {
       break;
     }
 
+  case '/controledegastos': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/views/controledegastos_view.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+      header('Location: /login');
+      break;
+    }
+
   case '/comprovante':
     if (isset($_SESSION['user_id'])) {
       require_once '../app/controllers/comprovante_contr.php';

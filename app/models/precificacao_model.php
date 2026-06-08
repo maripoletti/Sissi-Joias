@@ -204,6 +204,7 @@ class precificacao_model extends Dbh {
                     Name AS nome,
                     ValuePerGram AS valorGrama
                 FROM Prod_Metals
+                WHERE Status = 1
                 ORDER BY Name ASC
             ";
 
@@ -246,7 +247,8 @@ class precificacao_model extends Dbh {
 
         try {
             $query = "
-                DELETE FROM Prod_Metals
+                UPDATE Prod_Metals SET
+                    Status = 0
                 WHERE MetalID = ?
             ";
 
@@ -262,4 +264,3 @@ class precificacao_model extends Dbh {
         }
     }
 }
-

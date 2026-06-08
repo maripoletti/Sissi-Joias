@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
         links.push(
             { href: "/impressoras", text: "Impressoras" },
             { href: "/relatorios", text: "Relatórios" },
+            { href: "/controledegastos", text: "Controle de Gastos" },
             { href: "/controledeusuarios", text: "Controle de Revendedores" },
             { href: "/fornecedores", text: "Fornecedores" },
             { href: "/cadastrarimpressora", text: "Cadastrar Impressora" },

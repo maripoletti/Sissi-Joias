@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>Sissi Semi Joias e Acessórios - Relatórios</title>
   <link rel="stylesheet" href="styles/global.css">
-  <link rel="stylesheet" href="styles/estilo2.css">
   <link rel="stylesheet" href="styles/relatorios.css">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
 </head>
