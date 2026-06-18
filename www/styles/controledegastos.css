@@ -1,0 +1,373 @@
+.controledegastos-page {
+    padding: 30px;
+}
+
+button {
+    background-color: rgb(100, 0, 158);
+    color: white;
+    font-family: 'Courier New', Courier, monospace;
+    font-weight: bold;
+    border-radius: 9px;
+    border: 0;
+}
+
+#gasto-add {
+    padding: 2px;
+}
+
+.cg-titulo {
+    margin-bottom: 25px;
+}
+
+.cg-itens {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.cg-item {
+    padding: 20px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1px solid #ddd;
+}
+
+.cg-texto {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.cg-dado {
+    font-size: 2rem;
+    margin-bottom: 15px;
+}
+
+.cg-item > button {
+    display: none;
+}
+
+.cg-data {
+    margin: 0;
+    color: #4ecd8a;
+    font-size: 0.85rem;
+}
+
+.cg-item::after {
+    content: "";
+    display: block;
+}
+
+.cg-item .cg-data {
+    display: inline-block;
+}
+
+.cg-item .cg-data + button,
+.cg-item > button {
+    float: right;
+}
+
+.cg-item button {
+    padding: 7px 12px;
+}
+
+button {
+    cursor: pointer;
+}
+
+.cg-topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+}
+
+.cg-extra {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.cg-extra p {
+    margin: 0;
+}
+
+.metal-atual {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.metal-valor {
+    font-weight: 600;
+}
+
+/* ---------------------- */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 2, 15, .60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    z-index: 9999;
+}
+
+.modal-real {
+    width: 100%;
+    max-width: 560px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 22px 70px rgba(0, 0, 0, .35);
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.modal-real h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #600a5e;
+}
+
+.modal-real label {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    color: #3a3a3a;
+}
+
+.modal-real button {
+    padding: 10px;
+}
+
+.form-cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-fechar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(75, 13, 79, .1);
+    color: #4b0d4f;
+    font-size: 16px;
+}
+
+.form-grupoIntervalo {
+    display: flex;
+    gap: 20px;
+}
+
+.form-datas {
+    width: 100%;
+}
+
+.form-datas input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 12px;
+    resize: none;
+}
+
+#modal-banho > .modal-real {
+    overflow-y: visible;
+}
+
+.form-grupoMetal {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+
+    position: relative;
+}
+
+.form-grupoMetal input{
+    width: 50%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 2px;
+    resize: none;
+}
+
+#resultado-metalBanho {
+    position: absolute;
+    width: 50%;
+
+    top: calc(40%);
+    left: 50%;
+    right: 0;
+
+    z-index: 20;
+    background: #ffffff;
+    border: 1px solid #eadcf4;
+    border-radius: 14px;
+    box-shadow: 0 12px 28px rgba(45, 18, 64, 0.14);
+
+    max-height: 250px;
+    overflow: hidden;
+}
+
+.sugestao-vazia {
+    width: 100%;
+    border: none;
+    background: #ffffff;
+    text-align: left;
+    padding: 12px 14px;
+    color: #2d124087;
+    font-size: 14px;
+}
+
+.resultado-metalBanho-item {
+    width: 100%;
+    border: none;
+    background: #ffffff;
+    text-align: left;
+    padding: 12px 14px;
+    color: #2d1240;
+    font-size: 14px;
+}
+
+.resultado-metalBanho-item:hover {
+    background: #f8f2fc;
+}
+
+.form-dados {
+    display: flex;
+    gap: 10px;
+    flex-direction: column;
+}
+
+.form-dados input {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 14px;
+    margin-top: 2px;
+    resize: none;
+}
+
+/* ---------------------- */
+
+#gastos-dinamicos {
+    width: 100%;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+}
+
+.topo {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.campo-custoTotal {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+#custoTotal {
+    width: 180px;
+    padding: 10px;
+    font-size: 17px;
+}
+
+.realizar {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.campo-sincronizar,
+.intervalo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.intervalo p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #666;
+}
+
+
+.mainGastos {
+    width: 100%;
+}
+
+.mainGastos::before {
+    content: "";
+    display: block;
+}
+
+.gastos-header,
+.gasto {
+    display: grid;
+    grid-template-columns:
+        3fr
+        1fr
+        1.5fr
+        1.5fr;
+
+    align-items: center;
+}
+
+.gastos-header {
+    padding: 15px 20px;
+    font-weight: 600;
+    border-bottom: 1px solid #ddd;
+    background: #f8f8f8;
+}
+
+.gasto {
+    padding: 15px 20px;
+    border-bottom: 1px solid #eee;
+}
+
+.gasto:last-child {
+    border-bottom: none;
+}
+
+.gasto-nome {
+    font-weight: 500;
+}
+
+.gasto-custo {
+    font-weight: 600;
+}
+
+.gasto-data {
+    color: #666;
+    font-size: 0.85rem;
+}
+
+.gasto-modificar {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.gasto-modificar button {
+    padding: 7px 12px;
+}

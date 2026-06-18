@@ -24,3 +24,5 @@ $result = $db->criar_produto([
 ]);
 
 echo json_encode($result);
+
+exit;

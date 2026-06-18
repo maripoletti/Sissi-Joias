@@ -9,7 +9,7 @@ $db = new precificacao_model();
 
 $input = json_decode(file_get_contents("php://input"), true);
 
-$name = trim($input["nome"] ?? "");
+$name = mb_strtoupper(trim($input["nome"] ?? ""));
 $value = (float)($input["valorGrama"] ?? 0);
 
 if ($name === "") {

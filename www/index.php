@@ -465,6 +465,41 @@ switch ($uri) {
       break;
     }
 
+  case '/api/controledegastos/fixos': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosFixosGet_contr.php';
+      break;
+    }
+    
+  case '/api/controledegastos/dinamicos': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosGet_contr.php';
+      break;
+    }
+  case '/api/controledegastos/dinamicos/upd': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosUpd_contr.php';
+      break;
+    }
+
+  case '/api/controledegastos/dinamicos/del': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosDel_contr.php';
+      break;
+    }
+
+  case '/api/controledegastos/dinamicos/add': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosAdd_contr.php';
+      break;
+    }
+
+  case '/api/controledegastos/metais': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosMetaisGet_contr.php';
+      break;
+    }
+
   case '/comprovante':
     if (isset($_SESSION['user_id'])) {
       require_once '../app/controllers/comprovante_contr.php';

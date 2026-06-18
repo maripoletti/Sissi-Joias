@@ -286,7 +286,7 @@ function renderizarMetais(
 
 async function adicionarMetal() {
 
-  const nome = novoMetalInput.value.trim();
+  const nome = novoMetalInput.value.trim().toUpperCase();
 
   const valorGrama =
     limparMoeda(valorGramaMetalInput.value);
@@ -304,13 +304,8 @@ async function adicionarMetal() {
   try {
 
     const response = await fetch(API_CRIAR_METAL, {
-
       method: "POST",
-
-      headers: {
-        "Content-Type": "application/json"
-      },
-
+      headers: {"Content-Type": "application/json"},
       body: JSON.stringify({
         nome,
         valorGrama
@@ -336,9 +331,7 @@ async function adicionarMetal() {
     renderizarMetais(nome);
 
   } catch (erro) {
-
     console.error(erro);
-
     alert("Erro ao adicionar metal.");
   }
 }

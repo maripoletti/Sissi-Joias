@@ -196,83 +196,83 @@ if (e.target === modalEdit) fecharModal();
 });
 
 editFoto.addEventListener("change", () => {
-const file = editFoto.files && editFoto.files[0];
-if (!file) return;
-editPreview.src = URL.createObjectURL(file);
+    const file = editFoto.files && editFoto.files[0];
+    if (!file) return;
+    editPreview.src = URL.createObjectURL(file);
 });
 
 function darBaixaEstoque() {
-const id = Number(editId.value);
-const idx = produtos.findIndex(p => Number(p.id) === id);
-if (idx === -1) return;
+    const id = Number(editId.value);
+    const idx = produtos.findIndex(p => Number(p.id) === id);
+    if (idx === -1) return;
 
-const atual = Number(editEstoque.value);
-const baixa = Number(editBaixa.value);
+    const atual = Number(editEstoque.value);
+    const baixa = Number(editBaixa.value);
 
-if (!baixa || baixa <= 0) {
-    alert("Digite uma quantidade válida pra dar baixa.");
-    return;
-}
+    if (!baixa || baixa <= 0) {
+        alert("Digite uma quantidade válida pra dar baixa.");
+        return;
+    }
 
-if (baixa > atual) {
-    alert("Não dá: baixa maior que o estoque.");
-    return;
-}
+    if (baixa > atual) {
+        alert("Não dá: baixa maior que o estoque.");
+        return;
+    }
 
-const novo = atual - baixa;
+    const novo = atual - baixa;
 
-editEstoque.value = novo;
-produtos[idx].estoque = novo;
+    editEstoque.value = novo;
+    produtos[idx].estoque = novo;
 
-editBaixa.value = "";
-render(true);
+    editBaixa.value = "";
+    render(true);
 }
 
 formEdit.addEventListener("submit", async (e) => {
-e.preventDefault();
+    e.preventDefault();
 
-const id = Number(editId.value);
-const idx = produtos.findIndex(p => Number(p.id) === id);
-if (idx === -1) return;
+    const id = Number(editId.value);
+    const idx = produtos.findIndex(p => Number(p.id) === id);
+    if (idx === -1) return;
 
-produtos[idx].nome = editNome.value.trim();
-produtos[idx].preco = Number(editPreco.value);
-produtos[idx].estoque = Number(editEstoque.value);
-produtos[idx].tamanho = editTamanho.value.trim();
-produtos[idx].cor = editCor.value.trim();
-produtos[idx].peso_banho = editPesoBanho.value.trim();
-produtos[idx].milesimos_banho = editMilesimosBanho.value.trim();
+    produtos[idx].nome = editNome.value.trim();
+    produtos[idx].preco = Number(editPreco.value);
+    produtos[idx].estoque = Number(editEstoque.value);
+    produtos[idx].tamanho = editTamanho.value.trim();
+    produtos[idx].cor = editCor.value.trim();
+    produtos[idx].peso_banho = editPesoBanho.value.trim();
+    produtos[idx].milesimos_banho = editMilesimosBanho.value.trim();
 
-const file = editFoto.files && editFoto.files[0];
-if (file) produtos[idx].img = URL.createObjectURL(file);
+    const file = editFoto.files && editFoto.files[0];
+    if (file) produtos[idx].img = URL.createObjectURL(file);
 
-const data = new FormData();
-data.append("id", id);
-data.append("nome", editNome.value.trim());
-data.append("preco", editPreco.value);
-data.append("estoque", editEstoque.value);
-data.append("tamanho", editTamanho.value.trim());
-data.append("cor", editCor.value.trim());
-data.append("peso_banho", editPesoBanho.value.trim());
-data.append("milesimos_banho", editMilesimosBanho.value.trim());
+    const data = new FormData();
+    data.append("id", id);
+    data.append("nome", editNome.value.trim());
+    data.append("preco", editPreco.value);
+    data.append("estoque", editEstoque.value);
+    data.append("tamanho", editTamanho.value.trim());
+    data.append("cor", editCor.value.trim());
+    data.append("peso_banho", editPesoBanho.value.trim());
+    data.append("milesimos_banho", editMilesimosBanho.value.trim());
 
-if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
+    if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
 
-try {
-    const res = await fetch("/api/produtos/update", {
-    method: "POST",
-    body: data
-    });
+    try {
+        const res = await fetch("/api/produtos/update", {
+        method: "POST",
+        body: data
+        });
 
-    if (!res.ok) throw new Error("Erro ao atualizar produto");
+        if (!res.ok) throw new Error("Erro ao atualizar produto");
 
-    fecharModal();
-    render(true);
+        fecharModal();
+        render(true);
 
-} catch (err) {
-    console.error(err);
-    alert("Não foi possível atualizar o produto.");
-}
+    } catch (err) {
+        console.error(err);
+        alert("Não foi possível atualizar o produto.");
+    }
 });
 
 function abrirModalAdicionar() {
