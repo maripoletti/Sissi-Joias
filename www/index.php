@@ -398,6 +398,12 @@ switch ($uri) {
       break;
     }
 
+  case '/api/campanhas/selecionar': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/toprevendedorasCampSelecionar_contr.php';
+      break;
+    }
+
   case '/precificacao': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/precificacao_view.php';

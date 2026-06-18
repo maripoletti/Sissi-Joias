@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles/estilo2.css">
   <link rel="stylesheet" href="styles/paineldecontrole.css">
   <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
   <body>
   <div class="container">
@@ -88,6 +89,12 @@
           <div class="panel panel-top">
             <div class="panel-head">
               <h3>Top Vendedoras</h3>
+              <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+              <button class="btn-campanhas" id="abrirModal">
+                <i class="fa-solid fa-gear"></i>
+                Campanhas
+              </button>
+               <?php endif; ?>
             </div>
 
             <div class="top-list"></div>
@@ -96,6 +103,30 @@
         </section>
       </main>
 
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-campanhas">
+      <div class="modal-header">
+        <h2>Campanhas</h2>
+
+        <button id="fecharModal">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="campanhas-lista" id="campanhasLista"></div>
+
+      <button class="btn-add" id="novaCampanha">
+        <i class="fa-solid fa-plus"></i>
+        Nova Campanha
+      </button>
+
+      <button class="btn-salvar" id="salvarCampanhas">
+        <i class="fa-regular fa-floppy-disk"></i>
+        Salvar
+      </button>
     </div>
   </div>
 

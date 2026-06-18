@@ -44,6 +44,9 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
 
   display: flex;
   flex-direction: column;
+
+  height: 100vh;
+  overflow-y: auto;
 }
 .sidebar h2{
   font-size: 22px;

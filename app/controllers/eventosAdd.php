@@ -12,7 +12,8 @@ $input = json_decode(file_get_contents("php://input"), true);
 
 $title = trim($input['titulo'] ?? "");
 $date = trim($input['date'] ?? "");
-$hour = trim($input['hora'] ?? null);
+$hour = $input['hora'] ?? null;
+$hour = ($hour !== null && $hour !== '') ? trim($hour) : null;
 $type = trim($input['type'] ?? "outro");
 $text = trim($input['text'] ?? "Evento");
 

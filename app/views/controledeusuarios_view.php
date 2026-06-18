@@ -68,7 +68,7 @@
             <div class="level">
               <div class="level-bar rubi-black"></div>
               <div class="level-name rubi-black-name">⚫ Rubi Black</div>
-              <div class="level-info">Acima de R$5.000,00 → 50%</div>
+              <div class="level-info">Acima de R$5.000,00 → 40% + brindes</div>
             </div>
 
           </div>

@@ -20,20 +20,34 @@ if (!is_array($input)) {
 $response = [];
 
 foreach ($input as $campanha) {
+
+    $id = $campanha["id"] ?? null;
+
     $nome = trim($campanha["nome"] ?? "");
     $descricao = trim($campanha["descricao"] ?? "");
     $inicio = $campanha["inicio"] ?? null;
     $fim = $campanha["fim"] ?? null;
 
-    if ($nome === "") {
-        $response[] = [
-            "success" => false,
-            "message" => "Nome obrigatório."
-        ];
-        continue;
+    if (is_numeric($id)) {
+
+        $result = $db->atualizar_campanha(
+            (int)$id,
+            $nome,
+            $descricao,
+            $inicio,
+            $fim
+        );
+
+    } else {
+
+        $result = $db->criar_campanha(
+            $nome,
+            $descricao,
+            $inicio,
+            $fim
+        );
     }
 
-    $result = $db->criar_campanha($nome, $descricao, $inicio, $fim);
     $response[] = $result;
 }
 

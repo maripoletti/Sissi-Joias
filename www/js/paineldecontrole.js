@@ -456,58 +456,410 @@ dataAtual.textContent = hojeTopo.toLocaleDateString("pt-BR", {
 
   carregarEventos();
 
-  async function carregarTopVendedoras() {
-    try {
-      const res = await fetch("/api/relatorios");
-      if (!res.ok) return;
-
-      const data = await res.json();
-      const container = document.querySelector(".top-list");
-      if (!container) return;
-
-      container.innerHTML = "";
-
-      if (data.vendedoras && data.vendedoras.length) {
-        const maiorVenda = Math.max(...data.vendedoras.map((v) => Number(v.valor)));
-
-        data.vendedoras
-          .sort((a, b) => Number(b.valor) - Number(a.valor))
-          .forEach((v, i) => {
-            const valor = Number(v.valor);
-            const percentual = maiorVenda ? (valor / maiorVenda) * 100 : 0;
-
-            let rankClass = "";
-            if (i === 0) rankClass = "gold";
-            else if (i === 1) rankClass = "purple";
-            else if (i === 2) rankClass = "purple2";
-            else rankClass = "";
-
-            const itemHTML = `
-              <div class="seller">
-                <div class="rank ${rankClass}">${i + 1}</div>
-
-                <div class="info">
-                  <strong>${v.nome}</strong>
-                  <div class="seller-track">
-                    <div class="seller-fill ${rankClass}" style="width:${percentual}%"></div>
-                  </div>
-                </div>
-
-                <div class="money">R$ ${valor.toFixed(2)}</div>
-              </div>
-            `;
-
-            container.insertAdjacentHTML("beforeend", itemHTML);
-          });
-      } else {
-        container.innerHTML = `<p class="muted">Nenhuma vendedora encontrada.</p>`;
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  }
-
   document.addEventListener("DOMContentLoaded", () => {
     carregarTopVendedoras();
   });
 })();
+
+async function carregarTopVendedoras() {
+  try {
+    const res = await fetch("/api/relatorios");
+    if (!res.ok) return;
+
+    const data = await res.json();
+    const container = document.querySelector(".top-list");
+    if (!container) return;
+
+    container.innerHTML = "";
+
+    if (data.vendedoras && data.vendedoras.length) {
+      const maiorVenda = Math.max(...data.vendedoras.map((v) => Number(v.valor)));
+
+      data.vendedoras
+        .sort((a, b) => Number(b.valor) - Number(a.valor))
+        .forEach((v, i) => {
+          const valor = Number(v.valor);
+          const percentual = maiorVenda ? (valor / maiorVenda) * 100 : 0;
+
+          let rankClass = "";
+          if (i === 0) rankClass = "gold";
+          else if (i === 1) rankClass = "purple";
+          else if (i === 2) rankClass = "purple2";
+          else rankClass = "";
+
+          const itemHTML = `
+            <div class="seller">
+              <div class="rank ${rankClass}">${i + 1}</div>
+
+              <div class="info">
+                <strong>${v.nome}</strong>
+                <div class="seller-track">
+                  <div class="seller-fill ${rankClass}" style="width:${percentual}%"></div>
+                </div>
+              </div>
+
+              <div class="money">R$ ${valor.toFixed(2)}</div>
+            </div>
+          `;
+
+          container.insertAdjacentHTML("beforeend", itemHTML);
+        });
+    } else {
+      container.innerHTML = `<p class="muted">Nenhuma vendedora encontrada.</p>`;
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+let campanhas = [];
+
+const modalOverlay = document.getElementById('modalOverlay');
+const campanhasLista = document.getElementById('campanhasLista');
+
+async function buscarCampanhas() {
+
+  try {
+
+    const response = await fetch(
+      `/api/campanhas/get`
+    );
+
+    const data = await response.json();
+
+    campanhas = Array.isArray(data) ? data : [];
+
+    renderizarModalCampanhas();
+
+  } catch (error) {
+
+    console.error(
+      'Erro ao buscar campanhas:',
+      error
+    );
+  }
+}
+
+function abrirModalCampanhas() {
+  modalOverlay.classList.add('active');
+}
+
+function fecharModalCampanhas() {
+  modalOverlay.classList.remove('active');
+}
+
+function adicionarCampanha() {
+
+  campanhas.push({
+    id: crypto.randomUUID(),
+    nome: '',
+    descricao: '',
+    inicio: '',
+    fim: '',
+    nova: true
+  });
+
+  renderizarModalCampanhas();
+}
+
+
+async function removerCampanha(id) {
+
+  const campanhaEncontrada = campanhas.find(
+    (campanha) => String(campanha.id) === String(id)
+  );
+
+  if (campanhaEncontrada && campanhaEncontrada.nova) {
+
+    campanhas = campanhas.filter(
+      (campanha) => String(campanha.id) !== String(id)
+    );
+
+    renderizarModalCampanhas();
+
+    return;
+  }
+
+  try {
+
+    const response = await fetch(`/api/campanhas/del`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id })
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+
+      campanhas = campanhas.filter(
+        (campanha) => String(campanha.id) !== String(id)
+      );
+
+      renderizarModalCampanhas();
+    } else {
+
+      alert(data.message || 'Erro ao remover campanha');
+    }
+
+  } catch (error) {
+
+    console.error('Erro ao remover campanha:', error);
+
+    alert('Erro ao remover campanha');
+  }
+}
+
+async function escolherCampanha(id) {
+
+  const res = await fetch("/api/campanhas/selecionar", {
+      method: "POST",
+      headers: {
+          "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ id })
+  });
+
+  const data = await res.json();
+
+  if (!data.success) {
+      alert(data.message);
+      return;
+  }
+
+  await buscarCampanhas();
+  await carregarTopVendedoras();
+}
+
+async function salvarCampanhas() {
+
+  sincronizarCampanhasDaTela();
+
+
+  const botaoSalvar = document.getElementById('salvarCampanhas');
+
+  try {
+
+    botaoSalvar.disabled = true;
+    botaoSalvar.innerHTML = `
+      <i class="fa-solid fa-spinner fa-spin"></i>
+      Salvando...
+    `;
+
+
+    const campanhasParaSalvar = campanhas.map((campanha) => {
+      return {
+        id: campanha.id,
+        nome: campanha.nome,
+        descricao: campanha.descricao,
+        inicio: campanha.inicio,
+        fim: campanha.fim
+      };
+    });
+
+
+    const response = await fetch(
+      `/api/campanhas/salvar`,
+      {
+        method: 'POST',
+
+        headers: {
+          'Content-Type': 'application/json'
+        },
+
+        body: JSON.stringify(campanhasParaSalvar)
+      }
+    );
+
+
+    const texto = await response.text();
+
+    const data = texto ? JSON.parse(texto) : {};
+
+    if (!response.ok || data.success === false) {
+
+      alert(data.message || 'Erro ao salvar campanhas');
+
+      return;
+    }
+
+    fecharModalCampanhas();
+
+    await buscarCampanhas();
+  } catch (error) {
+
+    console.error(
+      'Erro ao salvar campanhas:',
+      error
+    );
+
+    alert('Erro ao salvar campanhas');
+
+  } finally {
+
+    botaoSalvar.disabled = false;
+
+    botaoSalvar.innerHTML = `
+      <i class="fa-regular fa-floppy-disk"></i>
+      Salvar
+    `;
+  }
+}
+
+
+function renderizarModalCampanhas() {
+
+  campanhasLista.innerHTML = '';
+
+  campanhas.forEach((campanha) => {
+
+    campanhasLista.innerHTML += `
+    
+      <div class="campanha-card" data-id="${campanha.id}">
+
+        <div class="campanha-top">
+
+          <input
+            type="text"
+            value="${campanha.nome || ''}"
+            placeholder="Nome da campanha"
+            data-campo="nome"
+            oninput="
+              editarCampanha(
+                '${campanha.id}',
+                'nome',
+                this.value
+              )
+            "
+          >
+
+          <button class="botao-selecionarCampanha ${campanha.selected == 1 ? 'selecionada' : ''}" onclick="escolherCampanha('${campanha.id}')">V</button>
+
+          <button class="botao-removerCampanha" onclick="removerCampanha('${campanha.id}')">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+
+        </div>
+
+        <textarea
+          placeholder="Descrição"
+          data-campo="descricao"
+          oninput="
+            editarCampanha(
+              '${campanha.id}',
+              'descricao',
+              this.value
+            )
+          "
+        >${campanha.descricao || ''}</textarea>
+
+        <div class="datas">
+          <div>
+            <label>Início</label>
+            <input
+              type="date"
+              value="${campanha.inicio || ''}"
+              data-campo="inicio"
+              oninput="
+                editarCampanha(
+                  '${campanha.id}',
+                  'inicio',
+                  this.value
+                )
+              "
+            >
+          </div>
+          <div>
+
+            <label>Fim</label>
+
+            <input
+              type="date"
+              value="${campanha.fim || ''}"
+              data-campo="fim"
+              oninput="
+                editarCampanha(
+                  '${campanha.id}',
+                  'fim',
+                  this.value
+                )
+              "
+            >
+          </div>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function editarCampanha(id, campo, valor) {
+
+  campanhas = campanhas.map((campanha) => {
+
+    if (String(campanha.id) === String(id)) {
+
+      return {
+        ...campanha,
+        [campo]: valor
+      };
+    }
+
+    return campanha;
+  });
+
+  //renderizarCampanhasFiltro();
+}
+
+function sincronizarCampanhasDaTela() {
+
+  const cards = document.querySelectorAll('.campanha-card');
+
+  cards.forEach((card) => {
+
+    const id = card.getAttribute('data-id');
+
+    const campanha = campanhas.find(
+      (item) => String(item.id) === String(id)
+    );
+
+    if (!campanha) {
+      return;
+    }
+
+    const nome = card.querySelector('[data-campo="nome"]');
+    const descricao = card.querySelector('[data-campo="descricao"]');
+    const inicio = card.querySelector('[data-campo="inicio"]');
+    const fim = card.querySelector('[data-campo="fim"]');
+
+    campanha.nome = nome ? nome.value : '';
+    campanha.descricao = descricao ? descricao.value : '';
+    campanha.inicio = inicio ? inicio.value : '';
+    campanha.fim = fim ? fim.value : '';
+  });
+}
+
+modalOverlay.addEventListener("click", (e) => {
+    if (e.target === modalOverlay) {
+        fecharModalCampanhas();
+    };
+});
+
+document
+  .getElementById('abrirModal')
+  .onclick = abrirModalCampanhas;
+
+document
+  .getElementById('fecharModal')
+  .onclick = fecharModalCampanhas;
+
+document
+  .getElementById('novaCampanha')
+  .onclick = adicionarCampanha;
+
+document
+  .getElementById('salvarCampanhas')
+  .onclick = salvarCampanhas;
+
+buscarCampanhas()
