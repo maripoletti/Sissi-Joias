@@ -77,12 +77,12 @@
 
                         <div class="form-grupoIntervalo">
                             <div class="form-datas">
-                                <label>Data inicial:</label>
+                                <label for="dataInicial">Data inicial:</label>
                                 <input type="date" id="dataInicial">
                             </div>
                             
                             <div class="form-datas">
-                                <label>Data final:</label>
+                                <label for="dataFinal">Data final:</label>
                                 <input type="date" id="dataFinal">
                             </div>
                         </div>
@@ -99,7 +99,7 @@
                         </div>
 
                         <div class="form-grupoMetal">
-                            <label>Nome do metal</label>
+                            <label for="metalBanho">Nome do metal</label>
                             <input type="text" id="metalBanho" placeholder="Ex: Ouro">
                             <div id="resultado-metalBanho" style="display: none;">
 
@@ -119,17 +119,17 @@
 
                         <div class="form-dados">
                             <div class="form-grupoGasto">
-                                <label>Nome do gasto</label>
+                                <label for="input-add-nome-gasto">Nome do gasto</label>
                                 <input id="input-add-nome-gasto" type="text">
                             </div>
 
                             <div class="form-grupoGasto">
-                                <label>Preço do gasto</label>
+                                <label for="input-add-custo-gasto">Preço do gasto</label>
                                 <input id="input-add-custo-gasto" type="number" step="0.01">
                             </div>
 
                             <div class="form-grupoGasto">
-                                <label>Quando ocorreu</label>
+                                <label for="input-add-data-gasto">Quando ocorreu</label>
                                 <input id="input-add-data-gasto" type="date">
                             </div>
                         </div>
@@ -147,17 +147,17 @@
 
                         <div class="form-dados">
                             <div class="form-grupoGasto">
-                                <label>Nome do gasto</label>
+                                <label for="input-nome-gasto">Nome do gasto</label>
                                 <input id="input-nome-gasto" type="text">
                             </div>
 
                             <div class="form-grupoGasto">
-                                <label>Preço do gasto</label>
+                                <label for="input-custo-gasto">Preço do gasto</label>
                                 <input id="input-custo-gasto" type="number" step="0.01">
                             </div>
 
                             <div class="form-grupoGasto">
-                                <label>Quando ocorreu</label>
+                                <label for="input-data-gasto">Quando ocorreu</label>
                                 <input id="input-data-gasto" type="date">
                             </div>
                         </div>
@@ -170,12 +170,12 @@
             <section id="gastos-dinamicos">
                 <div class="topo">
                     <div class="campo-custoTotal">
-                        <label>Custo Total</label>
+                        <label for="custoTotal">Custo Total</label>
                         <input id="custoTotal" type="text" readonly>
                     </div>
                     <div class="realizar">
                         <div class="campo-sincronizar">
-                            <label>Considerar os gastos acíma?</label>
+                            <label for="sincronizarGastos">Considerar os gastos acima?</label>
                             <select id="sincronizarGastos">
                                 <option value="sim">Sim</option>
                                 <option value="nao" selected>Não</option>

@@ -17,15 +17,28 @@
           <h1>Produtos dos Revendedores</h1>
         </header>
 
-        <div class="filtros">
-          <input type="text" id="filtroProduto" placeholder="Buscar produto...">
-          <input type="text" id="filtroRevendedor" placeholder="Buscar revendedor...">
+        <div class="faixa-topo">
+          <div class="filtros">
+            <input type="text" id="filtroProduto" placeholder="Buscar produto...">
+            <input type="text" id="filtroRevendedor" placeholder="Buscar revendedor...">
+          </div>
+
+          <div>
+            <button class="btn-primary" id="prosseguirBtn" style="display: none;">Prosseguir</button>
+            <button type="button" class="btn-secondary" id="cancelarBtn" onclick="cancelarSelecao()" style="display: none;">Cancelar</button>
+          </div>
+
+          <div class="emMassa">
+            <button type="button" class="btn-primary" id="maletaClick" onclick="ativarMaletaClick()">Adicionar em Maleta</button>
+            <button type="button" class="btn-primary" id="excluirEmMassa" onclick="ativarExcluirClick()">Remover em Massa</button>
+          </div>
         </div>
 
         <div class="tabela-container">
           <table id="tabelaRevendedores">
             <thead>
               <tr>
+                <th class="col-selecao" style="display:none"></th>
                 <th>Produto</th>
                 <th>Revendedor</th>
                 <th>Quantidade</th>
@@ -40,6 +53,43 @@
           <div id="sentinela"></div>
         </div>
 
+        <div id="modalMaleta" class="modal" style="display:none;">
+          <div class="modal-real">
+              <div class="form-cabecalho">
+                  <h2>Adicionar em Maleta</h2>
+
+                  <button
+                      class="modal-fechar"
+                      onclick="fecharModalMaleta()">
+                      ×
+                  </button>
+              </div>
+
+              <select id="selectMaleta">
+                  <option value="nova">Criar nova maleta</option>
+                  <option value="outra">Adicionar em maleta já existente</option>
+              </select>
+
+              <input type="text" id="nomeNovaMaleta" placeholder="Nome da nova maleta">
+              <select id="selectMaletaExistente" style="display:none;">
+                
+              </select>
+
+              <div class="modal-botoes">
+                  <button
+                      class="modal-cancelar"
+                      onclick="fecharModalMaleta()">
+                      Cancelar
+                  </button>
+
+                  <button
+                      class="modal-confirmar"
+                      onclick="confirmarMaleta()">
+                      Confirmar
+                  </button>
+              </div>
+          </div>
+        </div>
       </main>
     </div>
   </div>

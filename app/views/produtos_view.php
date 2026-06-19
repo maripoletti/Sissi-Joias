@@ -239,6 +239,9 @@
         <label for="buscaEnvio">Buscar produto</label>
         <input type="text" id="buscaEnvio" placeholder="Digite o nome do produto..." />
 
+        <label for="nomearMaleta">Nomear maleta</label>
+        <input type="text" id="nomearMaleta" placeholder="Digite o nome da maleta..." />
+
         <div id="listaProdutosEnvio" class="lista-produtos-envio"></div>
 
         <div class="resumo-envio">

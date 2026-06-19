@@ -241,6 +241,30 @@ switch ($uri) {
     } else {
       AuthMiddleware::user();
     }
+
+  case '/api/produtosRevendedores/deletarEmMassa':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresMassDel_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+  
+  case '/api/maleta/adicionar':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresMaletaAdd_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/maletas':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresMaleta_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
     
   case '/api/produtos/xml':
     if(isset($_SESSION["user_id"])) {

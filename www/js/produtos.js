@@ -44,6 +44,7 @@ const modalEnvio = document.getElementById("modalEnvio");
 const formEnvio = document.getElementById("formEnvio");
 const revendedoraSelect = document.getElementById("revendedoraSelect");
 const buscaEnvio = document.getElementById("buscaEnvio");
+const nomearMaleta = document.getElementById("nomearMaleta")
 const listaProdutosEnvio = document.getElementById("listaProdutosEnvio");
 const itensSelecionadosEnvio = document.getElementById("itensSelecionadosEnvio");
 
@@ -706,6 +707,7 @@ if (!itensEnvio.length) {
 
 const payload = {
     revendedora_id: revendedoraId,
+    nome_maleta: nomearMaleta.value,
     produtos: itensEnvio.map(item => ({
     produto_id: item.id,
     quantidade: item.quantidade
@@ -719,7 +721,10 @@ try {
     body: JSON.stringify(payload)
     });
 
-    if (!res.ok) throw new Error("Erro ao enviar");
+    if (!res.ok) {
+        alert("Mesmo produto já foi enviado antes, olhe em Produtos dos Revendedores");  
+        throw new Error("Erro ao enviar.");
+    };
     formEnvio.reset();
     itensEnvio = [];
     atualizarListaProdutosEnvio();

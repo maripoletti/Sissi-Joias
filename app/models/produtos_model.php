@@ -473,27 +473,63 @@ class Produtos_model extends Dbh {
         }
     }
 
-    public function send_to_employee($UserID, $ProductID, $StockSent) {
+    public function send_to_employee($UserID, $ProductID, $StockSent, $CaseID) {
         $pdo = $this->connect();
-        try {
-            if ($StockSent <= 0) {
-                return false;
-            }
 
+        try {
             $query = "
-            INSERT INTO Sales_EmployeeProducts (UserID, ProductID, UsableStock)
-            VALUES (?, ?, ?)
+                INSERT INTO Sales_EmployeeProducts 
+                (UserID, ProductID, UsableStock, CaseID)
+                VALUES (?, ?, ?, ?)
             ";
 
             $stmt = $pdo->prepare($query);
-            $stmt->execute([$UserID, $ProductID, $StockSent]);
+            $stmt->execute([$UserID, $ProductID, $StockSent, $CaseID]);
 
             return $stmt->rowCount() > 0;
+
         } catch (PDOException $e) {
             http_response_code(500);
             echo $e->getMessage();
             exit;
         }
+    }
+
+    public function create_case(string $name): int {
+        $pdo = $this->connect();
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO Sales_Cases (Name)
+                VALUES (?)
+            ");
+
+            $stmt->execute([$name]);
+
+            return (int)$pdo->lastInsertId();
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+        }
+    }
+
+    public function add_product_to_case(int $CaseID, int $ProductID, int $Quantity): bool {
+        $pdo = $this->connect();
+
+        try {
+            $stmt = $pdo->prepare("
+                INSERT INTO Sales_CasesProducts
+                (CaseID, ProductID, Quantity)
+                VALUES (?, ?, ?)
+            ");
+
+            return $stmt->execute([$CaseID, $ProductID, $Quantity]);
+        } catch (PDOException $e) {
+            http_response_code(500);
+            echo $e->getMessage();
+            exit;
+        }    
     }
 
     public function remove_products($ProductID, $UserID) {
@@ -528,6 +564,28 @@ class Produtos_model extends Dbh {
             http_response_code(500);
             echo $e->getMessage();
             exit;
+        }
+    }
+
+    public function listar_maletas() {
+        $pdo = $this->connect();
+
+        try {
+            $query = "SELECT
+                        CaseID,
+                        Name AS CaseName
+                    FROM Sales_Cases            
+            ";
+            $stmt = $pdo->prepare($query);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        } catch (PDOException $e) {
+            return [
+                "success" => false,
+                "message" => "Erro ao listar campanhas: " . $e->getMessage()
+            ];
         }
     }
 }

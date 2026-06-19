@@ -33,12 +33,16 @@ class produtosRevendedores_model extends Dbh {
                 se.UserID RevId,
                 sep.UsableStock quantidade, 
                 sp.Price preco_revenda,
-                sep.SendAt data_envio
+                sep.SendAt data_envio,
+                sc.CaseID AS CaseID,
+                sc.Name AS CaseName
             FROM Sales_EmployeeProducts sep
             LEFT JOIN Sales_Employees se
             ON sep.UserID = se.UserID
             LEFT JOIN Sales_Products sp
             ON sep.ProductID = sp.ProductID
+            LEFT JOIN Sales_Cases sc
+            ON sep.CaseID = sc.caseID
             $where
             LIMIT ? OFFSET ?";
 
@@ -61,4 +65,5 @@ class produtosRevendedores_model extends Dbh {
             ];
         }
     }
+
 }

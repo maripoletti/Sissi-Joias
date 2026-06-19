@@ -12,6 +12,13 @@
   margin-bottom: 20px;
 }
 
+.faixa-topo {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  justify-content: space-between;
+}
+
 .filtros input {
   padding: 10px;
   border-radius: 8px;
@@ -95,4 +102,154 @@ tbody tr:hover {
 .btn-excluir {
   background: #dc3545;
   color: white;
+}
+.btn-primary{
+  display: inline-block;
+  text-decoration: none;
+  background: #4b0d4f;
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-secondary{
+  display: inline-block;
+  text-decoration: none;
+  background: #4b0d4f79;
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
+#excluirEmMassa {
+  background-color: rgb(157, 0, 0);
+}
+
+tr.selecionado {
+  background: #dbeafe;
+}
+
+tr.selecionado:hover {
+  background: #dbeafe87;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(13, 2, 15, .60);
+
+    display: flex;
+    align-content: center;
+    justify-items: center;
+
+    padding: 18px;
+    z-index: 9999;    
+}
+
+.modal-real {
+    width: 100%;
+    max-width: 560px;
+
+    background: #fff;
+    border-radius: 18px;
+    padding: 18px;
+
+    box-shadow: 0 22px 70px rgba(0, 0, 0, .35);
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-real h2 {
+    margin: 0;
+
+    font-size: 20px;
+    font-weight: 700;
+
+    color: #600a5e;
+}
+
+.modal-real select,
+.modal-real input[type="text"] {
+    width: 100%;
+
+    border: 1px solid #ddd;
+    border-radius: 12px;
+
+    padding: 14px;
+    font-size: 14px;
+}
+
+.modal-real select:focus,
+.modal-real input:focus {
+    outline: none;
+    border-color: #600a5e;
+}
+
+.modal-botoes {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+.modal-confirmar {
+    background: #4b0d4f;
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+.modal-cancelar {
+    background: #e7e7e7;
+    color: #333;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+}
+
+.modal-cancelar:hover {
+    background: #dcdcdc;
+}
+
+.modal-confirmar:hover {
+    background: #600a5e;
+}
+
+.form-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-fechar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    border: none;
+    background: rgba(75, 13, 79, .1);
+    color: #4b0d4f;
+    font-size: 16px;
+}
+
+#prosseguirBtn {
+  transition: 0.2s;
+}
+
+.prosseguir-maleta {
+  background-color: #4b0d4f;
+}
+
+.prosseguir-excluir {
+  background-color: #b3261e;
 }
