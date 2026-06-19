@@ -467,46 +467,38 @@ async function carregarTopVendedoras() {
     if (!res.ok) return;
 
     const data = await res.json();
-    const container = document.querySelector(".top-list");
-    if (!container) return;
 
-    container.innerHTML = "";
+    if (!data.vendedoras || !data.vendedoras.length) return;
 
-    if (data.vendedoras && data.vendedoras.length) {
-      const maiorVenda = Math.max(...data.vendedoras.map((v) => Number(v.valor)));
+    const labels = data.vendedoras.map(v => v.nome);
+    const valores = data.vendedoras.map(v => Number(v.valor));
 
-      data.vendedoras
-        .sort((a, b) => Number(b.valor) - Number(a.valor))
-        .forEach((v, i) => {
-          const valor = Number(v.valor);
-          const percentual = maiorVenda ? (valor / maiorVenda) * 100 : 0;
+    const ctx = document.getElementById("topVendedorasChart");
 
-          let rankClass = "";
-          if (i === 0) rankClass = "gold";
-          else if (i === 1) rankClass = "purple";
-          else if (i === 2) rankClass = "purple2";
-          else rankClass = "";
+    new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: labels,
+        datasets: [{
+          data: valores
+        }]
+      },
+      options: {
+        plugins: {
+          legend: {
+            position: "right"
+          },
+          tooltip: {
+            callbacks: {
+              label: function(context) {
+                return context.label;
+              }
+            }
+          }
+        }
+      }
+    });
 
-          const itemHTML = `
-            <div class="seller">
-              <div class="rank ${rankClass}">${i + 1}</div>
-
-              <div class="info">
-                <strong>${v.nome}</strong>
-                <div class="seller-track">
-                  <div class="seller-fill ${rankClass}" style="width:${percentual}%"></div>
-                </div>
-              </div>
-
-              <div class="money">R$ ${valor.toFixed(2)}</div>
-            </div>
-          `;
-
-          container.insertAdjacentHTML("beforeend", itemHTML);
-        });
-    } else {
-      container.innerHTML = `<p class="muted">Nenhuma vendedora encontrada.</p>`;
-    }
   } catch (err) {
     console.error(err);
   }

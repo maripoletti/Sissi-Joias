@@ -600,6 +600,7 @@ listaProdutosEnvio.innerHTML = filtrados.map(p => {
         <div>
             <strong>${p.nome}</strong>
             <span>Estoque disponível: ${p.estoque}</span>
+            <span>Ref: ${p.id}</span>
         </div>
         </div>
 

@@ -97,7 +97,7 @@
                <?php endif; ?>
             </div>
 
-            <div class="top-list"></div>
+            <canvas id="topVendedorasChart"></canvas>
           </div>
 
         </section>
@@ -165,5 +165,6 @@
     };
   </script>
   <script src="js/global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
