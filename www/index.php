@@ -209,6 +209,45 @@ switch ($uri) {
     } else {
       AuthMiddleware::user();
     }
+  case '/api/categorias':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->listar_categorias();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/categorias/update':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->editar_categoria();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/categorias/add':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->adicionar_categoria();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/categorias/delete':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->remover_categoria();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
 
   case '/api/produtos/envios_revendedoras':
     if ($_SESSION['role'] == '2') {

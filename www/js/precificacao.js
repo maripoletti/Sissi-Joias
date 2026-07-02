@@ -49,6 +49,11 @@ function setModoEdicao(valor, id = null) {
   atualizarTextoBotao();
 }
 
+(async () => {
+    await carregarCategorias();
+    carregarMetais();
+})();
+
 // ================== MOEDA ==================
 
 function limparMoeda(valor) {
@@ -503,6 +508,25 @@ function recalcularPrecificacao() {
   valor2Input.value = formatarMoedaBR(calcularValorVenda(custoTotal, percentualTabela2));
 }
 
+// ==================
+
+let categorias = [];
+
+async function carregarCategorias() {
+    const res = await fetch("/api/categorias");
+
+    if (!res.ok) return;
+
+    categorias = await res.json();
+
+    categoriaVitrine.innerHTML =
+        `<option value="">Selecione uma categoria</option>` +
+        categorias.map(c =>
+            `<option value="${c.id}">${c.nome}</option>`
+        ).join("");
+}
+
+
 // ================== FETCH - BUSCAR PRODUTO PELO NOME ==================
 
 let timeoutBusca;
@@ -630,7 +654,6 @@ function preencherFormularioProduto(produto) {
   setTextoInput(codigoExternoInput, pegarValor(produto, "codigo_externo", "codigoExterno", "código_externo"));
   setTextoInput(unidadeEstoqueInput, pegarValor(produto, "unidade_estoque", "estoque", "un_estoque"));
   setTextoInput(pesoInput, pegarValor(produto, "peso", "peso_gramas", "gramas"));
-  setTextoInput(categoriaVitrineInput, pegarValor(produto, "categoria", "categoria_vitrine", "categoriaVitrine"));
   setTextoInput(milesimosInput, pegarValor(produto, "milesimos", "milésimos", "milesimo"));
   setTextoInput(milesimosBanhoInput, pegarValor(produto, "milesimosBanho", "milésimosBanho", "milesimoBanho"));
 
@@ -639,7 +662,8 @@ function preencherFormularioProduto(produto) {
   setMoedaInput(custoCompraBrutoInput, pegarValor(custosProduto, "custo_compra_bruto", "custoBruto", "compra_bruto"));
   setMoedaInput(custoInsumoInput, pegarValor(custosProduto, "custo_insumo", "custoInsumo", "insumo"));
   setMoedaInput(banhoCustoInput, pegarValor(custosProduto, "banho_custo", "banhoCusto"));
-
+  
+  categoriaVitrine.value = produto.categoria_id ?? "";
 
   const valorGramaMetal = limparNumero(
     pegarValor(produto, "valor_grama_metal", "valorGramaMetal", "valorGrama")
@@ -718,7 +742,7 @@ async function salvarPrecificacao() {
       metal: getMetalSelecionado()?.id || null,
       metalBanho: metais.find(m => m.nome === metalBanhoSelect.value)?.id || null,
 
-      categoria: categoriaVitrineInput.value.trim()
+      categoria: categoriaVitrine.value === "" ? null : Number(categoriaVitrine.value)
     }
   };
 

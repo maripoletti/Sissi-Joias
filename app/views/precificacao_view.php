@@ -82,7 +82,9 @@
 
               <div class="field">
                 <label>Categoria</label>
-                <input type="text" id="categoriaVitrine" placeholder="Digite a categoria de vitrine do produto">
+                <select id="categoriaVitrine">
+                    <option value="">Selecione uma categoria</option>
+                </select>
               </div>
             </div>
 

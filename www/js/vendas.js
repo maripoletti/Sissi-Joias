@@ -85,7 +85,9 @@ function criarCard(v) {
 
       <div class="card-right">
         <div class="price">${formatBRL(Number(v.Sales || 0))}</div>
-        <button class="btn-delete" type="button" onclick="delVenda(${v.OrderID})">🗑 Apagar</button>
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+          <button class="btn-delete" type="button" onclick="delVenda(${v.OrderID})">🗑 Apagar</button>
+        <?php endif; ?>n 
       </div>
     </article>
   `;

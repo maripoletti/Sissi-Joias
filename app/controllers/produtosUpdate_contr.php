@@ -17,6 +17,7 @@ if (!empty($_FILES['foto']['name'])) {
 
 $id = (int)($_POST['id'] ?? 0);
 $nome = $_POST['nome'] ?? "";
+$categoria = ($_POST["categoria"] ?? "") === "" ? null : (int)$_POST["categoria"];
 $preco = (float)($_POST['preco'] ?? 0);
 $estoque = (int)($_POST['estoque'] ?? 0);
 
@@ -28,6 +29,7 @@ $milesimos_banho = ($_POST["milesimos_banho"] === "") ? null : (int)$_POST["mile
 $validate = prodValidator::validate_update(
     $id,
     $nome,
+    $categoria,
     $preco,
     $estoque,
     $fotoPath,

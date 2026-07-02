@@ -108,36 +108,9 @@ class Produtos_model extends Dbh {
         try {
             $pdo->beginTransaction();
 
-
-            //inserindo tags
-            $stmt = $pdo->prepare(
-                "INSERT IGNORE INTO Prod_Tags (TagName) VALUES (?)"
-            );
-
-            foreach ($data['tags'] as $tag) {
-                $stmt->execute([$tag]);
-            }
-
-            //pegando os Ids de tags inseridas
-            $tagsIds = [];
-
-            if (!empty($data['tags'])) {
-
-                $placeholders = implode(', ', array_fill(0, count($data['tags']), '?'));
-
-                $stmt = $pdo->prepare(
-                    "SELECT TagID
-                    FROM Prod_Tags
-                    WHERE TagName IN ($placeholders)"
-                );
-
-                $stmt->execute($data['tags']);
-                $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-            }
-
-
             //inserindo produtos
             $campos = [
+                'TagID',
                 'ProductName',
                 'StockQuantity',
                 'Price',
@@ -148,6 +121,7 @@ class Produtos_model extends Dbh {
             ];
 
             $params = [
+                $data['tag'],
                 $data['name'],
                 $data['stock'],
                 $data['price'],
@@ -182,18 +156,6 @@ class Produtos_model extends Dbh {
             );
 
             $stmt->execute([$barcode, $productId]);
-
-
-            //linkando tags com produtos
-            $stmt = $pdo->prepare(
-                "INSERT INTO Prod_ProductsTags (ProductID, TagID) VALUES (?, ?)"
-            );
-
-            if (!empty($tagsIds)) {
-                foreach ($tagsIds as $tag) {
-                    $stmt->execute([$productId, $tag]);
-                }
-            }
             
             $pdo->commit();
         } catch (PDOException $e) {
@@ -220,6 +182,7 @@ class Produtos_model extends Dbh {
                 "ProductName = :name",
                 "Price = :price",
                 "StockQuantity = :stock",
+                "TagID = :tagID",
                 "Size = :tamanho",
                 "Color = :cor",
                 "BathWeight = :peso_banho",
@@ -239,6 +202,7 @@ class Produtos_model extends Dbh {
             $stmt->bindParam(":name", $data["name"]);
             $stmt->bindParam(":price", $data["price"]);
             $stmt->bindParam(":stock", $data["stock"]);
+            $stmt->bindParam(":tagID", $data["tag"], $data["tag"] === null ? PDO::PARAM_NULL : PDO::PARAM_INT);
             $stmt->bindParam(":id", $data["id"]);
             $stmt->bindParam(":tamanho", $data["tamanho"]);
             $stmt->bindParam(":cor", $data["cor"]);
@@ -267,7 +231,7 @@ class Produtos_model extends Dbh {
             $min   = $data["min"]   ?? null;
             $max   = $data["max"]   ?? null;
             $text  = $data["text"]  ?? "";
-            $tags  = $data["tags"]  ?? [];
+            $tag  = $data["tag"]  ?? null;
             $sort  = $data["sort"]  ?? null;
             $limit = $data["limit"] ?? 12;
             $page  = $data["page"]  ?? 0;
@@ -314,6 +278,11 @@ class Produtos_model extends Dbh {
                 $params[] = $milesimos_banho;
             }
 
+            if ($tag !== null) {
+                $whereParts[] = "p.TagID = ?";
+                $params[] = $tag;
+            }
+
             if (!empty($text)) {
                 $whereParts[] = "p.ProductName LIKE ?";
                 $params[] = $text . "%";
@@ -331,34 +300,7 @@ class Produtos_model extends Dbh {
                 $params[] = $max;
             }
 
-            $joinTags = "";
             $havingCount = "";
-
-            $joinTags = "
-                LEFT JOIN Prod_ProductsTags pt ON pt.ProductID = p.ProductID
-                LEFT JOIN Prod_Tags t ON t.TagID = pt.TagID
-            ";
-
-            $havingCount = "";
-
-            if (!empty($tags)) {
-                $subParts = [];
-
-                foreach ($tags as $tag) {
-                    $subParts[] = "
-                        EXISTS (
-                            SELECT 1
-                            FROM Prod_ProductsTags pt2
-                            JOIN Prod_Tags t2 ON t2.TagID = pt2.TagID
-                            WHERE pt2.ProductID = p.ProductID
-                            AND t2.TagName LIKE ?
-                        )
-                    ";
-                    $params[] = $tag . "%";
-                }
-
-                $whereParts[] = implode(" AND ", $subParts);
-            }
             
 
             $where = !empty($whereParts) ? "WHERE " . implode(" AND ", $whereParts) : "";
@@ -369,7 +311,6 @@ class Produtos_model extends Dbh {
                     SELECT p.ProductID
                     FROM Sales_Products p
                     $joinEmployee
-                    $joinTags
                     $where
                     GROUP BY p.ProductID
                     $havingCount
@@ -423,10 +364,12 @@ class Produtos_model extends Dbh {
                     p.Color AS cor,
                     p.BathWeight AS peso_banho,
                     p.BathThickness AS milesimos_banho,
-                    GROUP_CONCAT(DISTINCT t.TagName) AS cat
+                    t.TagID AS categoria_id,
+                    t.TagName AS categoria
                 FROM Sales_Products p
+                LEFT JOIN Prod_Tags t
+                    ON t.TagID = p.TagID
                 $joinEmployee
-                $joinTags
                 $where
                 GROUP BY p.ProductID
                 $havingCount

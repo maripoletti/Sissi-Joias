@@ -29,6 +29,7 @@
             <a href="/novavenda" class="btn-primary">+ Nova venda</a>
 
             <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
+              <button type="button" class="btn-primary" onclick="abrirModalCategorias()">Categorias</button>
               <button type="button" class="btn-primary" onclick="abrirModalAdicionar()">+ Adicionar produto</button>
               <button type="button" class="btn-primary" onclick="abrirModalEnvio()">Enviar produtos para revendedoras</button>
 
@@ -59,7 +60,9 @@
 
           <div class="filter">
             <label>Categoria</label>
-            <input type="text" id="cat">
+            <select id="cat">
+              
+            </select>
           </div>
 
           <div class="filter">
@@ -132,6 +135,9 @@
         <label>Nome</label>
         <input type="text" id="editNome" required />
 
+        <label>Categoria</label>
+        <select id="editCategoria"></select>
+
         <label>Preço</label>
         <input type="number" id="editPreco" step="0.01" min="0" required />
 
@@ -185,7 +191,7 @@
         <input type="text" id="addNome" required />
 
         <label>Categoria</label>
-        <input type="text" id="addCategoria">
+        <select id="addCategoria"></select>
 
         <label>Preço</label>
         <input type="number" id="addPreco" step="0.01" min="0" required />
@@ -281,21 +287,39 @@
     </div>
   </div>
 
-  <div id="modalCrop" class="modal hidden">
+  <div id="modalCategorias" class="modal hidden">
     <div class="modal-card">
-      <div class="modal-header">
-        <h2>Ajustar imagem</h2>
-        <button type="button" class="modal-close" onclick="fecharCrop()">✕</button>
-      </div>
+        <div class="modal-header">
+            <h2>Gerenciar categorias</h2>
+            <button type="button" class="modal-close" onclick="fecharModalCategorias()">✕</button>
+        </div>
 
-      <div class="crop-container">
-        <img id="cropImage" alt="Imagem para recorte">
-      </div>
+        <div class="categoria-add">
+            <input
+                type="text"
+                id="novaCategoria"
+                placeholder="Nova categoria"
+            >
+            <button
+                type="button"
+                class="btn"
+                onclick="adicionarCategoria()"
+            >
+                Adicionar
+            </button>
+        </div>
 
-      <div class="modal-actions">
-        <button type="button" class="btn btn-outline" onclick="fecharCrop()">Cancelar</button>
-        <button type="button" class="btn" onclick="confirmarCrop()">Confirmar</button>
-      </div>
+        <div id="listaCategorias"></div>
+
+        <div class="modal-actions">
+            <button
+                type="button"
+                class="btn btn-outline"
+                onclick="fecharModalCategorias()"
+            >
+                Fechar
+            </button>
+        </div>
     </div>
   </div>
   <script src="js/produtos.js"></script>

@@ -488,3 +488,36 @@
   border-radius: 14px;
   background: #f7f7f7;
 }
+
+.categoria-add{
+    display:flex;
+    gap:10px;
+    margin-bottom:20px;
+}
+
+.categoria-add input{
+    flex:1;
+}
+
+#listaCategorias{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    max-height:400px;
+    overflow:auto;
+}
+
+.categoria-item{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.categoria-item input{
+    flex:1;
+}
+
+.categoria-actions{
+    display:flex;
+    gap:8px;
+}

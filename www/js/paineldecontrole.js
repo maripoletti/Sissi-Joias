@@ -800,8 +800,6 @@ function editarCampanha(id, campo, valor) {
 
     return campanha;
   });
-
-  //renderizarCampanhasFiltro();
 }
 
 function sincronizarCampanhasDaTela() {
