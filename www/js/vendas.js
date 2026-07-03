@@ -61,7 +61,10 @@ async function carregarVendas() {
 
 function criarCard(v) {
   const produtos = Array.isArray(v.produtos) ? v.produtos : [];
-
+  const botaoApagar = window.userData.role == 2
+      ? `<button class="btn-delete" type="button" onclick="delVenda(${v.OrderID})">🗑 Apagar</button>`
+      : "";
+      
   const nomes = produtos.length
     ? produtos.map(p => `${p.nome} x ${p.qtd}`).join("<br>")
     : "Sem produtos";
@@ -85,9 +88,7 @@ function criarCard(v) {
 
       <div class="card-right">
         <div class="price">${formatBRL(Number(v.Sales || 0))}</div>
-        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-          <button class="btn-delete" type="button" onclick="delVenda(${v.OrderID})">🗑 Apagar</button>
-        <?php endif; ?>n 
+        ${botaoApagar}
       </div>
     </article>
   `;

@@ -9,15 +9,22 @@ $model = new produtos_model();
 
 $productId = (int)($input["prodId"] ?? "");
 $userId = (int)($input["revId"] ?? "");
+
+$caseId = ($input["caseId"] ?? "sem");
+
+if ($caseId !== "sem") {
+    $caseId = (int)$caseId;
+}
+
 $newStock = (int)($input["quantidade" ?? ""]);
 
-if(empty($productId) || empty($userId) || empty($newStock)) {
+if ($productId <= 0 || $userId <= 0 || $newStock < 0) {
     http_response_code(400);
 
     echo json_encode(["success" => false, "error" => "Dados inválidos"]);
     exit;
 } else {
-    $model->update_employee_products($productId, $userId, $newStock);
+    $model->update_employee_products($productId, $userId, $caseId, $newStock);
 
     echo json_encode(["success" => true]);
     exit;

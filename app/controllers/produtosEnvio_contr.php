@@ -14,7 +14,7 @@ $nomeMaleta = (string)trim($input["nome_maleta"] ?? "");
 
 if ($revID <= 0 || empty($input["produtos"]) || $nomeMaleta === "") {
     http_response_code(400);
-    echo json_encode(["erro" => "Dados inválidos"]);
+    echo json_encode(["erro" => "Dados inválidos"], JSON_UNESCAPED_UNICODE);
     exit;
 }
 
@@ -31,4 +31,4 @@ foreach ($input["produtos"] as $p) {
     $model->send_to_employee($revID, $ProductID, $qtd, $caseID);
 }
 
-echo json_encode(["msg" => "Sucesso"]);
+echo json_encode(["msg" => "Sucesso"], JSON_UNESCAPED_UNICODE);

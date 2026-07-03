@@ -170,13 +170,6 @@ class Produtos_model extends Dbh {
 
         try {
             $pdo->beginTransaction();
-
-            $query = 
-            "DELETE FROM Prod_ProductsTags
-            WHERE ProductID = :id;";
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(":id", $data["id"]);
-            $stmt->execute();
             
             $campos = [
                 "ProductName = :name",
@@ -249,9 +242,16 @@ class Produtos_model extends Dbh {
             $joinEmployee = "";
 
             if ($role != 2 && $UserID) {
-                $joinEmployee = "JOIN Sales_EmployeeProducts sep 
-                                ON sep.ProductID = p.ProductID 
-                                AND sep.UserID = ?";
+                $joinEmployee = "
+                    JOIN (
+                        SELECT
+                            ProductID,
+                            SUM(UsableStock) AS UsableStock
+                        FROM Sales_EmployeeProducts
+                        WHERE UserID = ?
+                        GROUP BY ProductID
+                    ) sep ON sep.ProductID = p.ProductID
+                    ";
                 
                 $params[] = $UserID;
             }
@@ -349,7 +349,7 @@ class Produtos_model extends Dbh {
 
             $stockField = ($role == 2)
                 ? "p.StockQuantity"
-                : "sep.UsableStock";
+                : "SUM(sep.UsableStock)";
 
 
             $query = "
@@ -357,6 +357,7 @@ class Produtos_model extends Dbh {
                     p.ProductID AS id,
                     p.ProductName AS nome,
                     $stockField AS estoque,
+                    IFNULL(uso.EstoqueEmUso, 0) AS estoque_em_uso,
                     p.Price AS preco,
                     p.ImagePath AS img,
                     p.Barcode AS cdb,
@@ -369,6 +370,13 @@ class Produtos_model extends Dbh {
                 FROM Sales_Products p
                 LEFT JOIN Prod_Tags t
                     ON t.TagID = p.TagID
+                LEFT JOIN (
+                    SELECT
+                        ProductID,
+                        SUM(UsableStock) AS EstoqueEmUso
+                    FROM Sales_EmployeeProducts
+                    GROUP BY ProductID
+                ) uso ON uso.ProductID = p.ProductID
                 $joinEmployee
                 $where
                 GROUP BY p.ProductID
@@ -475,17 +483,32 @@ class Produtos_model extends Dbh {
         }    
     }
 
-    public function remove_products($ProductID, $UserID) {
+    public function remove_products($ProductID, $UserID, $CaseID = "sem") {
         $pdo = $this->connect();
-        try {
-            $query = "
-            DELETE FROM Sales_EmployeeProducts
-            WHERE ProductID = ? AND UserID = ?";
 
-            $stmt=$pdo->prepare($query);
-            $stmt->execute([$ProductID, $UserID]);
+        try {
+
+            if ($CaseID === "sem") {
+                $query = "
+                    DELETE FROM Sales_EmployeeProducts
+                    WHERE ProductID = ?
+                    AND UserID = ?
+                    AND CaseID = 0";
+                $params = [$ProductID, $UserID];
+            } else {
+                $query = "
+                    DELETE FROM Sales_EmployeeProducts
+                    WHERE ProductID = ?
+                    AND UserID = ?
+                    AND CaseID = ?";
+                $params = [$ProductID, $UserID, $CaseID];
+            }
+
+            $stmt = $pdo->prepare($query);
+            $stmt->execute($params);
 
             return $stmt->rowCount();
+
         } catch (PDOException $e) {
             http_response_code(500);
             echo $e->getMessage();
@@ -493,16 +516,44 @@ class Produtos_model extends Dbh {
         }
     }
 
-    public function update_employee_products($ProductID, $UserID, $NewStock) {
+    public function update_employee_products($ProductID, $UserID, $CaseID, $NewStock) {
         $pdo = $this->connect();
-        try{
-            $query = "UPDATE Sales_EmployeeProducts SET UsableStock = ? 
-            WHERE ProductID = ? AND UserID = ?";
+        try {
+            if ($CaseID === "sem") {
+                $query = "
+                    UPDATE Sales_EmployeeProducts
+                    SET UsableStock = ?
+                    WHERE ProductID = ?
+                    AND UserID = ?
+                    AND CaseID IS NULL
+                ";
 
-            $stmt=$pdo->prepare($query);
-            $stmt->execute([$NewStock, $ProductID, $UserID]);
+                $stmt = $pdo->prepare($query);
+                $stmt->execute([
+                    $NewStock,
+                    $ProductID,
+                    $UserID
+                ]);
+            } else {
+                $query = "
+                    UPDATE Sales_EmployeeProducts
+                    SET UsableStock = ?
+                    WHERE ProductID = ?
+                    AND UserID = ?
+                    AND CaseID = ?
+                ";
+
+                $stmt = $pdo->prepare($query);
+                $stmt->execute([
+                    $NewStock,
+                    $ProductID,
+                    $UserID,
+                    $CaseID
+                ]);
+            }
 
             return $stmt->rowCount();
+
         } catch (PDOException $e) {
             http_response_code(500);
             echo $e->getMessage();

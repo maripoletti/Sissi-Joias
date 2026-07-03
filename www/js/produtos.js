@@ -126,6 +126,11 @@ try {
         <h3 title="${p.nome}">${p.nome}</h3>
         <div class="meta">
             <p>• Estoque: ${p.estoque}</p>
+
+            ${window.userData.role == 2 ? `
+                <p>• Estoque em uso: ${p.estoque_em_uso ?? 0}</p>
+            ` : ""}
+
             ${p.categoria ? `<p>• Categoria: ${p.categoria}</p>` : ``}
             ${p.tamanho ? `<p>• Tamanho: ${p.tamanho}</p>` : ``}
             ${p.cor ? `<p>• Cor: ${p.cor}</p>` : ``}
@@ -135,16 +140,18 @@ try {
         <div class="price">R$ ${parseFloat(p.preco).toFixed(2).replace(".", ",")}</div>
 
         <div class="actions">
-            <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-            <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
-            <?php endif; ?>
+            ${window.userData.role == 2 ? `
+                <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">
+                    Editar
+                </button>
+
+                <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">
+                    Excluir
+                </button>
+            ` : ""}
 
             <button class="btn btn-outline" type="button" onclick="imprimirEtiqueta(${p.id})">
-            Etiqueta
-            </button>
-
-            <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">
-            Excluir
+                Etiqueta
             </button>
         </div>
         </div>
@@ -690,7 +697,8 @@ listaProdutosEnvio.innerHTML = filtrados.map(p => {
         <img src="${p.img}" alt="${p.nome}">
         <div>
             <strong>${p.nome}</strong>
-            <span>Estoque disponível: ${p.estoque}</span>
+            <span>Estoque: ${p.estoque}</span>
+            <span>Estoque em uso: ${p.estoque_em_uso}</span>
             <span>Ref: ${p.id}</span>
         </div>
         </div>
@@ -709,7 +717,7 @@ listaProdutosEnvio.innerHTML = filtrados.map(p => {
             type="button"
             class="btn ${jaSelecionado ? "btn-outline" : ""}"
             onclick="toggleProdutoEnvio(${p.id})"
-            ${Number(p.estoque) <= 0 ? "disabled" : ""}
+            ${Number(p.estoque) - Number(p.estoque_em_uso) <= 0 ? "disabled" : ""}
         >
             ${jaSelecionado ? "Remover" : "Adicionar"}
         </button>
@@ -814,7 +822,9 @@ try {
     });
 
     if (!res.ok) {
-        alert("Mesmo produto já foi enviado antes, olhe em Produtos dos Revendedores");  
+        erro = await res.json();
+
+        alert(erro.erro);  
         throw new Error("Erro ao enviar.");
     };
     formEnvio.reset();

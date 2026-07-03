@@ -115,7 +115,8 @@ function renderizarTabela(dados, append = false) {
         toggleCheckbox(
           checkbox,
           item.ProdId,
-          item.RevId
+          item.RevId,
+          caseID
         );
       });
 
@@ -124,7 +125,7 @@ function renderizarTabela(dados, append = false) {
           <input
             type="checkbox"
             onclick="event.stopPropagation()"
-            onchange="toggleCheckbox(this, '${item.ProdId}', '${item.RevId}')"
+            onchange="toggleCheckbox(this, '${item.ProdId}', '${item.RevId}', '${caseID}')"
           >
         </td>
 
@@ -225,8 +226,8 @@ function mostrarCheckboxes() {
 
 const selecionados = new Set();
 
-function toggleCheckbox(checkbox, prodId, revId) {
-  const key = `${prodId}-${revId}`;
+function toggleCheckbox(checkbox, prodId, revId, caseId) {
+  const key = `${prodId}-${revId}-${caseId}`;
 
   if (checkbox.checked) {
     selecionados.add(key);
@@ -278,11 +279,12 @@ async function excluirEmMassa() {
   const itens = [];
 
   selecionados.forEach(key => {
-    const [prodId, revId] = key.split("-");
+    const [prodId, revId, caseId] = key.split("-");
 
     itens.push({
       prodId: Number(prodId),
-      revId: Number(revId)
+      revId: Number(revId),
+      caseId: caseId === "sem" ? null : Number(caseId)
     });
   });
 
@@ -305,10 +307,10 @@ async function excluirEmMassa() {
 
       selecionados.forEach(key => {
 
-        const [prodId, revId] = key.split("-");
+        const [prodId, revId, caseId] = key.split("-");
 
         const linha = document.querySelector(
-          `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"]`
+          `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"][data-case-id="${caseId}"]`
         );
 
         linha?.remove();
@@ -358,7 +360,7 @@ async function confirmarMaleta() {
 
   selecionados.forEach(key => {
 
-    const [prodId, revId] = key.split("-");
+    const [prodId, revId, oldCaseId] = key.split("-");
 
     const linha = document.querySelector(
       `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"]`
@@ -367,6 +369,7 @@ async function confirmarMaleta() {
     produtos.push({
       produto_id: Number(prodId),
       revendedor_id: Number(revId),
+      case_id_atual: oldCaseId === "sem" ? null : Number(oldCaseId),
       quantidade: Number(linha.dataset.quantidade)
     });
 
@@ -435,6 +438,7 @@ async function excluirLinha(botao) {
   const linha = botao.closest("tr");
   const prodId = linha.dataset.prodId;
   const revId = linha.dataset.revId;
+  const caseId = linha.dataset.caseId;
 
   if (!confirm("Excluir esse produto?")) return;
 
@@ -444,7 +448,11 @@ async function excluirLinha(botao) {
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ prodId, revId })
+      body: JSON.stringify({
+        prodId,
+        revId,
+        caseId: caseId === "sem" ? null : Number(caseId)
+      })
     });
 
     const result = await response.json();
@@ -466,6 +474,7 @@ async function editarQuantidade(botao) {
   const tdQuantidade = linha.children[3];
   const prodId = linha.dataset.prodId;
   const revId = linha.dataset.revId;
+  const caseId = linha.dataset.caseId;
 
   const valorAtual = tdQuantidade.innerText;
   const novoValor = prompt("Nova quantidade:", valorAtual);
@@ -484,6 +493,7 @@ async function editarQuantidade(botao) {
       body: JSON.stringify({
         prodId,
         revId,
+        caseId: caseId === "sem" ? null : Number(caseId),
         quantidade: parseInt(novoValor)
       })
     });

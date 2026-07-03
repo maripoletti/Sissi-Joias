@@ -242,11 +242,15 @@
           <option value="">Selecione uma revendedora</option>
         </select>
 
+        <?php
+          $_SESSION["user_id"] = 1;
+        ?>
+
         <label for="buscaEnvio">Buscar produto</label>
         <input type="text" id="buscaEnvio" placeholder="Digite o nome do produto..." />
 
         <label for="nomearMaleta">Nomear maleta</label>
-        <input type="text" id="nomearMaleta" placeholder="Digite o nome da maleta..." />
+        <input type="text" id="nomearMaleta" placeholder="Digite o nome da maleta..." required />
 
         <div id="listaProdutosEnvio" class="lista-produtos-envio"></div>
 
@@ -322,12 +326,12 @@
         </div>
     </div>
   </div>
-  <script src="js/produtos.js"></script>
   <script>
     window.userData = {
         nome: <?= json_encode($_SESSION['usuario_nome'] ?? 'Usuário') ?>,
         role: <?= json_encode($_SESSION['role'] ?? 0) ?>
     };
   </script>
+  <script src="js/produtos.js"></script>
   <script src="js/global.js"></script>
 </body>

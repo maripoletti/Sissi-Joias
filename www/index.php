@@ -210,7 +210,7 @@ switch ($uri) {
       AuthMiddleware::user();
     }
   case '/api/categorias':
-    if ($_SESSION['role'] == '2') {
+    if(isset($_SESSION['user_id'])) {
       require_once '../app/controllers/categorias_contr.php';
       $controller = new categorias_contr();
       $controller->listar_categorias();

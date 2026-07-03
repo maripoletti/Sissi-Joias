@@ -79,13 +79,13 @@
       });
     }
   </script>
-  <script src="js/vendas.js"></script>
   <script>
     window.userData = {
-        nome: <?= json_encode($_SESSION['usuario_nome'] ?? 'Usuário') ?>,
-        role: <?= json_encode($_SESSION['role'] ?? 0) ?>
+      nome: <?= json_encode($_SESSION['usuario_nome'] ?? 'Usuário') ?>,
+      role: <?= json_encode($_SESSION['role'] ?? 0) ?>
     };
   </script>
+  <script src="js/vendas.js"></script>
   <script src="js/global.js"></script>
 </body>
 </html>
