@@ -36,7 +36,7 @@ function atualizarResumo() {
     const totalEl = document.getElementById("total");
 
     const subtotal = carrinho.reduce((acc, item) => {
-        return acc + (Number(item.preco) * item.quantidade);
+        return acc + precoFinal(item) * item.quantidade;
     }, 0);
 
     subtotalEl.textContent = formatarMoeda(subtotal);
@@ -95,7 +95,8 @@ function adicionarAoCarrinho(produto) {
 
         carrinho.push({
             ...produto,
-            quantidade: 1
+            quantidade: 1,
+            desconto: 0
         });
 
     }
@@ -129,7 +130,8 @@ function renderCarrinho() {
         div.innerHTML = `
             <div class="carrinho-info">
                 <strong>${item.nome}</strong>
-                <span>${formatarMoeda(item.preco)} cada</span>
+                <span> ${formatarMoeda(precoFinal(item))} cada 
+        ${item.desconto > 0 ? `<br><small>Desconto: -${formatarMoeda(item.desconto)}</small>` : ""}</span>
                 <small>Estoque: ${item.estoque ?? 0}</small>
             </div>
 
@@ -137,6 +139,7 @@ function renderCarrinho() {
                 <button type="button" onclick="alterarQuantidade('${item.id}', -1)">−</button>
                 <span>${item.quantidade}</span>
                 <button type="button" onclick="alterarQuantidade('${item.id}', 1)">+</button>
+                <button type="button" onclick="darDesconto('${item.id}')">Desconto</button>
                 <button type="button" class="btn-remover" onclick="removerDoCarrinho('${item.id}')">
                     Remover
                 </button>
@@ -151,7 +154,29 @@ function renderCarrinho() {
 
 }
 
+function darDesconto(id) {
+    const item = carrinho.find(i => String(i.id) === String(id));
+    if (!item) return;
 
+    const valor = prompt("Desconto em R$:", item.desconto ?? 0);
+
+    if (valor === null) return;
+
+    const desconto = parseFloat(valor.replace(",", "."));
+
+    if (isNaN(desconto) || desconto < 0) {
+        alert("Valor inválido.");
+        return;
+    }
+
+    item.desconto = desconto;
+
+    renderCarrinho();
+}
+
+function precoFinal(item) {
+    return Math.max(0, Number(item.preco) - Number(item.desconto ?? 0));
+}
 
 function renderListaProdutos() {
 
@@ -348,7 +373,7 @@ document.getElementById("finalizarVenda").addEventListener("click", async functi
     const produtos = carrinho.map(item => ({
         id: item.id,
         quantidade: item.quantidade,
-        preco: item.preco
+        preco: precoFinal(item)
     }));
 
     try {
@@ -376,7 +401,7 @@ document.getElementById("finalizarVenda").addEventListener("click", async functi
 
         window.open("/comprovante?id=" + data.order_id, "_blank");
 
-        window.location.href = "/vendas";
+        //window.location.href = "/vendas";
 
     } catch (err) {
 

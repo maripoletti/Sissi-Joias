@@ -115,25 +115,12 @@ class novavenda_model extends Dbh {
 
             $customerID = $pdo->lastInsertId();
 
-            $stmt = $pdo->prepare("
-                SELECT Price FROM Sales_Products WHERE ProductID = ?
-            ");
-
             $total = 0;
-            $precos = [];
+
             foreach ($produtos as $p) {
-                $stmt->execute([$p["id"]]);
-                $precoReal = $stmt->fetchColumn();
-
-                if ($precoReal === false) {
-                    $pdo->rollBack();
-                    echo "Produto não encontrado (ID {$p["id"]})";
-                    return false;
-                }
-
-                $precos[$p["id"]] = $precoReal;
-                $total += $p["quantidade"] * $precoReal;
+                $total += $p["quantidade"] * $p["preco"];
             }
+            
 
             $query = "INSERT INTO Sales_Orders (CustomerID, OrderDate, Sales, PaymentMethod) VALUES (?, NOW(),?,?)";
             $stmt = $pdo->prepare($query);
@@ -150,7 +137,7 @@ class novavenda_model extends Dbh {
                     $orderId,
                     $p["id"],
                     $p["quantidade"],
-                    $precos[$p["id"]]
+                    $p["preco"]
                 ]);
             }
             
