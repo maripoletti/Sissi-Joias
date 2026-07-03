@@ -3,6 +3,7 @@ let limit = 2000;
 let loading = false;
 let acabou = false;
 let tipoClick = null;
+let produtosCache = [];
 
 async function carregarProdutos() {
   if (loading || acabou) return;
@@ -29,6 +30,7 @@ async function carregarProdutos() {
     });
 
     const dados = await response.json();
+    produtosCache = dados;
 
     if (dados.length < limit) {
       acabou = true;
@@ -81,7 +83,17 @@ function renderizarTabela(dados, append = false) {
     trHeader.innerHTML = `
       <td colspan="7" class="maleta-header" data-id="${caseID}">
         <strong>${grupo.nome}</strong>
-        <span style="float:right;">R$ ${grupo.total.toFixed(2)}</span>
+
+        <span style="float:right; display:flex; align-items:center; gap:10px; justify-content:flex-end;">
+          <button
+            class="btn-imprimir-maleta"
+            onclick="event.stopPropagation(); imprimirMaleta('${caseID}')"
+            title="Imprimir etiquetas da maleta">
+            🖨️
+          </button>
+
+          <span>R$ ${grupo.total.toFixed(2)}</span>
+        </span>
       </td>
     `;
 
@@ -144,6 +156,107 @@ function renderizarTabela(dados, append = false) {
       tbody.appendChild(tr);
     });
   });
+}
+function imprimirMaleta(caseId) {
+    const itens = produtosCache.filter(p =>
+        String(p.CaseID) === String(caseId)
+    );
+
+    if (!itens.length) return;
+
+    let total = 0;
+
+    const linhas = itens.map(item => {
+        const qtd = Number(item.quantidade);
+        const preco = Number(item.preco_revenda);
+        const subtotal = qtd * preco;
+
+        total += subtotal;
+
+        return `
+            <div>
+                <div>${item.produto}</div>
+
+                <div class="row">
+                    <span>${qtd} x ${preco.toFixed(2).replace(".", ",")}</span>
+                    <span>R$ ${subtotal.toFixed(2).replace(".", ",")}</span>
+                </div>
+            </div>
+        `;
+    }).join("");
+
+    const html = `
+<!DOCTYPE html>
+<html>
+  <head>
+  <meta charset="UTF-8">
+    <style>
+      * { margin:0; padding:0; box-sizing:border-box; }
+
+      @media print {
+        @page { size: 58mm; margin: 0; }
+        body { margin: 0; padding: 0; }
+      }
+
+      body {
+        font-family: monospace;
+        font-size: 10px;
+      }
+
+      .ticket {
+        width: 58mm;
+        padding: 4px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .center { text-align: center; }
+
+      .divisor {
+        border-top: 1px dashed #000;
+        margin: 4px 0;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        gap: 4px;
+      }
+
+      .total {
+        font-weight: bold;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+
+  <body onload="window.print()">
+    <div class="ticket">
+      <div class="center">
+        <b>SISSI SEMIJOIAS E ACESSÓRIOS</b><br>
+      </div>
+
+      <div class="divisor"></div>
+
+      ${linhas}
+
+      <div class="divisor"></div>
+      <div class="row total">
+        <span>TOTAL</span>
+        <span>R$ ${total.toFixed(2).replace(".", ",")}</span>
+      </div>
+      <div class="divisor"></div>
+    </div>
+  </body>
+</html>
+`;
+
+    const win = window.open("", "_blank");
+    if (!win) return;
+
+    win.document.open();
+    win.document.write(html);
+    win.document.close();
 }
 
 function toggleMaleta(headerRow) {
