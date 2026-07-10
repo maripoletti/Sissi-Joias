@@ -29,7 +29,7 @@ $result = $db->atualizar_produto([
     "metalBanho" => $input["produto"]["metalBanho"] ?? null,
     "custoInsumo" => $input["produto"]["custoInsumo"] ?? 0,
     "custoBruto" => $input["produto"]["custoCompraBruto"] ?? 0,
-    "categoria" => $input["produto"]["categoria"] ?? []
+    "categoria" => $input["produto"]["categoria"] ?? null
 ]);
 
 echo json_encode($result);
