@@ -423,7 +423,7 @@ formAdd.addEventListener("submit", async (e) => {
     });
 
     if (!res.ok) {
-        console.error("Erro ao enviar pro back");
+        console.error("Erro ao consultar servidor");
         return;
     }
 
@@ -699,6 +699,9 @@ listaProdutosEnvio.innerHTML = filtrados.map(p => {
             <strong>${p.nome}</strong>
             <span>Estoque: ${p.estoque}</span>
             <span>Estoque em uso: ${p.estoque_em_uso}</span>
+            ${p.categoria ? `
+                <span>Categoria: ${p.categoria}</span>
+            ` : ""}
             <span>Ref: ${p.id}</span>
         </div>
         </div>

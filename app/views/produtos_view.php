@@ -241,11 +241,7 @@
         <select id="revendedoraSelect" required>
           <option value="">Selecione uma revendedora</option>
         </select>
-
-        <?php
-          $_SESSION["user_id"] = 1;
-        ?>
-
+        
         <label for="buscaEnvio">Buscar produto</label>
         <input type="text" id="buscaEnvio" placeholder="Digite o nome do produto..." />
 
