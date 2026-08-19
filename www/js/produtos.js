@@ -109,6 +109,15 @@ async function respostaJSON(res) {
 
 // ==================== LISTAGEM DE PRODUTOS ====================
 
+function checkScroll() {
+    if (main.scrollTop + main.clientHeight >= main.scrollHeight - 200) {
+        render();
+    }
+}
+
+main.addEventListener("scroll", checkScroll);
+window.addEventListener("load", checkScroll);
+
 async function render(reset = false) {
     if (isLoading) return;
 
@@ -205,6 +214,10 @@ async function render(reset = false) {
         }
     } finally {
         isLoading = false;
+
+        if (!acabou && main) {
+            requestAnimationFrame(checkScroll);
+        }
     }
 }
 

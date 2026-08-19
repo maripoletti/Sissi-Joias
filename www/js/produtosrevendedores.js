@@ -1,5 +1,5 @@
 let page = 1;
-let limit = 2000;
+let limit = 10000;
 let loading = false;
 let acabou = false;
 let tipoClick = null;
