@@ -376,6 +376,16 @@ switch ($uri) {
       break;
     }    
 
+    case '/romaneio':
+      if ($_SESSION['role'] == '2') {
+        require_once '../app/views/romaneio_view.php';
+        break;
+      } else {
+        AuthMiddleware::user();
+        header('Location: /login');
+        break;
+      }
+  
   case '/api/toprevendedoras': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/toprevendedorasGet_contr.php';
