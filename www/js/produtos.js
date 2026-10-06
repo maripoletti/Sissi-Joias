@@ -44,8 +44,14 @@ const modalEnvio = document.getElementById("modalEnvio");
 const formEnvio = document.getElementById("formEnvio");
 const revendedoraSelect = document.getElementById("revendedoraSelect");
 const buscaEnvio = document.getElementById("buscaEnvio");
+const nomearMaleta = document.getElementById("nomearMaleta")
 const listaProdutosEnvio = document.getElementById("listaProdutosEnvio");
 const itensSelecionadosEnvio = document.getElementById("itensSelecionadosEnvio");
+
+// cat
+const modalCategorias = document.getElementById("modalCategorias");
+const listaCategorias = document.getElementById("listaCategorias");
+const novaCategoria = document.getElementById("novaCategoria");
 
 let produtos = [];
 let page = 0;
@@ -80,26 +86,21 @@ const priceVal = price.value;
 const sortVal = sort.value;
 
 try {
-    const tags = catVal
-    .split(",")
-    .map(t => t.trim())
-    .filter(t => t.length > 0);
-    
     const res = await fetch("/api/produtos", {
-    method: "POST",
-    headers: { "Content-Type": "application/json"},
-    body: JSON.stringify({
-        text: term,
-        tags: tags,
-        price: priceVal,
-        sort: sortVal,
-        tamanho: tamanho.value.trim(),
-        cor: cor.value.trim(),
-        peso_banho: pesoBanho.value.trim(),
-        milesimos_banho: milesimosBanho.value.trim(),
-        page: page,
-        limit: limit
-    })
+        method: "POST",
+        headers: { "Content-Type": "application/json"},
+        body: JSON.stringify({
+            text: term,
+            categoria: catVal,
+            price: priceVal,
+            sort: sortVal,
+            tamanho: tamanho.value.trim(),
+            cor: cor.value.trim(),
+            peso_banho: pesoBanho.value.trim(),
+            milesimos_banho: milesimosBanho.value.trim(),
+            page: page,
+            limit: limit
+        })
     });
 
     if (!res.ok) throw new Error("Erro na requisição");
@@ -125,7 +126,12 @@ try {
         <h3 title="${p.nome}">${p.nome}</h3>
         <div class="meta">
             <p>• Estoque: ${p.estoque}</p>
-            ${p.cat ? `<p>• Categoria(s): ${p.cat}</p>` : ``}
+
+            ${window.userData.role == 2 ? `
+                <p>• Estoque em uso: ${p.estoque_em_uso ?? 0}</p>
+            ` : ""}
+
+            ${p.categoria ? `<p>• Categoria: ${p.categoria}</p>` : ``}
             ${p.tamanho ? `<p>• Tamanho: ${p.tamanho}</p>` : ``}
             ${p.cor ? `<p>• Cor: ${p.cor}</p>` : ``}
             ${p.peso_banho ? `<p>• Peso banho: ${p.peso_banho}</p>` : ``}
@@ -134,16 +140,18 @@ try {
         <div class="price">R$ ${parseFloat(p.preco).toFixed(2).replace(".", ",")}</div>
 
         <div class="actions">
-            <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 2): ?>
-            <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">Editar</button>
-            <?php endif; ?>
+            ${window.userData.role == 2 ? `
+                <button class="btn btn-editar" type="button" onclick="abrirModal(${p.id})">
+                    Editar
+                </button>
+
+                <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">
+                    Excluir
+                </button>
+            ` : ""}
 
             <button class="btn btn-outline" type="button" onclick="imprimirEtiqueta(${p.id})">
-            Etiqueta
-            </button>
-
-            <button class="btn btn-outline" type="button" onclick="formDel(${p.id})">
-            Excluir
+                Etiqueta
             </button>
         </div>
         </div>
@@ -173,6 +181,7 @@ if (!prod) return;
 
 editId.value = prod.id;
 editNome.value = prod.nome || "";
+editCategoria.value = prod.categoria_id ?? "";
 editPreco.value = prod.preco || "";
 editEstoque.value = prod.estoque || 0;
 editTamanho.value = prod.tamanho || "";
@@ -196,83 +205,85 @@ if (e.target === modalEdit) fecharModal();
 });
 
 editFoto.addEventListener("change", () => {
-const file = editFoto.files && editFoto.files[0];
-if (!file) return;
-editPreview.src = URL.createObjectURL(file);
+    const file = editFoto.files && editFoto.files[0];
+    if (!file) return;
+    editPreview.src = URL.createObjectURL(file);
 });
 
 function darBaixaEstoque() {
-const id = Number(editId.value);
-const idx = produtos.findIndex(p => Number(p.id) === id);
-if (idx === -1) return;
+    const id = Number(editId.value);
+    const idx = produtos.findIndex(p => Number(p.id) === id);
+    if (idx === -1) return;
 
-const atual = Number(editEstoque.value);
-const baixa = Number(editBaixa.value);
+    const atual = Number(editEstoque.value);
+    const baixa = Number(editBaixa.value);
 
-if (!baixa || baixa <= 0) {
-    alert("Digite uma quantidade válida pra dar baixa.");
-    return;
-}
+    if (!baixa || baixa <= 0) {
+        alert("Digite uma quantidade válida pra dar baixa.");
+        return;
+    }
 
-if (baixa > atual) {
-    alert("Não dá: baixa maior que o estoque.");
-    return;
-}
+    if (baixa > atual) {
+        alert("Não dá: baixa maior que o estoque.");
+        return;
+    }
 
-const novo = atual - baixa;
+    const novo = atual - baixa;
 
-editEstoque.value = novo;
-produtos[idx].estoque = novo;
+    editEstoque.value = novo;
+    produtos[idx].estoque = novo;
 
-editBaixa.value = "";
-render(true);
+    editBaixa.value = "";
+    render(true);
 }
 
 formEdit.addEventListener("submit", async (e) => {
-e.preventDefault();
+    e.preventDefault();
 
-const id = Number(editId.value);
-const idx = produtos.findIndex(p => Number(p.id) === id);
-if (idx === -1) return;
+    const id = Number(editId.value);
+    const idx = produtos.findIndex(p => Number(p.id) === id);
+    if (idx === -1) return;
 
-produtos[idx].nome = editNome.value.trim();
-produtos[idx].preco = Number(editPreco.value);
-produtos[idx].estoque = Number(editEstoque.value);
-produtos[idx].tamanho = editTamanho.value.trim();
-produtos[idx].cor = editCor.value.trim();
-produtos[idx].peso_banho = editPesoBanho.value.trim();
-produtos[idx].milesimos_banho = editMilesimosBanho.value.trim();
+    produtos[idx].nome = editNome.value.trim();
+    produtos[idx].categoria_id = editCategoria.value;
+    produtos[idx].preco = Number(editPreco.value);
+    produtos[idx].estoque = Number(editEstoque.value);
+    produtos[idx].tamanho = editTamanho.value.trim();
+    produtos[idx].cor = editCor.value.trim();
+    produtos[idx].peso_banho = editPesoBanho.value.trim();
+    produtos[idx].milesimos_banho = editMilesimosBanho.value.trim();
 
-const file = editFoto.files && editFoto.files[0];
-if (file) produtos[idx].img = URL.createObjectURL(file);
+    const file = editFoto.files && editFoto.files[0];
+    if (file) produtos[idx].img = URL.createObjectURL(file);
 
-const data = new FormData();
-data.append("id", id);
-data.append("nome", editNome.value.trim());
-data.append("preco", editPreco.value);
-data.append("estoque", editEstoque.value);
-data.append("tamanho", editTamanho.value.trim());
-data.append("cor", editCor.value.trim());
-data.append("peso_banho", editPesoBanho.value.trim());
-data.append("milesimos_banho", editMilesimosBanho.value.trim());
+    const data = new FormData();
+    data.append("id", id);
+    data.append("nome", editNome.value.trim());
+    data.append("categoria", editCategoria.value);
+    data.append("preco", editPreco.value);
+    data.append("estoque", editEstoque.value);
+    data.append("tamanho", editTamanho.value.trim());
+    data.append("cor", editCor.value.trim());
+    data.append("peso_banho", editPesoBanho.value.trim());
+    data.append("milesimos_banho", editMilesimosBanho.value.trim());
 
-if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
+    if (editFoto.files[0]) data.append("foto", editFoto.files[0]);
 
-try {
-    const res = await fetch("/api/produtos/update", {
-    method: "POST",
-    body: data
-    });
+    try {
+        const res = await fetch("/api/produtos/update", {
+        method: "POST",
+        body: data
+        });
 
-    if (!res.ok) throw new Error("Erro ao atualizar produto");
+        if (!res.ok) throw new Error("Erro ao atualizar produto");
 
-    fecharModal();
-    render(true);
+        fecharModal();
+        render(true);
 
-} catch (err) {
-    console.error(err);
-    alert("Não foi possível atualizar o produto.");
-}
+    } catch (err) {
+        console.error(err);
+        alert("Não foi possível atualizar o produto.");
+    }
 });
 
 function abrirModalAdicionar() {
@@ -287,59 +298,147 @@ modalAdd.addEventListener("click", (e) => {
 if (e.target === modalAdd) fecharModalAdicionar();
 });
 
+function abrirModalCategorias(){
+    atualizarCategorias();
+    modalCategorias.classList.remove("hidden");
+}
+
+function fecharModalCategorias(){
+    modalCategorias.classList.add("hidden");
+}
+
+async function atualizarCategorias(){
+    await carregarCategorias();
+
+    listaCategorias.innerHTML = categorias.map(cat => `
+        <div class="categoria-item">
+            <input
+                id="cat-${cat.id}"
+                value="${cat.nome}"
+            >
+
+            <div class="categoria-actions">
+                <button
+                    class="btn"
+                    onclick="editarCategoria(${cat.id})">
+                    Salvar
+                </button>
+
+                <button
+                    class="btn btn-outline"
+                    onclick="removerCategoria(${cat.id})">
+                    Excluir
+                </button>
+            </div>
+        </div>
+    `).join("");
+}
+
+async function adicionarCategoria(){
+    const nome = novaCategoria.value.trim();
+
+    if(!nome) return;
+
+    const data = new FormData();
+    data.append("nome", nome);
+
+    await fetch("/api/categorias/add",{
+        method:"POST",
+        body:data
+    });
+
+    novaCategoria.value = "";
+
+    await atualizarCategorias();
+}
+
+async function editarCategoria(id){
+
+    const nome = document.getElementById(`cat-${id}`).value.trim();
+
+    if(!nome) return;
+
+    const data = new FormData();
+    data.append("id", id);
+    data.append("nome", nome);
+
+    await fetch("/api/categorias/update",{
+        method:"POST",
+        body:data
+    });
+
+    await atualizarCategorias();
+}
+
+async function removerCategoria(id){
+
+    if(!confirm("Excluir categoria?"))
+        return;
+
+    const data = new FormData();
+    data.append("id", id);
+
+    await fetch("/api/categorias/delete",{
+        method:"POST",
+        body:data
+    });
+
+    await atualizarCategorias();
+}
+
+modalCategorias.addEventListener("click",(e)=>{
+    if(e.target===modalCategorias)
+        fecharModalCategorias();
+});
+
+
+
 let imagemFinalFile = null;
 let imagemFinalBlob = null;
 
+
 formAdd.addEventListener("submit", async (e) => {
-e.preventDefault();
+    e.preventDefault();
 
-const addCategoriaClean = addCategoria.value
-    .split(",")
-    .map(t => t.trim())
-    .filter(t => t.length > 0);
+    const data = new FormData();
 
-const data = new FormData();
+    data.append("categoria", addCategoria.value);
+    data.append("nome", addNome.value.trim());
+    data.append("preco", addPreco.value);
+    data.append("estoque", addEstoque.value);
+    data.append("tamanho", addTamanho.value.trim());
+    data.append("cor", addCor.value.trim());
+    data.append("peso_banho", addPesoBanho.value.trim());
+    data.append("milesimos_banho", addMilesimosBanho.value.trim());
 
-addCategoriaClean.forEach(cat => {
-    data.append("categoria[]", cat);
-});
+    if (imagemFinalFile) {
+        data.append("foto", imagemFinalFile);
+    } else if (addFoto.files[0]) {
+        data.append("foto", addFoto.files[0]);
+    }
 
-data.append("nome", addNome.value.trim());
-data.append("preco", addPreco.value);
-data.append("estoque", addEstoque.value);
-data.append("tamanho", addTamanho.value.trim());
-data.append("cor", addCor.value.trim());
-data.append("peso_banho", addPesoBanho.value.trim());
-data.append("milesimos_banho", addMilesimosBanho.value.trim());
+    const res = await fetch("/api/produtos/add", {
+        method: "POST",
+        body: data
+    });
 
-if (imagemFinalFile) {
-    data.append("foto", imagemFinalFile);
-} else if (addFoto.files[0]) {
-    data.append("foto", addFoto.files[0]);
-}
+    if (!res.ok) {
+        console.error("Erro ao consultar servidor");
+        return;
+    }
 
-const res = await fetch("/api/produtos/add", {
-    method: "POST",
-    body: data
-});
+    formAdd.reset();
 
-if (!res.ok) {
-    console.error("Erro ao enviar pro back");
-    return;
-}
+    if (addPreview) {
+        addPreview.src = "";
+        addPreview.style.display = "none";
+    }
 
-formAdd.reset();
+    imagemFinalBlob = null;
+    imagemFinalFile = null;
 
-if (addPreview) {
-    addPreview.src = "";
-    addPreview.style.display = "none";
-}
-
-imagemFinalBlob = null;
-imagemFinalFile = null;
-
-fecharModalAdicionar();
-render(true);
+    fecharModalAdicionar();
+    render(true);
 });
 
 async function formDel(id) {
@@ -548,7 +647,7 @@ while (!acabouEnvio) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
         text: "",
-        tags: [],
+        categoria: "",
         price: "all",
         sort: "relevancia",
         tamanho: "",
@@ -598,7 +697,12 @@ listaProdutosEnvio.innerHTML = filtrados.map(p => {
         <img src="${p.img}" alt="${p.nome}">
         <div>
             <strong>${p.nome}</strong>
-            <span>Estoque disponível: ${p.estoque}</span>
+            <span>Estoque: ${p.estoque}</span>
+            <span>Estoque em uso: ${p.estoque_em_uso}</span>
+            ${p.categoria ? `
+                <span>Categoria: ${p.categoria}</span>
+            ` : ""}
+            <span>Ref: ${p.id}</span>
         </div>
         </div>
 
@@ -616,7 +720,7 @@ listaProdutosEnvio.innerHTML = filtrados.map(p => {
             type="button"
             class="btn ${jaSelecionado ? "btn-outline" : ""}"
             onclick="toggleProdutoEnvio(${p.id})"
-            ${Number(p.estoque) <= 0 ? "disabled" : ""}
+            ${Number(p.estoque) - Number(p.estoque_em_uso) <= 0 ? "disabled" : ""}
         >
             ${jaSelecionado ? "Remover" : "Adicionar"}
         </button>
@@ -706,6 +810,7 @@ if (!itensEnvio.length) {
 
 const payload = {
     revendedora_id: revendedoraId,
+    nome_maleta: nomearMaleta.value,
     produtos: itensEnvio.map(item => ({
     produto_id: item.id,
     quantidade: item.quantidade
@@ -719,7 +824,12 @@ try {
     body: JSON.stringify(payload)
     });
 
-    if (!res.ok) throw new Error("Erro ao enviar");
+    if (!res.ok) {
+        erro = await res.json();
+
+        alert(erro.erro);  
+        throw new Error("Erro ao enviar.");
+    };
     formEnvio.reset();
     itensEnvio = [];
     atualizarListaProdutosEnvio();
@@ -736,6 +846,37 @@ try {
 });
 
 buscaEnvio.addEventListener("input", atualizarListaProdutosEnvio);
+
+let categorias = [];
+
+async function carregarCategorias() {
+    const res = await fetch("/api/categorias");
+
+    if (!res.ok) return;
+
+    categorias = await res.json();
+
+    const options = `
+        <option value="">Todas</option>
+        ${categorias.map(c =>
+            `<option value="${c.id}">${c.nome}</option>`
+        ).join("")}
+    `;
+
+    cat.innerHTML = options;
+
+    addCategoria.innerHTML =
+        `<option value="">Selecione</option>` +
+        categorias.map(c =>
+            `<option value="${c.id}">${c.nome}</option>`
+        ).join("");
+
+    editCategoria.innerHTML =
+        `<option value="">Selecione</option>` +
+        categorias.map(c =>
+            `<option value="${c.id}">${c.nome}</option>`
+        ).join("");
+}
 
 document.addEventListener("keydown", (e) => {
 if (e.key !== "Escape") return;
@@ -755,6 +896,11 @@ window.fecharModalEnvio = fecharModalEnvio;
 window.toggleProdutoEnvio = toggleProdutoEnvio;
 window.removerItemEnvio = removerItemEnvio;
 window.limparSelecaoEnvio = limparSelecaoEnvio;
+window.abrirModalCategorias = abrirModalCategorias;
+window.fecharModalCategorias = fecharModalCategorias;
+window.adicionarCategoria = adicionarCategoria;
+window.editarCategoria = editarCategoria;
+window.removerCategoria = removerCategoria;
 
 q.addEventListener("input", () => render(true));
 cat.addEventListener("input", () => render(true));
@@ -765,5 +911,8 @@ cor.addEventListener("input", () => render(true));
 pesoBanho.addEventListener("input", () => render(true));
 milesimosBanho.addEventListener("input", () => render(true));
 
-carregarRevendedoras();
-render(true);
+(async () => {
+    await carregarCategorias();
+    await carregarRevendedoras();
+    render(true);
+})();

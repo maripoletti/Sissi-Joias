@@ -105,10 +105,7 @@
         Nova Campanha
       </button>
 
-      <button
-        class="btn-salvar"
-        id="salvarCampanhas"
-      >
+      <button class="btn-salvar" id="salvarCampanhas">
         <i class="fa-regular fa-floppy-disk"></i>
         Salvar
       </button>

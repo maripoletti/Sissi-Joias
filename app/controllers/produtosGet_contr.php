@@ -12,7 +12,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) ? "https://" : "http://") . $_SERVER['HTTP_
 $input = json_decode(file_get_contents('php://input'), true);
 
 $q = $input["text"] ?? "";
-$tags = $input["tags"] ?? [];
+$categoria = ($input["categoria"] ?? "") === "" ? null : (int)$input["categoria"];
 $price = $input["price"] ?? "all";
 $sort = $input["sort"] ?? "relevancia";
 $page = $input["page"] ?? 0;
@@ -24,7 +24,7 @@ $milesimos_banho = $input["milesimos_banho"] ?? "";
 
 $data = prodValidator::validate_get(
     $q,
-    $tags,
+    $categoria,
     $price,
     $sort,
     $limit,

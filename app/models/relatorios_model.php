@@ -10,7 +10,30 @@ class relatorios_model extends Dbh {
         $pdo = $this->connect();
 
         try {
+            $inicioCampanha = null;
+            $fimCampanha = null;
 
+            $stmt = $pdo->query("
+                SELECT start_date, end_date
+                FROM Campaigns
+                WHERE selected = 1
+                LIMIT 1
+            ");
+
+            $campanha = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($campanha) {
+                $inicioCampanha = $campanha["start_date"];
+                $fimCampanha = $campanha["end_date"];
+            }
+
+            $filtroData = "";
+
+            if ($inicioCampanha && $fimCampanha) {
+                $filtroData = "
+                    AND OrderDate BETWEEN :inicio AND :fim
+                ";
+            }
 
             $stmt = $pdo->prepare("
                 SELECT
@@ -36,10 +59,17 @@ class relatorios_model extends Dbh {
                     ON sc.EmployeeID = se.EmployeeID
                 WHERE se.FullName IS NOT NULL
                 AND so.Status = '1'
+                " . ($inicioCampanha ? "AND so.OrderDate BETWEEN :inicio AND :fim" : "") . "
                 GROUP BY se.EmployeeID
                 ORDER BY valor DESC
                 LIMIT 5
             ");
+            
+            if ($inicioCampanha) {
+                $stmt->bindValue(":inicio", $inicioCampanha);
+                $stmt->bindValue(":fim", $fimCampanha);
+            }
+                
             $stmt->execute();
             $vendedoras = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -130,6 +160,7 @@ class relatorios_model extends Dbh {
 
 
             return [
+                "campanha_selecionada" => $campanha ?? "Todos",
 
                 "total" => (float)($totais["total"] ?? 0),
                 "qtd_vendas" => (int)($totais["qtd_vendas"] ?? 0),

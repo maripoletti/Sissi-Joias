@@ -5,7 +5,7 @@ declare(strict_types= 1);
 class prodValidator {
     public static function validate_add(
         string $name,
-        array $tags,
+        null|int $tag,
         float $price,
         int $stock,
         null|string $photo,
@@ -17,7 +17,7 @@ class prodValidator {
         $errors = [];
         $clean = [
             'name' => trim($name ?? ''),
-            'tags' => array_map(fn($v) => mb_strtolower($v, 'UTF-8'), $tags) ?? [],
+            'tag' => $tag,
             'price' => abs($price ?? 0),
             'stock' => abs($stock ?? 0),
             'photo' => $photo,
@@ -49,6 +49,7 @@ class prodValidator {
     public static function validate_update(
         int $id,
         string $name,
+        null|int $tag,
         float $price,
         int $stock,
         null|string $photo,
@@ -61,6 +62,7 @@ class prodValidator {
         $clean = [
             'id' => $id,
             'name' => trim($name),
+            'tag' => $tag,
             'price' => abs($price),
             'stock' => abs($stock),
             'photo' => $photo,
@@ -92,7 +94,7 @@ class prodValidator {
     }
     public static function validate_get(
         string $text,
-        string|array $tags,
+        null|int $tag,
         string $price,
         string $sort,
         int $limit,
@@ -128,7 +130,7 @@ class prodValidator {
 
         $data = [
             'text' => $text,
-            'tags'=> $tags,
+            'tag'=> $tag,
             'sort' => $sort,
             'min'=> $min,
             'max'=> $max,

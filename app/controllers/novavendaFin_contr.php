@@ -18,11 +18,16 @@ $validate = orderValidator::validate($cliente, $pagamento, $produtos);
 
 if($validate['errors']) {
     $_SESSION['error_order_sale'] = $validate['errors'];
+    echo "asd";
     exit;
 } else {
     $result = $db->realizar_venda($validate['data']['produtos'], $validate['data']['cliente'], $validate['data']['pagamento']);
 
     if ($result === false) {
+        echo json_encode([
+            "success" => false,
+            "message" => "Erro ao processar venda"
+        ]);
         exit;
     }
 

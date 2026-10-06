@@ -82,7 +82,9 @@
 
               <div class="field">
                 <label>Categoria</label>
-                <input type="text" id="categoriaVitrine" placeholder="Digite a categoria de vitrine do produto">
+                <select id="categoriaVitrine">
+                    <option value="">Selecione uma categoria</option>
+                </select>
               </div>
             </div>
 
@@ -212,8 +214,8 @@
 
             <div class="row row-1">
               <div class="field">
-                <label>Preço Atual</label>
-                <input id="precoFin" type="text" class="money custo">
+                <label>Preço Final</label>
+                <input id="precoFin" type="text" class="money custo" placeholder="Escolha o preço que a peça deve custar">
               </div>
             </div>
 

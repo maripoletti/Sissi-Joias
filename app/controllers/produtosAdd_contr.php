@@ -12,7 +12,7 @@ $db = new produtos_model();
 $fotoPath = $upload->image($_FILES['foto'] ?? []);
 
 $name = $_POST["nome"] ?? "";
-$tags = $_POST["categoria"] ?? [];
+$categoria = ($_POST["categoria"] ?? "") === "" ? null : (int)$_POST["categoria"];
 $price = (float)($_POST["preco"] ?? "");
 $stock = (int)($_POST["estoque"] ?? 0);
 $tamanho = $_POST["tamanho"] ?? "";
@@ -22,7 +22,7 @@ $milesimos_banho = ($_POST["milesimos_banho"] === "") ? null : (int)$_POST["mile
 
 $validate = prodValidator::validate_add(
     $name,
-    $tags,
+    $categoria,
     $price,
     $stock,
     $fotoPath,

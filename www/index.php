@@ -209,6 +209,45 @@ switch ($uri) {
     } else {
       AuthMiddleware::user();
     }
+  case '/api/categorias':
+    if(isset($_SESSION['user_id'])) {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->listar_categorias();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/categorias/update':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->editar_categoria();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/categorias/add':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->adicionar_categoria();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/categorias/delete':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/categorias_contr.php';
+      $controller = new categorias_contr();
+      $controller->remover_categoria();
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
 
   case '/api/produtos/envios_revendedoras':
     if ($_SESSION['role'] == '2') {
@@ -237,6 +276,30 @@ switch ($uri) {
   case '/api/produtosRevendedores/editar':
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/produtosRevendedoresUpdate_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/produtosRevendedores/deletarEmMassa':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresMassDel_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+  
+  case '/api/maleta/adicionar':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresMaletaAdd_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/maletas':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRevendedoresMaleta_contr.php';
       break;
     } else {
       AuthMiddleware::user();
@@ -408,6 +471,12 @@ switch ($uri) {
       break;
     }
 
+  case '/api/campanhas/selecionar': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/toprevendedorasCampSelecionar_contr.php';
+      break;
+    }
+
   case '/precificacao': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/views/precificacao_view.php';
@@ -472,6 +541,41 @@ switch ($uri) {
     } else {
       AuthMiddleware::user();
       header('Location: /login');
+      break;
+    }
+
+  case '/api/controledegastos/fixos': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosFixosGet_contr.php';
+      break;
+    }
+    
+  case '/api/controledegastos/dinamicos': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosGet_contr.php';
+      break;
+    }
+  case '/api/controledegastos/dinamicos/upd': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosUpd_contr.php';
+      break;
+    }
+
+  case '/api/controledegastos/dinamicos/del': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosDel_contr.php';
+      break;
+    }
+
+  case '/api/controledegastos/dinamicos/add': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosDinamicosAdd_contr.php';
+      break;
+    }
+
+  case '/api/controledegastos/metais': 
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/controledegastosMetaisGet_contr.php';
       break;
     }
 

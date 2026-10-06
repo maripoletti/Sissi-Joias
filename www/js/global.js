@@ -29,6 +29,10 @@ document.addEventListener("DOMContentLoaded", () => {
     sidebar.innerHTML = `
         <h2>Sissi Semi Joias e Acessórios</h2>
 
+        <button id="menuBotaoMobile">
+            ☰
+        </button>
+
         <nav>
             ${links.map(link => `
                 <a href="${link.href}"
@@ -65,6 +69,37 @@ document.addEventListener("DOMContentLoaded", () => {
     `;
 
     inicializarPerfilUsuario();
+
+    const btn = document.getElementById("menuBotaoMobile");
+
+    if (btn) {
+
+    btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+
+        sidebar.classList.add("open");
+        btn.classList.add("hidden");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!sidebar.classList.contains("open")) return;
+
+        const clicouNoSidebar = sidebar.contains(e.target);
+        const clicouNoBotao = btn.contains(e.target);
+
+        if (!clicouNoSidebar && !clicouNoBotao) {
+            sidebar.classList.remove("open");
+            btn.classList.remove("hidden");
+        }
+    });
+
+    sidebar.querySelectorAll("a").forEach(a => {
+        a.addEventListener("click", () => {
+            sidebar.classList.remove("open");
+            btn.classList.remove("hidden");
+        });
+    });
+    }
 });
 
 function inicializarPerfilUsuario() {

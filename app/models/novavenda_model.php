@@ -34,30 +34,64 @@ class novavenda_model extends Dbh {
             }
 
             if ($role != 2 && $userId) {
-                $query = "
-                    UPDATE Sales_EmployeeProducts
-                    SET UsableStock = UsableStock - :qty
-                    WHERE ProductID = :pid 
-                    AND UserID = :uid
-                    AND UsableStock >= :qty
-                ";
+                $buscar = $pdo->prepare("
+                    SELECT
+                        UserID,
+                        ProductID,
+                        CaseID,
+                        UsableStock
+                    FROM Sales_EmployeeProducts
+                    WHERE UserID = ?
+                    AND ProductID = ?
+                    AND UsableStock > 0
+                    ORDER BY CaseID ASC
+                ");
 
-                $stmt = $pdo->prepare($query);
+                $atualizar = $pdo->prepare("
+                    UPDATE Sales_EmployeeProducts
+                    SET UsableStock = ?
+                    WHERE UserID = ?
+                    AND ProductID = ?
+                    AND CaseID = ?
+                ");
 
                 foreach ($produtos as $p) {
-                    $stmt->execute([
-                        ":qty" => $p["quantidade"],
-                        ":pid" => $p["id"],
-                        ":uid" => $userId
+
+                    $buscar->execute([
+                        $userId,
+                        $p["id"]
                     ]);
 
-                    if ($stmt->rowCount() === 0) {
+                    $maletas = $buscar->fetchAll(PDO::FETCH_ASSOC);
+
+                    $restante = (int)$p["quantidade"];
+
+                    foreach ($maletas as $m) {
+
+                        if ($restante <= 0) {
+                            break;
+                        }
+
+                        $retirar = min($restante, (int)$m["UsableStock"]);
+
+                        $novoEstoque = $m["UsableStock"] - $retirar;
+
+                        $atualizar->execute([
+                            $novoEstoque,
+                            $m["UserID"],
+                            $m["ProductID"],
+                            $m["CaseID"]
+                        ]);
+
+                        $restante -= $retirar;
+                    }
+
+                    if ($restante > 0) {
                         $pdo->rollBack();
                         echo "Estoque insuficiente para a funcionária (produto ID {$p["id"]})";
                         return false;
                     }
                 }
-
             }
 
             $query = "SELECT EmployeeID FROM Sales_Employees WHERE UserID = :userid";
@@ -81,25 +115,12 @@ class novavenda_model extends Dbh {
 
             $customerID = $pdo->lastInsertId();
 
-            $stmt = $pdo->prepare("
-                SELECT Price FROM Sales_Products WHERE ProductID = ?
-            ");
-
             $total = 0;
-            $precos = [];
+
             foreach ($produtos as $p) {
-                $stmt->execute([$p["id"]]);
-                $precoReal = $stmt->fetchColumn();
-
-                if ($precoReal === false) {
-                    $pdo->rollBack();
-                    echo "Produto não encontrado (ID {$p["id"]})";
-                    return false;
-                }
-
-                $precos[$p["id"]] = $precoReal;
-                $total += $p["quantidade"] * $precoReal;
+                $total += $p["quantidade"] * $p["preco"];
             }
+            
 
             $query = "INSERT INTO Sales_Orders (CustomerID, OrderDate, Sales, PaymentMethod) VALUES (?, NOW(),?,?)";
             $stmt = $pdo->prepare($query);
@@ -116,7 +137,7 @@ class novavenda_model extends Dbh {
                     $orderId,
                     $p["id"],
                     $p["quantidade"],
-                    $precos[$p["id"]]
+                    $p["preco"]
                 ]);
             }
             
@@ -142,11 +163,18 @@ class novavenda_model extends Dbh {
             $params = [$nome . "*"];
 
             if ($role != 2 && $userId) {
-                $joinEmployee = "JOIN Sales_EmployeeProducts sep 
-                                ON sep.ProductID = p.ProductID 
-                                AND sep.UserID = ?";
-                
-                $stockField = "IFNULL(sep.UsableStock, 0)";
+                $joinEmployee = "
+                    LEFT JOIN (
+                        SELECT
+                            ProductID,
+                            SUM(UsableStock) AS UsableStock
+                        FROM Sales_EmployeeProducts
+                        WHERE UserID = ?
+                        GROUP BY ProductID
+                    ) sep ON sep.ProductID = p.ProductID
+                ";
+
+                $stockField = "IFNULL(sep.UsableStock,0)";
                 $params[] = $userId;
             }
 

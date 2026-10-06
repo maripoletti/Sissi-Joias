@@ -24,10 +24,10 @@ class precificacao_model extends Dbh {
                 p.BathMetal AS metalBanho,
                 p.InputCosts AS custoInsumo,
                 p.BruteCost AS custoBruto,
-                GROUP_CONCAT(DISTINCT t.TagName) AS categoria
-            FROM Sales_Products p
-            LEFT JOIN Prod_ProductsTags pt ON pt.ProductID = p.ProductID
-            LEFT JOIN Prod_Tags t ON t.TagID = pt.TagID
+                t.TagID AS categoria_id,
+                t.TagName AS categoria
+                FROM Sales_Products p
+            LEFT JOIN Prod_Tags t ON t.TagID = p.TagID
             WHERE p.ProductName LIKE CONCAT(?, '%')
             AND p.Status = 1
             GROUP BY p.ProductID
@@ -62,8 +62,9 @@ class precificacao_model extends Dbh {
                     BathMetal,
                     InputCosts,
                     BruteCost,
+                    TagID,
                     Status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)
             ";
 
             $stmt = $pdo->prepare($query);
@@ -78,7 +79,8 @@ class precificacao_model extends Dbh {
                 $data["metal"],
                 $data["metalBanho"],
                 $data["custoInsumo"],
-                $data["custoBruto"]
+                $data["custoBruto"],
+                $data["categoria"]
             ]);
 
             $productId = $pdo->lastInsertId();
@@ -92,26 +94,6 @@ class precificacao_model extends Dbh {
             ");
 
             $stmt->execute([$barcode, $productId]);
-
-            if (!empty($data["categoria"])) {
-                $tags = is_array($data["categoria"]) ? $data["categoria"] : [$data["categoria"]];
-
-             
-                $stmt = $pdo->prepare("INSERT IGNORE INTO Prod_Tags (TagName) VALUES (?)");
-                foreach ($tags as $tag) {
-                    $stmt->execute([$tag]);
-                }
-
-                $placeholders = implode(', ', array_fill(0, count($tags), '?'));
-                $stmt = $pdo->prepare("SELECT TagID FROM Prod_Tags WHERE TagName IN ($placeholders)");
-                $stmt->execute($tags);
-                $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-                $stmt = $pdo->prepare("INSERT INTO Prod_ProductsTags (ProductID, TagID) VALUES (?, ?)");
-                foreach ($tagsIds as $tagId) {
-                    $stmt->execute([$productId, $tagId]);
-                }
-            }
 
             $pdo->commit();
 
@@ -140,7 +122,8 @@ class precificacao_model extends Dbh {
                     Metal = ?,
                     BathMetal = ?,
                     InputCosts = ?,
-                    BruteCost = ?
+                    BruteCost = ?,
+                    TagID = ?
                 WHERE ProductID = ?
             ";
 
@@ -157,30 +140,9 @@ class precificacao_model extends Dbh {
                 $data["metalBanho"],
                 $data["custoInsumo"],
                 $data["custoBruto"],
+                $data["categoria"],
                 $data["id"]
             ]);
-
-            if (!empty($data["categoria"])) {
-                $tags = is_array($data["categoria"]) ? $data["categoria"] : [$data["categoria"]];
-
-                $stmt = $pdo->prepare("DELETE FROM Prod_ProductsTags WHERE ProductID = ?");
-                $stmt->execute([$data["id"]]);
-
-                $stmt = $pdo->prepare("INSERT IGNORE INTO Prod_Tags (TagName) VALUES (?)");
-                foreach ($tags as $tag) {
-                    $stmt->execute([$tag]);
-                }
-
-                $placeholders = implode(', ', array_fill(0, count($tags), '?'));
-                $stmt = $pdo->prepare("SELECT TagID FROM Prod_Tags WHERE TagName IN ($placeholders)");
-                $stmt->execute($tags);
-                $tagsIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
-
-                $stmt = $pdo->prepare("INSERT INTO Prod_ProductsTags (ProductID, TagID) VALUES (?, ?)");
-                foreach ($tagsIds as $tagId) {
-                    $stmt->execute([$data["id"], $tagId]);
-                }
-            }
 
             $pdo->commit();
 

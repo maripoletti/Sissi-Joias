@@ -70,7 +70,7 @@ body {
     <div>
       <div><?= $item['ProductName'] ?></div>
       <div class="row">
-        <span><?= $item['Quantity'] ?> x <?= number_format($item['Price'],2,",",".") ?></span>
+        <span><?= $item['Quantity'] ?> x <?= number_format((float)$item['Price'], 2, ",", ".") ?></span>
         <span>R$ <?= number_format($subtotal,2,",",".") ?></span>
       </div>
     </div>
