@@ -441,7 +441,7 @@ switch ($uri) {
 
     case '/romaneio':
       if ($_SESSION['role'] == '2') {
-        require_once '../app/views/romaneio_view.php';
+        require_once '../app/views/pastasrevend_view.php';
         break;
       } else {
         AuthMiddleware::user();
@@ -597,6 +597,14 @@ switch ($uri) {
     if ($method === "POST") {
       require_once '../app/controllers/esquecisenha_contr.php';
       break;
+    }
+
+  case '/api/':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosRev_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
     }
   
   case '/trocarsenha':

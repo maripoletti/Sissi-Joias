@@ -1,0 +1,411 @@
+:root {
+    --roxo: #4a0f50;
+    --roxo2: #6b2d7a;
+    --ouro: #d0a310;
+    --txt: #2a0b2e;
+    --borda: #e6dcea;
+}
+
+/* =========================
+   LAYOUT DA PÁGINA
+========================= */
+
+.pastas-layout {
+    display: flex;
+    align-items: stretch;
+    width: 100%;
+    min-height: calc(100vh - 40px);
+    padding: 0;
+    overflow: hidden;
+}
+
+.pastas-layout > .sidebar {
+    flex-shrink: 0;
+}
+
+.pastas-layout > .main {
+    flex: 1;
+    min-width: 0;
+    padding: 24px;
+}
+
+/* =========================
+   CABEÇALHO
+========================= */
+
+.pastas-layout .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.pastas-layout .top h1 {
+    margin: 0;
+    color: var(--roxo);
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.pastas-layout .subtitle {
+    display: block;
+    margin-top: 6px;
+    color: #7a5f80;
+    font-size: 13px;
+}
+
+.pastas-layout .top-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* =========================
+   SELETOR DE PERFIL
+========================= */
+
+.pastas-layout .demo {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+    border: 1px solid var(--borda);
+    border-radius: 8px;
+    background: #fff;
+    color: var(--txt);
+    font-size: 12px;
+}
+
+.pastas-layout .demo label {
+    font-weight: 600;
+}
+
+.pastas-layout .demo select {
+    max-width: 180px;
+    padding: 6px 8px;
+    border: 1px solid var(--borda);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--roxo);
+    font: inherit;
+    cursor: pointer;
+}
+
+.pastas-layout .demo select:focus-visible {
+    outline: 3px solid var(--ouro);
+    outline-offset: 2px;
+}
+
+/* =========================
+   CONTEÚDO PRINCIPAL
+========================= */
+
+.pastas-layout .pastas-conteudo {
+    min-height: 60vh;
+    padding: 20px;
+    border: 1px solid var(--borda);
+    border-radius: 16px;
+    background: #fff;
+}
+
+/* =========================
+   BOTÕES
+========================= */
+
+.pastas-layout .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background: var(--roxo);
+    color: #fff;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.pastas-layout .btn:hover {
+    background: var(--roxo2);
+}
+
+.pastas-layout .btn.sec {
+    border-color: var(--borda);
+    background: #fff;
+    color: var(--roxo);
+}
+
+.pastas-layout .btn.sec:hover {
+    background: #faf5fb;
+    border-color: var(--roxo2);
+}
+
+.pastas-layout .btn.del {
+    border-color: #e9b9c1;
+    background: #fff;
+    color: #a3122a;
+}
+
+.pastas-layout .btn.del:hover {
+    background: #fff0f2;
+}
+
+.pastas-layout .btn:focus-visible,
+.pastas-layout .pasta:focus-visible,
+.pastas-layout .arq a:focus-visible {
+    outline: 3px solid var(--ouro);
+    outline-offset: 3px;
+}
+
+/* =========================
+   BARRA DE AÇÕES DA PASTA
+========================= */
+
+.pastas-layout .bar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.pastas-layout .bar h3 {
+    flex: 1;
+    min-width: 120px;
+    margin: 0;
+    color: var(--roxo);
+    font-size: 20px;
+}
+
+/* =========================
+   LISTA DE PASTAS
+========================= */
+
+.pastas-layout .pastas {
+    display: grid;
+    grid-template-columns: repeat(
+        auto-fill,
+        minmax(190px, 1fr)
+    );
+    gap: 14px;
+}
+
+.pastas-layout .pasta {
+    all: unset;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    padding: 16px;
+    border: 1px solid var(--borda);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s,
+                transform 0.2s;
+}
+
+.pastas-layout .pasta:hover {
+    border-color: var(--roxo2);
+    background: #faf5fb;
+    transform: translateY(-2px);
+}
+
+.pastas-layout .pasta .ico {
+    flex-shrink: 0;
+    color: var(--ouro);
+    font-size: 30px;
+}
+
+.pastas-layout .pasta b {
+    display: block;
+    overflow-wrap: anywhere;
+    color: var(--roxo);
+    font-size: 15px;
+}
+
+.pastas-layout .pasta small {
+    display: block;
+    margin-top: 4px;
+    color: #7a5f80;
+    font-size: 12px;
+}
+
+/* =========================
+   LISTA DE ARQUIVOS
+========================= */
+
+.pastas-layout .arq {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    padding: 12px;
+    border: 1px solid var(--borda);
+    border-radius: 10px;
+    background: #fff;
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.pastas-layout .arq:hover {
+    border-color: #d5c3dc;
+    background: #fdfbfe;
+}
+
+.pastas-layout .arq .info {
+    flex: 1;
+    min-width: 0;
+}
+
+.pastas-layout .arq .nome {
+    overflow: hidden;
+    color: var(--roxo);
+    font-size: 14px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pastas-layout .arq small {
+    display: block;
+    margin-top: 4px;
+    color: #7a5f80;
+    font-size: 12px;
+}
+
+.pastas-layout .arq a {
+    color: var(--roxo2);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.pastas-layout .arq a:hover {
+    color: var(--roxo);
+    text-decoration: underline;
+}
+
+/* =========================
+   ESTADOS VAZIOS
+========================= */
+
+.pastas-layout .vazio {
+    padding: 28px 4px;
+    color: #7a5f80;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* =========================
+   ELEMENTOS OCULTOS
+========================= */
+
+.pastas-layout .hidden,
+.pastas-layout .pastas-conteudo .hidden {
+    display: none !important;
+}
+
+/* =========================
+   RESPONSIVIDADE
+========================= */
+
+@media (max-width: 900px) {
+    .pastas-layout > .main {
+        padding: 20px;
+    }
+
+    .pastas-layout .top-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 700px) {
+    .pastas-layout {
+        flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .pastas-layout > .sidebar {
+        width: 100%;
+        flex: 0 0 auto;
+    }
+
+    .pastas-layout > .main {
+        padding: 16px;
+    }
+
+    .pastas-layout .top {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .pastas-layout .top h1 {
+        font-size: 24px;
+    }
+
+    .pastas-layout .top-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .pastas-layout .pastas-conteudo {
+        padding: 14px;
+    }
+
+    .pastas-layout .pastas {
+        grid-template-columns: 1fr;
+    }
+
+    .pastas-layout .bar {
+        align-items: stretch;
+    }
+
+    .pastas-layout .bar h3 {
+        flex-basis: 100%;
+        order: -1;
+    }
+
+    .pastas-layout .arq {
+        flex-wrap: wrap;
+    }
+
+    .pastas-layout .arq .info {
+        flex-basis: calc(100% - 50px);
+    }
+}
+
+@media (max-width: 400px) {
+    .pastas-layout > .main {
+        padding: 12px;
+    }
+
+    .pastas-layout .pastas-conteudo {
+        padding: 10px;
+    }
+
+    .pastas-layout .demo {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pastas-layout .demo select {
+        width: 100%;
+        max-width: none;
+    }
+
+    .pastas-layout .btn {
+        padding: 9px 10px;
+        font-size: 12px;
+    }
+} 
