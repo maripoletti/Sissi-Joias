@@ -21,8 +21,9 @@ document.addEventListener("DOMContentLoaded", () => {
             { href: "/cadastrarimpressora", text: "Cadastrar Impressora" },
             { href: "/produtosrevendedores", text: "Produtos dos Revendedores" },
             { href: "/precificacao", text: "Precificação" },
-            { href: "/toprevendedoras", text: "Top Revendedoras" },
-            { href: "/romaneio", text: "Romaneio" }
+            { href: "/toprevendedoras", text: "Top Revendedores" },
+            { href: "/pastasrevendedoras", text: "Pasta de Revendedores" },
+            { href: "/cupons", text: "Cupons" }
         );
     }
 

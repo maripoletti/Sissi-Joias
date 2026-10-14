@@ -43,27 +43,6 @@
                         <span class="subtitle" id="data-atual"></span>
                     </div>
 
-                    <div class="top-actions">
-
-                        <!-- SOMENTE PARA TESTES -->
-                        <!-- No sistema real, o perfil vem do login -->
-                        <div class="demo">
-                            <label for="perfil">Testando como:</label>
-
-                            <select
-                                id="perfil"
-                                aria-label="Perfil de teste"
-                            ></select>
-                        </div>
-
-                        <!-- SAIR -->
-                        <a href="/logout" class="btn-sair">
-                            <i class="fa-solid fa-right-from-bracket"></i>
-                            Sair
-                        </a>
-
-                    </div>
-
                 </header>
 
                 <!-- CONTEÚDO DA PÁGINA -->

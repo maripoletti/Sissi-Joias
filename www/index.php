@@ -323,6 +323,38 @@ switch ($uri) {
       break;
     }
 
+  case '/api/pastasrevendedoras':
+    if ($_SESSION['role'] == '2') {
+      //require_once '../app/controllers/produtosUpdate_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/arquivos/listar':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosUpdate_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/arquivos/upload':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosUpdate_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
+  case '/api/arquivos/excluir':
+    if ($_SESSION['role'] == '2') {
+      require_once '../app/controllers/produtosUpdate_contr.php';
+      break;
+    } else {
+      AuthMiddleware::user();
+    }
+
   case '/api/produtos/update':
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/produtosUpdate_contr.php';
@@ -438,16 +470,6 @@ switch ($uri) {
       header('Location: /login');
       break;
     }    
-
-    case '/romaneio':
-      if ($_SESSION['role'] == '2') {
-        require_once '../app/views/pastasrevend_view.php';
-        break;
-      } else {
-        AuthMiddleware::user();
-        header('Location: /login');
-        break;
-      }
   
   case '/api/toprevendedoras': 
     if ($_SESSION['role'] == '2') {
@@ -599,13 +621,18 @@ switch ($uri) {
       break;
     }
 
-  case '/api/':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosRev_contr.php';
-      break;
-    } else {
+  case '/pastasrevendedoras':
+    if(isset($_SESSION['user_id'])) {
+    if ($method === 'GET') {
+      require_once '../app/views/pastasrevend_view.php';
       AuthMiddleware::user();
+      break;
     }
+  } else {
+    header('Location: /login');
+    break;
+  }
+  break;
   
   case '/trocarsenha':
     require_once '../app/controllers/trocarsenha_contr.php';

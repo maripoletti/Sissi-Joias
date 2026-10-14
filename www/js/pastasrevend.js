@@ -1,43 +1,73 @@
-/* ===== DADOS (em memória; troque por chamadas à sua API/banco) =====
-   Tabela sugerida: arquivos_revendedora(id, revendedora_id, nome, url, tamanho, criado_em) */
-const revendedoras=[
-  {id:1,nome:'Ana Souza'},{id:2,nome:'Beatriz Silva'},
-  {id:3,nome:'Camila Oliveira'},{id:4,nome:'Daniela Santos'}
-];
-let arquivos=[
-  {id:1,revId:1,nome:'Catálogo Outubro.pdf',tamanho:2400000,data:'2026-10-02',url:'#'},
-  {id:2,revId:1,nome:'Tabela de preços.xlsx',tamanho:88000,data:'2026-10-05',url:'#'},
-  {id:3,revId:3,nome:'Contrato assinado.pdf',tamanho:310000,data:'2026-09-28',url:'#'}
-];
-let prox=10, pastaAberta=null;
- 
+const API='/api'; // ajuste a base da API se necessário
+const ADMIN_ROLE=2; // valor de $_SESSION['role'] que representa o admin (ajuste)
+
+let revendedoras=[];
+let arquivos=[];
+let pastaAberta=null;
+
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const kb=n=>n>1e6?(n/1e6).toFixed(1)+' MB':Math.max(1,Math.round(n/1e3))+' KB';
 const dataBR=d=>d.split('-').reverse().join('/');
-const perfil=()=>$('perfil').value; // 'admin' ou id da revendedora
- 
-/* ===== Perfil de teste ===== */
-$('perfil').innerHTML='<option value="admin">Admin</option>'+
-  revendedoras.map(r=>`<option value="${r.id}">${esc(r.nome)} (revendedora)</option>`).join('');
-$('perfil').onchange=()=>{pastaAberta=null;render()};
- 
+
+/* ===== Sessão (vem do PHP via window.userData) ===== */
+const user=window.userData||{};
+const ehAdmin=()=>Number(user.role)===ADMIN_ROLE;
+const meuRevId=()=>Number(user.revendedora_id);
+
+/* ===== API ===== */
+async function req(url,opts){
+  const r=await fetch(url,opts);
+  if(!r.ok) throw new Error('Erro '+r.status+' ao comunicar com o servidor.');
+  return r.status===204?null:r.json();
+}
+// Envia JSON via POST (IDs vão no corpo, não na URL)
+const postJSON=(url,body)=>req(url,{
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify(body)
+});
+const erro=e=>alert(e.message||'Falha na requisição.');
+const norm=a=>({id:a.id,revId:a.revendedora_id??a.revId,nome:a.nome,tamanho:a.tamanho,
+  data:String(a.criado_em??a.data).slice(0,10),url:a.url});
+
+// GET /api/pastasrevendedoras -> lista de pastas (só admin)
+async function carregarPastas(){
+  revendedoras=await req(`${API}/pastasrevendedoras`);
+}
+// POST /api/arquivos/listar  body: { revendedora_id }
+async function carregarArquivos(revId){
+  const lista=await postJSON(`${API}/arquivos/listar`,{revendedora_id:revId});
+  arquivos=arquivos.filter(a=>a.revId!==revId).concat(lista.map(norm));
+}
+
+async function atualizar(){
+  try{
+    if(ehAdmin()){
+      if(pastaAberta===null) await Promise.all(revendedoras.map(r=>carregarArquivos(r.id))); // contagem por pasta
+      else await carregarArquivos(pastaAberta);
+    }else{
+      await carregarArquivos(meuRevId());
+    }
+  }catch(e){erro(e)}
+  render();
+}
+
 /* ===== Render ===== */
 function linhaArquivo(a,admin){
   return `<div class="arq">
     <span style="font-size:22px">📄</span>
     <div class="info"><div class="nome">${esc(a.nome)}</div>
     <small>${kb(a.tamanho)} · enviado em ${dataBR(a.data)}</small></div>
-    <a class="btn sec" href="${a.url}" download="${esc(a.nome)}" style="text-decoration:none">Baixar</a>
+    <a class="btn sec" href="${esc(a.url)}" download="${esc(a.nome)}" style="text-decoration:none">Baixar</a>
     ${admin?`<button class="btn del" data-del="${a.id}">Excluir</button>`:''}
   </div>`;
 }
- 
+
 function render(){
   ['adminLista','adminPasta','revView'].forEach(i=>$(i).classList.add('hidden'));
-  const p=perfil();
- 
-  if(p==='admin'){
+
+  if(ehAdmin()){
     if(pastaAberta===null){
       $('titulo').textContent='Pasta de Revendedoras';
       $('pastas').innerHTML=revendedoras.map(r=>{
@@ -52,43 +82,61 @@ function render(){
       $('nomePasta').textContent='📁 '+r.nome;
       $('arqsAdmin').innerHTML=lista.length
         ?lista.map(a=>linhaArquivo(a,true)).join('')
-        :'<p class="vazio">Nenhum arquivo nesta pasta. Use “+ Adicionar arquivo”.</p>';
+        :'<p class="vazio">Nenhum arquivo nesta pasta. Use “Adicionar arquivo”.</p>';
       $('adminPasta').classList.remove('hidden');
     }
   }else{
-    // Revendedora: só os arquivos dela, como página
+    // Revendedora: só os arquivos dela
     $('titulo').textContent='Meus Arquivos';
-    const meus=arquivos.filter(a=>a.revId===Number(p));
+    const meus=arquivos.filter(a=>a.revId===meuRevId());
     $('arqsRev').innerHTML=meus.length
       ?meus.map(a=>linhaArquivo(a,false)).join('')
       :'<p class="vazio">Você ainda não tem arquivos disponíveis.</p>';
     $('revView').classList.remove('hidden');
   }
 }
- 
+
 /* ===== Ações do admin ===== */
 $('pastas').onclick=e=>{
   const b=e.target.closest('[data-pasta]'); if(!b) return;
-  pastaAberta=Number(b.dataset.pasta); render();
+  pastaAberta=Number(b.dataset.pasta); atualizar();
 };
-$('voltar').onclick=()=>{pastaAberta=null;render()};
+$('voltar').onclick=()=>{pastaAberta=null;atualizar()};
 $('addBtn').onclick=()=>$('fileInput').click();
-$('fileInput').onchange=e=>{
-  if(perfil()!=='admin'||pastaAberta===null) return;
-  [...e.target.files].forEach(f=>{
-    // Real: enviar f via FormData ao servidor e salvar o registro com revendedora_id
-    arquivos.push({id:prox++,revId:pastaAberta,nome:f.name,tamanho:f.size,
-      data:new Date().toISOString().slice(0,10),url:URL.createObjectURL(f)});
-  });
-  e.target.value=''; render();
+$('fileInput').onchange=async e=>{
+  if(!ehAdmin()||pastaAberta===null) return;
+  const revId=pastaAberta, files=[...e.target.files];
+  e.target.value='';
+  // POST /api/arquivos/upload (multipart/form-data: "revendedora_id" e "arquivo")
+  for(const f of files){
+    try{
+      const fd=new FormData();
+      fd.append('revendedora_id',revId); // antes do arquivo
+      fd.append('arquivo',f);
+      await req(`${API}/arquivos/upload`,{method:'POST',body:fd});
+    }catch(err){erro(err)}
+  }
+  atualizar();
 };
-$('arqsAdmin').onclick=e=>{
-  const b=e.target.closest('[data-del]'); if(!b||perfil()!=='admin') return;
+$('arqsAdmin').onclick=async e=>{
+  const b=e.target.closest('[data-del]'); if(!b||!ehAdmin()) return;
   const a=arquivos.find(x=>x.id===Number(b.dataset.del));
   if(confirm(`Remover “${a.nome}” desta revendedora?`)){
-    // Real: DELETE /api/revendedoras/:revId/arquivos/:id
-    arquivos=arquivos.filter(x=>x.id!==a.id); render();
+    try{
+      // POST /api/arquivos/excluir  body: { id, revendedora_id }
+      await postJSON(`${API}/arquivos/excluir`,{id:a.id,revendedora_id:a.revId});
+      atualizar();
+    }catch(err){erro(err)}
   }
 };
- 
-render();
+
+/* ===== Início ===== */
+(async()=>{
+  const hoje=$('data-atual');
+  if(hoje) hoje.textContent=new Date().toLocaleDateString('pt-BR',
+    {weekday:'long',day:'2-digit',month:'long',year:'numeric'});
+  if(ehAdmin()){
+    try{await carregarPastas()}catch(e){erro(e)}
+  }
+  atualizar();
+})();
