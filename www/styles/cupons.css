@@ -1,0 +1,368 @@
+/* CUPONS - SISSI SEMI JOIAS */
+
+.cupons-page {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 100vh;
+    padding: 16px 20px 50px;
+    background: #d4aa0c;
+    color: #4b0d4f;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.cupons-page *,
+.cupons-page *::before,
+.cupons-page *::after {
+    box-sizing: border-box;
+}
+
+.cupons-header {
+    margin-bottom: 20px;
+}
+
+.cupons-header h1 {
+    margin: 0 0 4px;
+    font-size: 32px;
+    color: #4b0d4f;
+}
+
+.cupons-header p {
+    margin: 0;
+    color: #702b80;
+    font-size: 16px;
+}
+
+.cupons-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.cupons-tab,
+.cupons-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 10px 17px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.cupons-tab {
+    background: #f3dc8c;
+    color: #4b0d4f;
+}
+
+.cupons-tab:hover {
+    background: #fff0b7;
+}
+
+.cupons-tab.active,
+.cupons-btn-primary {
+    background: #702b80;
+    color: #fff;
+}
+
+.cupons-tab.active:hover,
+.cupons-btn-primary:hover {
+    background: #581b68;
+}
+
+.cupons-card {
+    width: 100%;
+    max-width: 1200px;
+    min-height: 458px;
+    padding: 22px;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(75 13 79 / 4%);
+}
+
+.cupons-section-title {
+    margin-bottom: 16px;
+}
+
+.cupons-section-title h2,
+.cupons-novo h3,
+.cupons-usados h3 {
+    margin: 0 0 4px;
+    color: #35083b;
+    font-size: 16px;
+}
+
+.cupons-section-title p {
+    margin: 0;
+    color: #87518f;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.cupons-field {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.cupons-field label {
+    color: #4b0d4f;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.cupons-field small {
+    color: #87518f;
+    font-size: 11px;
+}
+
+.cupons-field input,
+.cupons-field select {
+    width: 100%;
+    min-height: 38px;
+    padding: 9px 11px;
+    border: 1px solid #ead9ef;
+    border-radius: 11px;
+    outline: none;
+    background: #fff;
+    color: #35083b;
+    font-family: inherit;
+    font-size: 14px;
+}
+
+.cupons-field select {
+    width: 190px;
+    cursor: pointer;
+}
+
+.cupons-field select:disabled {
+    background: #faf5fc;
+    cursor: not-allowed;
+}
+
+.cupons-field input:focus,
+.cupons-field select:focus {
+    border-color: #702b80;
+    box-shadow: 0 0 0 3px rgb(112 43 128 / 10%);
+}
+
+.cupons-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.cupons-table {
+    width: 100%;
+    margin-top: 14px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.cupons-table th {
+    padding: 12px 8px;
+    border-bottom: 1px solid #ead9ef;
+    color: #87518f;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.cupons-table td {
+    padding: 13px 8px;
+    border-bottom: 1px solid #f0e6f2;
+    color: #4b0d4f;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.cupons-desconto {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: #702b80;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.cupons-quantidade {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cupons-quantidade button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 31px;
+    height: 31px;
+    border: 1px solid #ead9ef;
+    border-radius: 9px;
+    background: #fff;
+    color: #702b80;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cupons-quantidade button:hover,
+.cupons-btn-remove:hover {
+    background: #f8effa;
+}
+
+.cupons-quantidade button:disabled {
+    cursor: not-allowed;
+    opacity: .4;
+}
+
+.cupons-btn-remove {
+    min-height: 38px;
+    padding: 9px 15px;
+    border: 1px solid #ead9ef;
+    border-radius: 11px;
+    background: #fff;
+    color: #702b80;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cupons-novo {
+    margin-top: 22px;
+}
+
+#form-novo-cupom {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+#form-novo-cupom .cupons-field:nth-child(1) {
+    width: 150px;
+}
+
+#form-novo-cupom .cupons-field:nth-child(2) {
+    width: 210px;
+}
+
+.cupons-feedback {
+    min-height: 18px;
+    margin: 10px 0 0;
+    color: #702b80;
+    font-size: 13px;
+}
+
+.cupons-aviso {
+    margin: 14px 0 16px;
+    padding: 10px 14px;
+    border: 1px solid #ead9ef;
+    border-radius: 12px;
+    background: #faf5fc;
+    color: #87518f;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.cupons-resumo {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 18px 0;
+}
+
+.cupons-resumo-card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 225px;
+    min-height: 86px;
+    padding: 15px 16px;
+    border: 1px dashed #8c37a0;
+    border-radius: 17px;
+    background: #faf5fc;
+}
+
+.cupons-resumo-card strong {
+    color: #4b0d4f;
+    font-size: 30px;
+    line-height: 1.1;
+}
+
+.cupons-resumo-card span {
+    color: #87518f;
+    font-size: 13px;
+}
+
+.cupons-usados {
+    margin-top: 20px;
+}
+
+.cupons-vazio {
+    padding: 14px 8px;
+    color: #87518f;
+    font-size: 14px;
+}
+
+.cupons-page [hidden] {
+    display: none !important;
+}
+
+.cupons-page button:focus-visible {
+    outline: 3px solid #d4aa0c;
+    outline-offset: 3px;
+}
+
+@media (max-width: 650px) {
+    .cupons-page {
+        padding: 16px 12px 30px;
+    }
+
+    .cupons-header h1 {
+        font-size: 27px;
+    }
+
+    .cupons-card {
+        min-height: auto;
+        padding: 16px 12px;
+        border-radius: 18px;
+    }
+
+    .cupons-tabs {
+        gap: 6px;
+    }
+
+    .cupons-tab {
+        flex: 1;
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    #form-novo-cupom {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    #form-novo-cupom .cupons-field:nth-child(1),
+    #form-novo-cupom .cupons-field:nth-child(2),
+    #form-novo-cupom .cupons-btn {
+        width: 100%;
+    }
+
+    .cupons-resumo-card {
+        width: 100%;
+    }
+
+    .cupons-table {
+        min-width: 540px;
+    }
+}
