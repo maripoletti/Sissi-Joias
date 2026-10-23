@@ -521,3 +521,43 @@
     display:flex;
     gap:8px;
 }
+
+/* Botão Cupom ao lado de Adicionar */
+.btn-cupom-envio {
+    flex: 1;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    border-radius: 12px;
+    background: #4b0d4f;
+    color: #fff;
+    font-weight: 700;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.btn-cupom-envio:hover {
+    background: #68156e;
+}
+
+.produto-envio-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.produto-envio-right .btn {
+    flex: 1;
+}
+
+@media (max-width: 768px) {
+    .produto-envio-right {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .produto-envio-right input {
+        width: 70px !important;
+    }
+}

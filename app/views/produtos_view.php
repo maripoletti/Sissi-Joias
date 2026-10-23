@@ -330,4 +330,64 @@
   </script>
   <script src="js/produtos.js"></script>
   <script src="js/global.js"></script>
+ 
+<!-- MODAL CUPOM DO PRODUTO -->
+<div id="modalCupomEnvio" class="modal hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h2 style="color:#4b0d4f">Cupom do produto</h2>
+            <button
+                type="button"
+                class="modal-close"
+                onclick="fecharCupomProduto()"
+            >✕</button>
+        </div>
+
+        <form id="formCupomEnvio" class="modal-form">
+            <input type="hidden" id="cupomProdutoId">
+
+            <label for="cupomCodigo">Código do cupom</label>
+            <input
+                type="text"
+                id="cupomCodigo"
+                placeholder="Ex.: SISSI10"
+                maxlength="50"
+                required
+            >
+
+            <label for="cupomTipo">Tipo de desconto</label>
+            <select id="cupomTipo" required>
+                <option value="percentual">Percentual (%)</option>
+                <option value="fixo">Valor fixo (R$)</option>
+            </select>
+
+            <label for="cupomValor">Valor do desconto</label>
+            <input
+                type="number"
+                id="cupomValor"
+                min="0.01"
+                step="0.01"
+                placeholder="Ex.: 10"
+                required
+            >
+
+            <span class="hint">
+                O cupom será associado ao produto selecionado
+                para esta maleta.
+            </span>
+
+            <div class="modal-actions">
+                <button
+                    type="button"
+                    class="btn btn-outline"
+                    onclick="fecharCupomProduto()"
+                >Cancelar</button>
+
+                <button type="submit" class="btn">
+                    Salvar cupom
+                </button>
+            </div>
+        </form>
+    </div>
+  </div>
 </body>
