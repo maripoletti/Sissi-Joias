@@ -1,7 +1,7 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]));
 let page = 1;
-let limit = 10; // Quantidade de maletas por página; cada uma traz todos os seus produtos.
+let limit = 16; // Quantidade de maletas por página; cada uma traz todos os seus produtos.
 let loading = false;
 let acabou = false;
 let tipoClick = null;
