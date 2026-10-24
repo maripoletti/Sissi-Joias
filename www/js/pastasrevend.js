@@ -1,5 +1,5 @@
-const API='/api'; // ajuste a base da API se necessário
-const ADMIN_ROLE=2; // valor de $_SESSION['role'] que representa o admin (ajuste)
+const API='/api';
+const ADMIN_ROLE=2;
 
 let revendedoras=[];
 let arquivos=[];
@@ -16,10 +16,13 @@ const ehAdmin=()=>Number(user.role)===ADMIN_ROLE;
 const meuRevId=()=>Number(user.revendedora_id);
 
 /* ===== API ===== */
-async function req(url,opts){
-  const r=await fetch(url,opts);
-  if(!r.ok) throw new Error('Erro '+r.status+' ao comunicar com o servidor.');
-  return r.status===204?null:r.json();
+async function req(url,opts={}){
+  const headers = new Headers(opts.headers);
+  headers.set('X-CSRF-Token', document.querySelector('meta[name="csrf-token"]').content);
+  const r=await fetch(url,{...opts,headers});
+  const data=await r.json();
+  if(!r.ok) throw new Error(data.message || 'Erro ao comunicar com o servidor.');
+  return data;
 }
 // Envia JSON via POST (IDs vão no corpo, não na URL)
 const postJSON=(url,body)=>req(url,{
@@ -28,12 +31,12 @@ const postJSON=(url,body)=>req(url,{
   body:JSON.stringify(body)
 });
 const erro=e=>alert(e.message||'Falha na requisição.');
-const norm=a=>({id:a.id,revId:a.revendedora_id??a.revId,nome:a.nome,tamanho:a.tamanho,
+const norm=a=>({id:Number(a.id),revId:Number(a.revendedora_id??a.revId),nome:a.nome,tamanho:a.tamanho,assinalado:Number(a.assinalado)===1,
   data:String(a.criado_em??a.data).slice(0,10),url:a.url});
 
 // GET /api/pastasrevendedoras -> lista de pastas (só admin)
 async function carregarPastas(){
-  revendedoras=await req(`${API}/pastasrevendedoras`);
+  revendedoras=(await req(`${API}/pastasrevendedoras`)).map(r=>({...r,id:Number(r.id)}));
 }
 // POST /api/arquivos/listar  body: { revendedora_id }
 async function carregarArquivos(revId){
@@ -44,7 +47,7 @@ async function carregarArquivos(revId){
 async function atualizar(){
   try{
     if(ehAdmin()){
-      if(pastaAberta===null) await Promise.all(revendedoras.map(r=>carregarArquivos(r.id))); // contagem por pasta
+      if(pastaAberta===null) await carregarPastas();
       else await carregarArquivos(pastaAberta);
     }else{
       await carregarArquivos(meuRevId());
@@ -56,6 +59,7 @@ async function atualizar(){
 /* ===== Render ===== */
 function linhaArquivo(a,admin){
   return `<div class="arq">
+    <label><input type="checkbox" data-check="${a.id}" ${a.assinalado?'checked':''}> Conferido</label>
     <span style="font-size:22px">📄</span>
     <div class="info"><div class="nome">${esc(a.nome)}</div>
     <small>${kb(a.tamanho)} · enviado em ${dataBR(a.data)}</small></div>
@@ -71,7 +75,7 @@ function render(){
     if(pastaAberta===null){
       $('titulo').textContent='Pasta de Revendedoras';
       $('pastas').innerHTML=revendedoras.map(r=>{
-        const n=arquivos.filter(a=>a.revId===r.id).length;
+        const n=Number(r.quantidade);
         return `<button class="pasta" data-pasta="${r.id}"><span class="ico">📁</span>
           <span><b>${esc(r.nome)}</b><small>${n} arquivo${n===1?'':'s'}</small></span></button>`;
       }).join('');
@@ -135,8 +139,18 @@ $('arqsAdmin').onclick=async e=>{
   const hoje=$('data-atual');
   if(hoje) hoje.textContent=new Date().toLocaleDateString('pt-BR',
     {weekday:'long',day:'2-digit',month:'long',year:'numeric'});
-  if(ehAdmin()){
-    try{await carregarPastas()}catch(e){erro(e)}
-  }
   atualizar();
 })();
+for (const container of [$('arqsAdmin'), $('arqsRev')]) {
+  container.addEventListener('change', async e => {
+    const checkbox=e.target.closest('[data-check]');
+    if(!checkbox) return;
+    const file=arquivos.find(a=>a.id===Number(checkbox.dataset.check));
+    checkbox.disabled=true;
+    try {
+      await postJSON(`${API}/arquivos/assinalar`, {id:file.id, revendedora_id:file.revId, assinalado:checkbox.checked});
+      file.assinalado=checkbox.checked;
+    } catch(err) {checkbox.checked=!checkbox.checked; erro(err)}
+    finally {checkbox.disabled=false}
+  });
+}

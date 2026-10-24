@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
     <title>Pasta de Revendedoras | Sissi Semi Joias e Acessórios</title>
 
     <!-- Estilos globais -->
@@ -83,12 +84,14 @@
                             <input
                                 type="file"
                                 id="fileInput"
+                                accept=".pdf,.png,.jpg,.jpeg,.txt"
                                 multiple
                                 class="hidden"
                             >
 
                         </div>
 
+                        <p>PDF, PNG, JPG ou TXT, até 10 MB por arquivo. Marque os arquivos já conferidos.</p>
                         <div id="arqsAdmin"></div>
 
                     </section>
@@ -111,12 +114,13 @@
     <!-- DADOS DA SESSÃO -->
     <script>
         window.userData = {
+            revendedora_id: <?= (int)$_SESSION['user_id'] ?>,
             nome: <?= json_encode(
                 $_SESSION['usuario_nome'] ?? 'Usuário'
             ) ?>,
 
             role: <?= json_encode(
-                $_SESSION['role'] ?? 0
+                (int)($_SESSION['role'] ?? 0)
             ) ?>
         };
     </script>

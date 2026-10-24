@@ -335,36 +335,13 @@ switch ($uri) {
     }
 
   case '/api/pastasrevendedoras':
-    if ($_SESSION['role'] == '2') {
-      //require_once '../app/controllers/produtosUpdate_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
-
   case '/api/arquivos/listar':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosUpdate_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
-
   case '/api/arquivos/upload':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosUpdate_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
-
   case '/api/arquivos/excluir':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosUpdate_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
+  case '/api/arquivos/assinalar':
+  case '/api/arquivos/baixar':
+    require_once '../app/controllers/pastasrevend_contr.php';
+    break;
 
   case '/api/produtos/update':
     if ($_SESSION['role'] == '2') {
@@ -633,18 +610,10 @@ switch ($uri) {
     }
 
   case '/pastasrevendedoras':
-    if(isset($_SESSION['user_id'])) {
-    if ($method === 'GET') {
-      require_once '../app/views/pastasrevend_view.php';
-      AuthMiddleware::user();
-      break;
-    }
-  } else {
-    header('Location: /login');
+    AuthMiddleware::user();
+    require_once '../app/views/pastasrevend_view.php';
     break;
-  }
-  break;
-  
+
   case '/trocarsenha':
     require_once '../app/controllers/trocarsenha_contr.php';
     $controller = new trocarsenha_contr();
