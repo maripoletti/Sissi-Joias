@@ -1,21 +1,32 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+$admin = (int)$_SESSION['role'] === 2;
+$revendedoras = [];
+if ($admin) {
+    require_once __DIR__ . '/../models/produtos_model.php';
+    $revendedoras = (new Produtos_model())->get_employees();
 }
-
-// Se o painel já inclui a sidebar, não a inclua novamente.
-// require_once __DIR__ . '/sidebar.php';
 ?>
-
-<link rel="stylesheet" href="styles/cupons.css">
-
-<main class="cupons-page">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
+    <title>Cupons | Sissi Semi Joias</title>
+    <link rel="stylesheet" href="styles/global.css">
+    <link rel="stylesheet" href="styles/estilo2.css">
+    <link rel="stylesheet" href="styles/cupons.css">
+</head>
+<body>
+<div class="container"><div class="card">
+<aside class="sidebar"></aside>
+<main class="main cupons-page">
     <header class="cupons-header">
         <h1>Cupons</h1>
         <p>Gerencie os descontos das revendedoras da Sissi Semi Joias.</p>
     </header>
 
-    <nav class="cupons-tabs" aria-label="Seções de cupons">
+    <nav <?= $admin ? '' : 'hidden' ?> class="cupons-tabs" aria-label="Seções de cupons">
         <button class="cupons-tab active" type="button"
                 data-tab="gerenciar" aria-selected="true">
             Gerenciar cupons
@@ -27,20 +38,19 @@ if (session_status() === PHP_SESSION_NONE) {
         </button>
     </nav>
 
-    <section class="cupons-card" id="tab-gerenciar">
+    <section class="cupons-card" id="tab-gerenciar" hidden>
         <div class="cupons-section-title">
             <h2>Cupons por revendedora</h2>
             <p>Escolha uma revendedora e gerencie seus cupons.</p>
         </div>
 
         <div class="cupons-field">
-            <label for="revendedora-admin">ID da revendedora</label>
+            <label for="revendedora-admin">Revendedora</label>
 
             <select id="revendedora-admin">
-                <!-- Substitua pelos IDs reais do banco de dados. -->
-                <option value="alice">Alice (exemplo)</option>
-                <option value="bruna">Bruna (exemplo)</option>
-                <option value="carolina">Carolina (exemplo)</option>
+                <?php foreach ($revendedoras as $rev): ?>
+                <option value="<?= (int)$rev['id'] ?>"><?= htmlspecialchars($rev['nome'], ENT_QUOTES, 'UTF-8') ?></option>
+                <?php endforeach; ?>
             </select>
         </div>
 
@@ -99,14 +109,7 @@ if (session_status() === PHP_SESSION_NONE) {
         </div>
 
         <div class="cupons-aviso">
-            Os cupons são carregados pela sessão da revendedora autenticada.
-        </div>
-
-        <div class="cupons-field">
-            <label for="revendedora-cliente">Conta</label>
-            <select id="revendedora-cliente" disabled>
-                <option value="">Conta autenticada</option>
-            </select>
+            Cada cupom é usado em uma unidade do produto na montagem da maleta.
         </div>
 
         <div class="cupons-resumo" id="resumo-cupons"></div>
@@ -132,4 +135,10 @@ if (session_status() === PHP_SESSION_NONE) {
     </section>
 </main>
 
+
+</div></div>
+<script>window.userData = {role: <?= (int)$_SESSION['role'] ?>};</script>
+<script src="js/global.js"></script>
 <script src="js/cupons.js" defer></script>
+</body>
+</html>

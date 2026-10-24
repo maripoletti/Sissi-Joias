@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const API_URL = "api/cupons.php";
+    const API_URL = "/api/cupons";
 
     const botoesAbas = document.querySelectorAll(".cupons-tab");
     const abaAdmin = document.getElementById("tab-gerenciar");
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const opcoes = {
             method: metodo,
             credentials: "same-origin",
-            headers: { Accept: "application/json" }
+            headers: { Accept: "application/json", "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content }
         };
 
         if (dados !== null) {
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
             menos.addEventListener("click", () => {
                 alterarQuantidade(
                     cupom.id,
-                    Number(cupom.quantidade) - 1
+                    -1
                 );
             });
 
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mais.addEventListener("click", () => {
                 alterarQuantidade(
                     cupom.id,
-                    Number(cupom.quantidade) + 1
+                    1
                 );
             });
 
@@ -272,17 +272,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    async function alterarQuantidade(id, quantidade) {
-        if (
-            !Number.isInteger(quantidade) ||
-            quantidade < 0 ||
-            quantidade > 10000
-        ) {
-            return;
-        }
-
+    async function alterarQuantidade(id, delta) {
         try {
-            await api("PATCH", { id, quantidade });
+            await api("PATCH", { id, delta });
 
             feedbackAdmin.textContent = "Quantidade atualizada.";
 
@@ -315,7 +307,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
             // O PHP identifica a revendedora pela sessão autenticada.
-            const resultado = await api("GET");
+            const query = Number(window.userData.role) === 2 && selectAdmin.value
+                ? `?revendedora_id=${encodeURIComponent(selectAdmin.value)}` : "";
+            const resultado = await api("GET", null, query);
 
             renderizarVisaoRevendedora(
                 resultado.cupons || [],
@@ -379,10 +373,10 @@ document.addEventListener("DOMContentLoaded", () => {
             const linha = document.createElement("tr");
 
             linha.append(
-                celula(item.produto || "—"),
+                celula(`${item.produto || "—"} (${item.quantidade} un.)`),
                 celula(`${item.desconto}%`),
-                celula(item.original || "—"),
-                celula(item.final || "—")
+                celula(Number(item.original).toLocaleString("pt-BR", {style: "currency", currency: "BRL"})),
+                celula(Number(item.final).toLocaleString("pt-BR", {style: "currency", currency: "BRL"}))
             );
 
             listaUsados.appendChild(linha);
@@ -394,5 +388,5 @@ document.addEventListener("DOMContentLoaded", () => {
         carregarCuponsAdmin();
     });
 
-    mostrarAba("gerenciar");
+    mostrarAba(Number(window.userData.role) === 2 ? "gerenciar" : "revendedora");
 });

@@ -4,8 +4,19 @@ require_once '../app/middleware/authMiddleware.php';
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
+$_SESSION['csrf_token'] ??= bin2hex(random_bytes(32));
 
 switch ($uri) {
+  case '/api/cupons':
+  case '/api/cupons.php':
+    require_once '../app/controllers/cupons_contr.php';
+    break;
+
+  case '/cupons':
+    AuthMiddleware::user();
+    require_once '../app/views/cupons.php';
+    break;
+
   case '/':
     if(isset($_SESSION['user_id'])) {
       header('Location: /paineldecontrole');

@@ -8,7 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const links = [
         { href: "/paineldecontrole", text: "Painel de Controle" },
         { href: "/produtos", text: "Produtos" },
-        { href: "/vendas", text: "Vendas" }
+        { href: "/vendas", text: "Vendas" },
+        { href: "/pastasrevendedoras", text: "Pasta de Revendedores" },
+        { href: "/cupons", text: "Cupons" }
     ];
 
     if (window.userData?.role === 2) {
@@ -21,9 +23,8 @@ document.addEventListener("DOMContentLoaded", () => {
             { href: "/cadastrarimpressora", text: "Cadastrar Impressora" },
             { href: "/produtosrevendedores", text: "Produtos dos Revendedores" },
             { href: "/precificacao", text: "Precificação" },
-            { href: "/toprevendedoras", text: "Top Revendedores" },
-            { href: "/pastasrevendedoras", text: "Pasta de Revendedores" },
-            { href: "/cupons", text: "Cupons" }
+            { href: "/toprevendedoras", text: "Top Revendedores" }
+
         );
     }
 
