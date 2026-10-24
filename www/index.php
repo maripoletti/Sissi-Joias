@@ -441,21 +441,6 @@ switch ($uri) {
     }    
   
     
-  case '/toprevendedoras': 
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/views/toprevendedoras_view.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-      header('Location: /login');
-      break;
-    }    
-  
-  case '/api/toprevendedoras': 
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/toprevendedorasGet_contr.php';
-      break;
-    }
   case '/api/campanhas/get': 
     if ($_SESSION['role'] == '2') {
       require_once '../app/controllers/toprevendedorasCampGet_contr.php';
