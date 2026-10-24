@@ -48,6 +48,40 @@ body { background: #f6f7fb; min-height: 100vh; font-family: Arial, sans-serif; }
   height: 100vh;
   overflow-y: auto;
 }
+
+.sidebar {
+  --scrollbar-track: #3e0b42;
+  --scrollbar-thumb: #b78cbe;
+  --scrollbar-thumb-hover: #d7b3dd;
+}
+
+.main {
+  --scrollbar-track: #f2ecf4;
+  --scrollbar-thumb: #94709c;
+  --scrollbar-thumb-hover: #704478;
+}
+
+.sidebar, .main {
+  scrollbar-width: thin;
+  scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+  scrollbar-gutter: stable;
+}
+
+.sidebar::-webkit-scrollbar, .main::-webkit-scrollbar { width: 8px; height: 8px; }
+.sidebar::-webkit-scrollbar-track, .main::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 999px;
+}
+.sidebar::-webkit-scrollbar-thumb, .main::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border: 2px solid var(--scrollbar-track);
+  border-radius: 999px;
+}
+.sidebar::-webkit-scrollbar-thumb:hover, .main::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}
+.sidebar::-webkit-scrollbar-corner, .main::-webkit-scrollbar-corner { background: transparent; }
+
 .sidebar h2{
   font-size: 22px;
   line-height: 1.15;
