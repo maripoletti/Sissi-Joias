@@ -32,6 +32,7 @@ function feature_input(): array {
 }
 
 function feature_int(mixed $value, int $min = 1, int $max = PHP_INT_MAX): int {
+    if (!is_int($value) && !is_string($value)) throw new InvalidArgumentException('Informe um número inteiro.');
     $number = filter_var($value, FILTER_VALIDATE_INT);
     if ($number === false || $number < $min || $number > $max) {
         throw new InvalidArgumentException('Valor inteiro fora do intervalo permitido.');

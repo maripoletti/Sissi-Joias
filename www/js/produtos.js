@@ -59,9 +59,13 @@ const novaCategoria = document.getElementById("novaCategoria");
 const modalCupomEnvio = document.getElementById("modalCupomEnvio");
 const formCupomEnvio = document.getElementById("formCupomEnvio");
 const cupomProdutoId = document.getElementById("cupomProdutoId");
-const cupomCodigo = document.getElementById("cupomCodigo");
-const cupomTipo = document.getElementById("cupomTipo");
-const cupomValor = document.getElementById("cupomValor");
+const cupomSelecionado = document.getElementById("cupomSelecionado");
+const cupomPrevia = document.getElementById("cupomPrevia");
+const salvarA4Pasta = document.getElementById("salvarA4Pasta");
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+let cuponsRevendedora = [];
+let enviandoMaleta = false;
+let tentativaEnvio = null;
 
 let produtos = [];
 let produtosEnvio = [];
@@ -101,7 +105,7 @@ async function respostaJSON(res) {
     const data = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-        throw new Error(data.erro || data.mensagem || "Erro na requisição.");
+        throw new Error(data.message || data.erro || data.mensagem || "Erro na requisição.");
     }
 
     return data;
@@ -761,62 +765,76 @@ async function carregarProdutosEnvio() {
 
 // ==================== CUPOM POR PRODUTO ====================
 
-function abrirCupomProduto(id) {
-    if (!modalCupomEnvio || !formCupomEnvio) {
-        alert("O HTML do modal de cupom não foi encontrado.");
+async function carregarCuponsEnvio() {
+    const revId = revendedoraSelect.value;
+    cuponsRevendedora = [];
+    if (!revId) return;
+    const response = await fetch(`/api/cupons?revendedora_id=${encodeURIComponent(revId)}`);
+    const data = await respostaJSON(response);
+    if (revendedoraSelect.value === revId) {
+        cuponsRevendedora = (data.cupons || []).filter(c => Number(c.quantidade) > 0);
+    }
+}
+
+revendedoraSelect.addEventListener("change", async () => {
+    cuponsPendentesEnvio = {};
+    itensEnvio.forEach(item => { item.cupom = null; });
+    fecharCupomProduto();
+    atualizarListaProdutosEnvio();
+    atualizarResumoEnvio();
+    try { await carregarCuponsEnvio(); }
+    catch (err) { alert(err.message || "Não foi possível carregar os cupons."); }
+});
+
+async function abrirCupomProduto(id) {
+    if (!revendedoraSelect.value) {
+        alert("Escolha a revendedora antes de aplicar um cupom.");
         return;
     }
-
+    try { await carregarCuponsEnvio(); }
+    catch (err) { alert(err.message || "Não foi possível carregar os cupons."); return; }
     const item = itensEnvio.find(i => Number(i.id) === Number(id));
-    const cupom = item?.cupom || cuponsPendentesEnvio[id] || {};
-
+    const cupom = item?.cupom || cuponsPendentesEnvio[id];
     cupomProdutoId.value = id;
-    cupomCodigo.value = cupom.codigo || "";
-    cupomTipo.value = cupom.tipo || "percentual";
-    cupomValor.value = cupom.valor ?? "";
-
+    cupomSelecionado.replaceChildren(new Option("Sem cupom", ""));
+    cuponsRevendedora.forEach(c => cupomSelecionado.add(new Option(`${c.desconto}% (${c.quantidade} disponíveis)`, c.id)));
+    cupomSelecionado.value = cupom?.id ?? "";
+    atualizarPreviaCupom();
     modalCupomEnvio.classList.remove("hidden");
 }
 
+function atualizarPreviaCupom() {
+    const product = produtosEnvio.find(p => Number(p.id) === Number(cupomProdutoId.value));
+    const coupon = cuponsRevendedora.find(c => Number(c.id) === Number(cupomSelecionado.value));
+    const original = Math.round(Number(product?.preco || 0) * 100);
+    const final = Math.floor((original * (100 - Number(coupon?.desconto || 0)) + 50) / 100);
+    cupomPrevia.textContent = `Preço unitário: R$ ${formatarPreco(original / 100)} → R$ ${formatarPreco(final / 100)}`;
+}
+cupomSelecionado.addEventListener("change", atualizarPreviaCupom);
+
 function fecharCupomProduto() {
-    if (modalCupomEnvio) modalCupomEnvio.classList.add("hidden");
+    modalCupomEnvio.classList.add("hidden");
 }
 
-if (formCupomEnvio) {
-    formCupomEnvio.addEventListener("submit", e => {
-        e.preventDefault();
-
-        const id = Number(cupomProdutoId.value);
-        const codigo = cupomCodigo.value.trim();
-        const tipo = cupomTipo.value;
-        const valor = Number(cupomValor.value);
-
-        if (!id || !codigo || !Number.isFinite(valor) || valor <= 0) {
-            alert("Informe o código do cupom e um desconto válido.");
-            return;
-        }
-
-        if (!["percentual", "fixo"].includes(tipo)) {
-            alert("Selecione um tipo de desconto válido.");
-            return;
-        }
-
-        if (tipo === "percentual" && valor > 100) {
-            alert("O desconto percentual não pode ser maior que 100%.");
-            return;
-        }
-
-        const cupom = { codigo, tipo, valor };
-        cuponsPendentesEnvio[id] = cupom;
-
-        const item = itensEnvio.find(i => Number(i.id) === id);
-        if (item) item.cupom = cupom;
-
-        fecharCupomProduto();
-        atualizarListaProdutosEnvio();
-        atualizarResumoEnvio();
-    });
-}
+formCupomEnvio.addEventListener("submit", e => {
+    e.preventDefault();
+    const id = Number(cupomProdutoId.value);
+    const coupon = cuponsRevendedora.find(c => Number(c.id) === Number(cupomSelecionado.value));
+    const item = itensEnvio.find(i => Number(i.id) === id);
+    const quantity = item?.quantidade ?? Number(document.getElementById(`qtd-envio-${id}`)?.value || 1);
+    const reserved = itensEnvio.filter(i => i.id !== id && Number(i.cupom?.id) === Number(coupon?.id))
+        .reduce((sum, i) => sum + i.quantidade, 0);
+    if (coupon && quantity + reserved > Number(coupon.quantidade)) {
+        alert("Cupons insuficientes para a quantidade selecionada. Cada unidade utiliza um cupom.");
+        return;
+    }
+    const selected = coupon ? {id: Number(coupon.id), desconto: Number(coupon.desconto)} : null;
+    cuponsPendentesEnvio[id] = selected;
+    if (item) item.cupom = selected;
+    fecharCupomProduto();
+    atualizarListaProdutosEnvio();
+    atualizarResumoEnvio();
+});
 
 function atualizarListaProdutosEnvio() {
     const termo = (buscaEnvio.value || "").trim().toLowerCase();
@@ -851,7 +869,7 @@ function atualizarListaProdutosEnvio() {
                         <span>Estoque em uso: ${Number(p.estoque_em_uso || 0)}</span>
                         ${p.categoria ? `<span>Categoria: ${escapeHTML(p.categoria)}</span>` : ""}
                         <span>Ref: ${id}</span>
-                        ${cupom ? `<span>Cupom: ${escapeHTML(cupom.codigo)}</span>` : ""}
+                        ${cupom ? `<span>Cupom: ${Number(cupom.desconto)}%</span>` : ""}
                     </div>
                 </div>
 
@@ -934,8 +952,9 @@ function atualizarResumoEnvio() {
             <div>
                 <strong>${escapeHTML(item.nome)}</strong>
                 <span>Quantidade: ${item.quantidade}</span>
+                <span>Unitário: R$ ${formatarPreco(item.preco)} → R$ ${formatarPreco(Math.floor((Math.round(item.preco * 100) * (100 - Number(item.cupom?.desconto || 0)) + 50) / 100) / 100)}</span>
                 ${item.cupom
-                    ? `<span>Cupom: ${escapeHTML(item.cupom.codigo)}</span>`
+                    ? `<span>Cupom: ${Number(item.cupom.desconto)}% (${item.quantidade} cupom(ns))</span>`
                     : ""}
             </div>
             <button type="button" class="btn btn-outline"
@@ -962,6 +981,7 @@ function limparSelecaoEnvio() {
 formEnvio.addEventListener("submit", async e => {
     e.preventDefault();
 
+    if (enviandoMaleta) return;
     const revendedoraId = revendedoraSelect.value;
 
     if (!revendedoraId) {
@@ -977,17 +997,27 @@ formEnvio.addEventListener("submit", async e => {
     const payload = {
         revendedora_id: Number(revendedoraId),
         nome_maleta: nomearMaleta.value.trim(),
+        salvar_a4: salvarA4Pasta.checked,
         produtos: itensEnvio.map(item => ({
             produto_id: item.id,
             quantidade: item.quantidade,
-            cupom: item.cupom
+            cupom_id: item.cupom?.id ?? null
         }))
     };
 
+    const signature = JSON.stringify(payload);
+    if (!tentativaEnvio || tentativaEnvio.signature !== signature) {
+        const bytes = crypto.getRandomValues(new Uint8Array(32));
+        tentativaEnvio = {signature, key: Array.from(bytes, b => b.toString(16).padStart(2, "0")).join("")};
+    }
+    payload.request_key = tentativaEnvio.key;
+    enviandoMaleta = true;
+    const submit = formEnvio.querySelector('[type="submit"]');
+    submit.disabled = true;
     try {
         const res = await fetch("/api/produtos/envios_revendedoras", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
             body: JSON.stringify(payload)
         });
 
@@ -995,6 +1025,8 @@ formEnvio.addEventListener("submit", async e => {
 
         alert(data.mensagem || "Maleta enviada com sucesso.");
 
+        tentativaEnvio = null;
+        cuponsRevendedora = [];
         formEnvio.reset();
         itensEnvio = [];
         cuponsPendentesEnvio = {};
@@ -1011,6 +1043,9 @@ formEnvio.addEventListener("submit", async e => {
 
         // Mantém os itens selecionados para que não sejam perdidos.
         alert(err.message || "Não foi possível enviar a maleta.");
+    } finally {
+        enviandoMaleta = false;
+        submit.disabled = false;
     }
 });
 

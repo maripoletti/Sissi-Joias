@@ -32,9 +32,11 @@ class produtosRevendedores_model extends Dbh {
                 se.FullName revendedor,
                 se.UserID RevId,
                 sep.UsableStock quantidade, 
-                sp.Price preco_revenda,
+                COALESCE(sep.UnitPrice, sp.Price) preco_revenda,
+                COALESCE(sep.OriginalPrice, sp.Price) preco_original,
+                sep.CouponPercent desconto,
                 sep.SendAt data_envio,
-                sc.CaseID AS CaseID,
+                sep.CaseID AS CaseID,
                 sc.Name AS CaseName
             FROM Sales_EmployeeProducts sep
             LEFT JOIN Sales_Employees se

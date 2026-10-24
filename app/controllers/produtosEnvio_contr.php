@@ -1,34 +1,9 @@
 <?php
 declare(strict_types=1);
+require_once __DIR__ . '/../models/maletas_model.php';
 
-require_once __DIR__ . "/../models/produtos_model.php";
-
-header("Content-Type: application/json; charset=UTF-8");
-
-$model = new Produtos_model();
-
-$input = json_decode(file_get_contents('php://input'), true);
-
-$revID = (int)($input["revendedora_id"] ?? 0);
-$nomeMaleta = (string)trim($input["nome_maleta"] ?? "");
-
-if ($revID <= 0 || empty($input["produtos"]) || $nomeMaleta === "") {
-    http_response_code(400);
-    echo json_encode(["erro" => "Dados inválidos"], JSON_UNESCAPED_UNICODE);
-    exit;
-}
-
-$caseID = $model->create_case($nomeMaleta);
-
-foreach ($input["produtos"] as $p) {
-    $ProductID = (int)($p["produto_id"] ?? 0);
-    $qtd = (int)($p["quantidade"] ?? 0);
-
-    if ($ProductID <= 0 || $qtd <= 0) continue;
-
-    $model->add_product_to_case($caseID, $ProductID, $qtd);
-
-    $model->send_to_employee($revID, $ProductID, $qtd, $caseID);
-}
-
-echo json_encode(["msg" => "Sucesso"], JSON_UNESCAPED_UNICODE);
+feature_run(function () {
+    feature_guard(true, true);
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') feature_json(['success' => false, 'message' => 'Método não permitido.'], 405);
+    return (new Maletas_model())->enviar(feature_input());
+});

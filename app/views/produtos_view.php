@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8" />
+  <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Produtos - Sissi Semi Joias e Acessórios</title>
   <link rel="stylesheet" href="styles/global.css">
@@ -261,6 +262,10 @@
           </div>
         </div>
 
+        <label for="salvarA4Pasta" class="envio-toggle">
+          <input type="checkbox" id="salvarA4Pasta" role="switch">
+          Salvar a impressão A4 (PDF) na pasta da revendedora ao enviar
+        </label>
         <div class="modal-actions">
           <button type="button" class="btn btn-outline" onclick="fecharModalEnvio()">Cancelar</button>
           <button type="submit" class="btn">Confirmar envio</button>
@@ -328,8 +333,7 @@
         role: <?= json_encode($_SESSION['role'] ?? 0) ?>
     };
   </script>
-  <script src="js/produtos.js"></script>
-  <script src="js/global.js"></script>
+
  
 <!-- MODAL CUPOM DO PRODUTO -->
 <div id="modalCupomEnvio" class="modal hidden">
@@ -346,35 +350,12 @@
         <form id="formCupomEnvio" class="modal-form">
             <input type="hidden" id="cupomProdutoId">
 
-            <label for="cupomCodigo">Código do cupom</label>
-            <input
-                type="text"
-                id="cupomCodigo"
-                placeholder="Ex.: SISSI10"
-                maxlength="50"
-                required
-            >
-
-            <label for="cupomTipo">Tipo de desconto</label>
-            <select id="cupomTipo" required>
-                <option value="percentual">Percentual (%)</option>
-                <option value="fixo">Valor fixo (R$)</option>
+            <label for="cupomSelecionado">Cupom da revendedora</label>
+            <select id="cupomSelecionado">
+                <option value="">Sem cupom</option>
             </select>
-
-            <label for="cupomValor">Valor do desconto</label>
-            <input
-                type="number"
-                id="cupomValor"
-                min="0.01"
-                step="0.01"
-                placeholder="Ex.: 10"
-                required
-            >
-
-            <span class="hint">
-                O cupom será associado ao produto selecionado
-                para esta maleta.
-            </span>
+            <p class="hint" id="cupomPrevia"></p>
+            <span class="hint">Cada unidade deste produto utiliza um cupom do percentual escolhido.</span>
 
             <div class="modal-actions">
                 <button
@@ -390,4 +371,6 @@
         </form>
     </div>
   </div>
+  <script src="js/produtos.js"></script>
+  <script src="js/global.js"></script>
 </body>

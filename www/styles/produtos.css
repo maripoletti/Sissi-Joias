@@ -216,6 +216,36 @@
   box-shadow: 0 0 0 4px rgba(75,13,79,.10);
 }
 
+.modal-form .envio-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modal-form .envio-toggle input {
+  appearance: none;
+  flex-shrink: 0;
+  width: 42px;
+  height: 24px;
+  margin: 0;
+  padding: 2px;
+  border-radius: 20px;
+  background: #bbb;
+  cursor: pointer;
+}
+
+.modal-form .envio-toggle input::before {
+  content: "";
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.modal-form .envio-toggle input:checked { background: #4b0d4f; }
+.modal-form .envio-toggle input:checked::before { transform: translateX(18px); }
+
 .modal-preview{
   margin-top: 12px;
 }

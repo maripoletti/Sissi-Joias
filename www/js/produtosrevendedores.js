@@ -1,3 +1,5 @@
+const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]));
 let page = 1;
 let limit = 10000;
 let loading = false;
@@ -16,7 +18,7 @@ async function carregarProdutos() {
 
     const response = await fetch("/api/produtosRevendedores", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
       body: JSON.stringify({
         filters: {
           produto: produto || null,
@@ -30,7 +32,7 @@ async function carregarProdutos() {
     });
 
     const dados = await response.json();
-    produtosCache = dados;
+    produtosCache = page === 1 ? dados : produtosCache.concat(dados);
 
     if (dados.length < limit) {
       acabou = true;
@@ -61,11 +63,14 @@ function renderizarTabela(dados, append = false) {
   const grupos = {};
 
   dados.forEach(item => {
-    const caseID = item.CaseID ?? "sem";
+    const caseID = `${item.RevId}:${item.CaseID ?? 0}`;
 
     if (!grupos[caseID]) {
       grupos[caseID] = {
         nome: item.CaseName ?? "Sem maleta",
+        revId: Number(item.RevId),
+        caseId: Number(item.CaseID ?? 0),
+        revendedor: item.revendedor,
         produtos: [],
         total: 0
       };
@@ -82,15 +87,15 @@ function renderizarTabela(dados, append = false) {
 
     trHeader.innerHTML = `
       <td colspan="7" class="maleta-header" data-id="${caseID}">
-        <strong>${grupo.nome}</strong>
+        <strong>${esc(grupo.nome)} — ${esc(grupo.revendedor)}</strong>
 
         <span style="float:right; display:flex; align-items:center; gap:10px; justify-content:flex-end;">
-          <button
-            class="btn-imprimir-maleta"
-            onclick="event.stopPropagation(); imprimirMaleta('${caseID}')"
-            title="Imprimir etiquetas da maleta">
-            🖨️
-          </button>
+          <button type="button" class="btn-imprimir-maleta"
+            onclick="event.stopPropagation(); imprimirMaleta(${grupo.caseId}, ${grupo.revId}, '58mm')"
+            title="Imprimir comprovante de 58 mm">🖨️ 58 mm</button>
+          <button type="button" class="btn-imprimir-maleta"
+            onclick="event.stopPropagation(); imprimirMaleta(${grupo.caseId}, ${grupo.revId}, 'a4')"
+            title="Imprimir folha A4">🖨️ A4</button>
 
           <span>R$ ${grupo.total.toFixed(2)}</span>
         </span>
@@ -111,7 +116,7 @@ function renderizarTabela(dados, append = false) {
       tr.dataset.quantidade = item.quantidade;
       tr.dataset.prodId = item.ProdId;
       tr.dataset.revId = item.RevId;
-      tr.dataset.caseId = caseID;
+      tr.dataset.caseId = grupo.caseId;
 
       tr.addEventListener("click", (e) => {
 
@@ -128,7 +133,7 @@ function renderizarTabela(dados, append = false) {
           checkbox,
           item.ProdId,
           item.RevId,
-          caseID
+          grupo.caseId
         );
       });
 
@@ -137,14 +142,14 @@ function renderizarTabela(dados, append = false) {
           <input
             type="checkbox"
             onclick="event.stopPropagation()"
-            onchange="toggleCheckbox(this, '${item.ProdId}', '${item.RevId}', '${caseID}')"
+            onchange="toggleCheckbox(this, '${item.ProdId}', '${item.RevId}', '${grupo.caseId}')"
           >
         </td>
 
-        <td>${item.produto}</td>
-        <td>${item.revendedor}</td>
+        <td>${esc(item.produto)}</td>
+        <td>${esc(item.revendedor)}</td>
         <td>${item.quantidade}</td>
-        <td>R$ ${parseFloat(item.preco_revenda).toFixed(2)}</td>
+        <td>${Number(item.desconto) > 0 ? `<small>R$ ${Number(item.preco_original).toFixed(2)} · cupom ${Number(item.desconto)}%</small><br>` : ""}R$ ${Number(item.preco_revenda).toFixed(2)}</td>
         <td>${formatarData(item.data_envio)}</td>
 
         <td class="acoes">
@@ -157,106 +162,10 @@ function renderizarTabela(dados, append = false) {
     });
   });
 }
-function imprimirMaleta(caseId) {
-    const itens = produtosCache.filter(p =>
-        String(p.CaseID) === String(caseId)
-    );
-
-    if (!itens.length) return;
-
-    let total = 0;
-
-    const linhas = itens.map(item => {
-        const qtd = Number(item.quantidade);
-        const preco = Number(item.preco_revenda);
-        const subtotal = qtd * preco;
-
-        total += subtotal;
-
-        return `
-            <div>
-                <div>${item.produto}</div>
-
-                <div class="row">
-                    <span>${qtd} x ${preco.toFixed(2).replace(".", ",")}</span>
-                    <span>R$ ${subtotal.toFixed(2).replace(".", ",")}</span>
-                </div>
-            </div>
-        `;
-    }).join("");
-
-    const html = `
-<!DOCTYPE html>
-<html>
-  <head>
-  <meta charset="UTF-8">
-    <style>
-      * { margin:0; padding:0; box-sizing:border-box; }
-
-      @media print {
-        @page { size: 58mm; margin: 0; }
-        body { margin: 0; padding: 0; }
-      }
-
-      body {
-        font-family: monospace;
-        font-size: 10px;
-      }
-
-      .ticket {
-        width: 58mm;
-        padding: 4px;
-        display: flex;
-        flex-direction: column;
-      }
-
-      .center { text-align: center; }
-
-      .divisor {
-        border-top: 1px dashed #000;
-        margin: 4px 0;
-      }
-
-      .row {
-        display: flex;
-        justify-content: space-between;
-        gap: 4px;
-      }
-
-      .total {
-        font-weight: bold;
-        font-size: 13px;
-      }
-    </style>
-  </head>
-
-  <body onload="window.print()">
-    <div class="ticket">
-      <div class="center">
-        <b>SISSI SEMIJOIAS E ACESSÓRIOS</b><br>
-      </div>
-
-      <div class="divisor"></div>
-
-      ${linhas}
-
-      <div class="divisor"></div>
-      <div class="row total">
-        <span>TOTAL</span>
-        <span>R$ ${total.toFixed(2).replace(".", ",")}</span>
-      </div>
-      <div class="divisor"></div>
-    </div>
-  </body>
-</html>
-`;
-
-    const win = window.open("", "_blank");
-    if (!win) return;
-
-    win.document.open();
-    win.document.write(html);
-    win.document.close();
+function imprimirMaleta(caseId, revId, formato) {
+    const query = new URLSearchParams({case_id: caseId, revendedora_id: revId, formato});
+    const win = window.open(`/api/maleta/imprimir?${query}`, "_blank");
+    if (!win) alert("Permita pop-ups para abrir a impressão.");
 }
 
 function toggleMaleta(headerRow) {
@@ -408,7 +317,7 @@ async function excluirEmMassa() {
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json", "X-CSRF-Token": csrfToken
         },
         body: JSON.stringify({ itens })
       }
@@ -476,7 +385,7 @@ async function confirmarMaleta() {
     const [prodId, revId, oldCaseId] = key.split("-");
 
     const linha = document.querySelector(
-      `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"]`
+      `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"][data-case-id="${oldCaseId}"]`
     );
 
     produtos.push({
@@ -496,7 +405,7 @@ async function confirmarMaleta() {
 
   const res = await fetch("/api/maleta/adicionar", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
     body: JSON.stringify(payload)
   });
 
@@ -506,7 +415,7 @@ async function confirmarMaleta() {
     selecionados.clear();
     location.reload();
   } else {
-    alert("Erro ao processar");
+    alert(data.message || "Erro ao processar");
   }
 }
 
@@ -519,6 +428,7 @@ window.addEventListener("scroll", () => {
 function resetarLista() {
   page = 1;
   acabou = false;
+  produtosCache = [];
   document.querySelector("#tabelaRevendedores tbody").innerHTML = "";
 }
 
@@ -559,7 +469,7 @@ async function excluirLinha(botao) {
     const response = await fetch("/api/produtosRevendedores/deletar", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json", "X-CSRF-Token": csrfToken
       },
       body: JSON.stringify({
         prodId,
@@ -571,7 +481,8 @@ async function excluirLinha(botao) {
     const result = await response.json();
 
     if (result.success) {
-      linha.remove();
+      resetarLista();
+      await carregarProdutos();
     } else {
       alert("Erro ao excluir no servidor");
     }
@@ -601,7 +512,7 @@ async function editarQuantidade(botao) {
     const response = await fetch("/api/produtosRevendedores/editar", {
       method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json", "X-CSRF-Token": csrfToken
       },
       body: JSON.stringify({
         prodId,
@@ -614,10 +525,10 @@ async function editarQuantidade(botao) {
     const result = await response.json();
 
     if (result.success) {
-      tdQuantidade.innerText = novoValor;
-      linha.dataset.quantidade = novoValor;
+      resetarLista();
+      await carregarProdutos();
     } else {
-      alert("Erro ao atualizar no servidor");
+      alert(result.message || "Erro ao atualizar no servidor");
     }
 
   } catch (erro) {
@@ -671,7 +582,7 @@ async function carregarMaletas() {
 
     select.innerHTML += `
       <option value="${maleta.CaseID}">
-        ${maleta.CaseName}
+        ${esc(maleta.CaseName)}
       </option>
     `;
 

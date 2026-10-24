@@ -96,6 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (requisicaoEmAndamento) return;
 
         requisicaoEmAndamento = true;
+        selectAdmin.disabled = true;
         listaAdmin.replaceChildren();
 
         const linha = document.createElement("tr");
@@ -132,6 +133,7 @@ document.addEventListener("DOMContentLoaded", () => {
             mensagemErro(erro);
         } finally {
             requisicaoEmAndamento = false;
+            selectAdmin.disabled = false;
         }
     }
 

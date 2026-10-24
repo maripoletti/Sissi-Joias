@@ -203,8 +203,8 @@ switch ($uri) {
   case '/produtos':
     if(isset($_SESSION['user_id'])) {
     if ($method === 'GET') {
-      require_once '../app/views/produtos_view.php';
       AuthMiddleware::user();
+      require_once '../app/views/produtos_view.php';
       break;
     }
   } else {
@@ -261,12 +261,8 @@ switch ($uri) {
     }
 
   case '/api/produtos/envios_revendedoras':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosEnvio_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
+    require_once '../app/controllers/produtosEnvio_contr.php';
+    break;
 
   case '/api/produtosRevendedores':
     if ($_SESSION['role'] == '2') {
@@ -285,12 +281,8 @@ switch ($uri) {
     }
 
   case '/api/produtosRevendedores/editar':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosRevendedoresUpdate_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
+    require_once '../app/controllers/produtosRevendedoresUpdate_contr.php';
+    break;
 
   case '/api/produtosRevendedores/deletarEmMassa':
     if ($_SESSION['role'] == '2') {
@@ -301,12 +293,12 @@ switch ($uri) {
     }
   
   case '/api/maleta/adicionar':
-    if ($_SESSION['role'] == '2') {
-      require_once '../app/controllers/produtosRevendedoresMaletaAdd_contr.php';
-      break;
-    } else {
-      AuthMiddleware::user();
-    }
+    require_once '../app/controllers/produtosRevendedoresMaletaAdd_contr.php';
+    break;
+
+  case '/api/maleta/imprimir':
+    require_once '../app/controllers/maletaPrint_contr.php';
+    break;
 
   case '/api/maletas':
     if ($_SESSION['role'] == '2') {
