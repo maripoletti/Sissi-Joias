@@ -40,7 +40,7 @@ foreach ($xml->venda as $venda) {
 
     $pagamento = (string)$venda->pagamento;
 
-    $result = $model->realizar_venda($produto, $cliente, $pagamento);
+    $result = $model->realizar_venda([$produto], $cliente, $pagamento);
 
     if ($result === false) {
         header("Refresh: 3; url=/vendas");

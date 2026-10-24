@@ -2,20 +2,18 @@
 
 declare(strict_types= 1);
 require_once __DIR__ . "/../../config/dbh.config.php";
+require_once __DIR__ . '/../services/rankService.php';
 
 class ControledeusuariosModel extends Dbh {
-    public function switch_lvl($id, $nivel) {
+    public function switch_lvl(int $id, string $nivel): void {
+        if (!isset(RankService::METAS[$nivel])) throw new InvalidArgumentException('Nível inválido.');
         $pdo = $this->connect();
-
-        try {
-            $query = "UPDATE Temp_PendingUsers SET Level = :nivel WHERE PendUserID = :id";
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(":id", $id, PDO::PARAM_INT);
-            $stmt->bindParam(":nivel", $nivel, PDO::PARAM_STR);
-            $stmt->execute();
-        } catch (PDOException $e) {
-            echo "Erro na conexão: ". $e->getMessage();
-        }
+        $stmt = $pdo->prepare('SELECT PendUserID FROM Temp_PendingUsers WHERE PendUserID = ?');
+        $stmt->execute([$id]);
+        if (!$stmt->fetchColumn()) throw new InvalidArgumentException('Revendedora não encontrada.');
+        // A administradora pode aumentar ou reduzir livremente o nível.
+        $stmt = $pdo->prepare('UPDATE Temp_PendingUsers SET Level = ? WHERE PendUserID = ?');
+        $stmt->execute([$nivel, $id]);
     }
     public function reject_user(int $tempid) {
         $pdo = $this->connect();

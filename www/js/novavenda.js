@@ -398,6 +398,8 @@ document.getElementById("finalizarVenda").addEventListener("click", async functi
         }
 
         const data = await res.json();
+        if (!data.order_id) throw new Error(data.message || "Erro na venda");
+        document.dispatchEvent(new Event("perfil:atualizar"));
 
         window.open("/comprovante?id=" + data.order_id, "_blank");
 

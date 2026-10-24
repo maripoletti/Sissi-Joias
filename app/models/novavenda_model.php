@@ -2,6 +2,7 @@
 
 declare(strict_types= 1);
 require_once __DIR__ . "/../../config/dbh.config.php";
+require_once __DIR__ . '/../services/rankService.php';
 
 class novavenda_model extends Dbh {
     public function realizar_venda(array $produtos, array $cliente, string $pagamento) {
@@ -12,6 +13,8 @@ class novavenda_model extends Dbh {
             $userId = $_SESSION["user_id"] ?? null;
 
             $pdo->beginTransaction();
+
+            $rankAnterior = RankService::iniciarVenda($pdo, (int)$userId);
 
             $query = "UPDATE Sales_Products 
                     SET 
@@ -141,12 +144,13 @@ class novavenda_model extends Dbh {
                 ]);
             }
             
+            RankService::finalizarVenda($pdo, (int)$userId, $rankAnterior);
             $pdo->commit();
 
             return $orderId;
-        } catch (PDOException $e) {
-            $pdo->rollBack();
-            echo $e->getMessage();
+        } catch (Throwable $e) {
+            if ($pdo->inTransaction()) $pdo->rollBack();
+            error_log('Falha ao finalizar venda: ' . get_class($e));
             return false;
         }
     }

@@ -57,8 +57,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     ${window.revData?.nome ?? "Usuário"}
                 </strong>
 
-                <div class="rev-group-badge ametista" id="revGroupBadge">
-                    Ametista
+                <div class="rev-group-badge" id="revGroupBadge">
+                    Carregando...
                 </div>
 
                 <p class="rev-recado" id="revRecado">
@@ -113,75 +113,25 @@ function inicializarPerfilUsuario() {
     const revRecadoEl = document.getElementById("revRecado");
 
     
-    function definirGrupoEMeta(total) {
-        let grupoNome = "Ametista";
-        let proximoGrupo = "Safira";
-        let proximaMeta = 800;
-        let classeGrupo = "ametista";
-
-        if (total >= 800 && total < 1300) {
-            grupoNome = "Safira";
-            proximoGrupo = "Topázio";
-            proximaMeta = 1800;
-            classeGrupo = "safira";
-        } else if (total >= 1300 && total < 1800) {
-            grupoNome = "Topázio";
-            proximoGrupo = "Esmeralda";
-            proximaMeta = 1800;
-            classeGrupo = "topazio";
-        } else if (total >= 1800 && total < 2300) {
-            grupoNome = "Esmeralda";
-            proximoGrupo = "Rubi";
-            proximaMeta = 2300;
-            classeGrupo = "esmeralda";
-        } else if (total >= 2300 && total < 5000) {
-            grupoNome = "Rubi";
-            proximoGrupo = "Rubi Black";
-            proximaMeta = 5000;
-            classeGrupo = "rubi";
-        } else if (total >= 5000) {
-            grupoNome = "Rubi Black";
-            proximoGrupo = null;
-            proximaMeta = null;
-            classeGrupo = "rubiblack";
+    function gerarRecado(usuario) {
+        const total = Number(usuario.total) || 0;
+        const proximo = usuario.proximo_nivel;
+        const meta = usuario.proxima_meta;
+        if (proximo && meta !== null) {
+            const faltam = Math.max(0, Number(meta) - total);
+            const valor = faltam.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            if (faltam <= 100) return `Tá voando! Faltam só R$ ${valor} para chegar em ${proximo}.`;
+            if (faltam <= 300) return `Você está pertinho do grupo ${proximo}. Faltam R$ ${valor}.`;
+            return `Seu próximo objetivo é o grupo ${proximo}.`;
         }
-
-        return { grupoNome, proximoGrupo, proximaMeta, classeGrupo };
-    }
-
-    function gerarRecado(total) {
-    const { grupoNome, proximoGrupo, proximaMeta, classeGrupo } = definirGrupoEMeta(total);
-
-    let recado = `Continue vendendo para subir de nível 💜`;
-
-    if (proximaMeta !== null) {
-        const faltam = proximaMeta - total;
-        const faltamFormatado = faltam.toLocaleString("pt-BR", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-        });
-
-        if (faltam <= 100) {
-        recado = `Tá voando! Faltam só <strong>R$ ${faltamFormatado}</strong> para chegar em <span>${proximoGrupo}</span>.`;
-        } else if (faltam <= 300) {
-        recado = `Você está pertinho do grupo <span>${proximoGrupo}</span>.<br>Faltam <strong>R$ ${faltamFormatado}</strong>.`;
-        } else if (faltam <= 500) {
-        recado = `Bom ritmo! Continue assim para alcançar <span>${proximoGrupo}</span>.`;
-        } else {
-        recado = `Seu próximo objetivo é o grupo <span>${proximoGrupo}</span>.`;
-        }
-    } else {
-        recado = `Parabéns! Você está no grupo <span>Rubi Black</span> e bateu a meta máxima. 🔥`;
-    }
-
-    return { grupoNome, recado, classeGrupo };
+        return usuario.nivel === "rubi-black"
+            ? "Você está no grupo Rubi Black, o nível máximo. 🔥"
+            : "Seu nível atual foi mantido. Não há novas metas automáticas disponíveis.";
     }
 
     function preencherDadosUsuario(usuario) {
     const nome = usuario.nome || "Sem nome";
     const foto = usuario.foto || "";
-    const total = Number(usuario.total) || 0;
-
     revNameEl.textContent = nome;
 
     if (foto) {
@@ -193,12 +143,11 @@ function inicializarPerfilUsuario() {
         revAvatarIcon.style.display = "block";
     }
 
-    const dadosMeta = gerarRecado(total);
-
-    badge.textContent = dadosMeta.grupoNome;
-    badge.className = `rev-group-badge ${dadosMeta.classeGrupo}`;
-
-    revRecadoEl.innerHTML = dadosMeta.recado;
+    const classes = {ametista: "ametista", safira: "safira", topazio: "topazio",
+        esmeralda: "esmeralda", rubi: "rubi", "rubi-black": "rubiblack"};
+    badge.textContent = usuario.nivel_nome || "Ametista";
+    badge.className = `rev-group-badge ${classes[usuario.nivel] || "ametista"}`;
+    revRecadoEl.textContent = gerarRecado(usuario);
     }
 
     async function carregarDadosUsuario() {
@@ -219,9 +168,9 @@ function inicializarPerfilUsuario() {
     } catch (err) {
         console.error(err);
         revNameEl.textContent = "Erro ao carregar";
-        badge.textContent = "Ametista";
-        badge.className = "rev-group-badge ametista";
-        revRecadoEl.innerHTML = "Não foi possível carregar os dados da revendedora.";
+        badge.textContent = "Nível indisponível";
+        badge.className = "rev-group-badge";
+        revRecadoEl.textContent = "Não foi possível carregar os dados da revendedora.";
     }
     }
 
@@ -252,5 +201,6 @@ function inicializarPerfilUsuario() {
         }
     });
 
+    document.addEventListener("perfil:atualizar", carregarDadosUsuario);
     carregarDadosUsuario();
 }

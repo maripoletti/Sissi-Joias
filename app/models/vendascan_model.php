@@ -1,6 +1,7 @@
 <?php
 declare(strict_types=1);
 require_once __DIR__ . "/../../config/dbh.config.php";
+require_once __DIR__ . "/novavenda_model.php";
 
 class vendascan_model extends Dbh {
 
@@ -13,17 +14,12 @@ class vendascan_model extends Dbh {
     }
 
     public function registrarVenda(int $produtoID, int $userID, float $price, int $quantity = 1, string $paymentMethod = 'Scanner'): bool {
-        $pdo = $this->connect();
-        $stmt = $pdo->prepare("
-            INSERT INTO Sales_Orders (ProductID, UserID, OrderDate, Quantity, Sales, PaymentMethod)
-            VALUES (:product_id, :user_id, NOW(), :quantity, :sales, :payment)
-        ");
-        return $stmt->execute([
-            'product_id' => $produtoID,
-            'user_id' => $userID,
-            'quantity' => $quantity,
-            'sales' => $price,
-            'payment' => $paymentMethod
-        ]);
+        if ($userID !== (int)($_SESSION['user_id'] ?? 0) || $quantity < 1 || !is_finite($price) || $price < 0) return false;
+        // Compartilha estoque, itens, transação e promoção de nível com a venda comum.
+        $order = (new novavenda_model())->realizar_venda(
+            [['id' => $produtoID, 'quantidade' => $quantity, 'preco' => $price]],
+            ['nome' => 'Venda por leitor', 'cpf' => ''], $paymentMethod
+        );
+        return $order !== false;
     }
 }

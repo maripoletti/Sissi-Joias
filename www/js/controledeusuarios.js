@@ -229,7 +229,8 @@
       const res = await fetch("/api/controledeusuarios/alterarnivel", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
         },
         body: JSON.stringify({
           id: id,
@@ -237,13 +238,16 @@
         })
       });
 
-      if (!res.ok) throw new Error("Erro ao atualizar nível");
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message || "Erro ao atualizar nível");
 
-      aplicarNivel(cardAtual, nivel);
+      aplicarNivel(cardAtual, data.nivel);
+      document.dispatchEvent(new Event("perfil:atualizar"));
       fecharModal();
 
     } catch (err) {
       console.error(err);
+      alert(err.message || "Erro ao atualizar nível");
     }
   });
 

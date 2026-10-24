@@ -1,21 +1,14 @@
 <?php
-
 declare(strict_types=1);
-require_once __DIR__ . "/../models/controledeusuarios_model.php";
-header("Content-Type: application/json");
-$db = new ControledeusuariosModel();
+require_once __DIR__ . '/../helpers/featureApi.php';
+require_once __DIR__ . '/../models/controledeusuarios_model.php';
 
-$input = json_decode(file_get_contents("php://input"), true);
-var_dump($input);
-
-$id = $input["id"] ?? null;
-$nivel = $input["nivel"] ?? null;
-
-if (!$id || !$nivel) {
-    http_response_code(400);
-    echo "Dados inválidos";
-    exit;
-} else {
-    $db->switch_lvl($id, $nivel);
-    exit;
-}
+feature_run(function () {
+    feature_guard(true, true);
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') feature_json(['success' => false, 'message' => 'Método não permitido.'], 405);
+    $input = feature_input();
+    $level = $input['nivel'] ?? null;
+    if (!is_string($level)) throw new InvalidArgumentException('Nível inválido.');
+    (new ControledeusuariosModel())->switch_lvl(feature_int($input['id'] ?? null), $level);
+    return ['success' => true, 'nivel' => $level];
+});
