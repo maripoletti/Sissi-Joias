@@ -1,51 +1,43 @@
 const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"}[c]));
 let page = 1;
-let limit = 10000;
+let limit = 10; // Quantidade de maletas por página; cada uma traz todos os seus produtos.
 let loading = false;
 let acabou = false;
 let tipoClick = null;
 let produtosCache = [];
 
+let versaoLista = 0;
 async function carregarProdutos() {
   if (loading || acabou) return;
-
   loading = true;
-
+  const version = versaoLista;
   try {
-    const produto = document.getElementById("filtroProduto").value.trim();
-    const revendedor = document.getElementById("filtroRevendedor").value.trim();
-
-    const response = await fetch("/api/produtosRevendedores", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
-      body: JSON.stringify({
-        filters: {
-          produto: produto || null,
-          revendedor: revendedor || null
-        },
-        pagination: {
-          page,
-          limit
-        }
-      })
+    const resultado = await api("/api/produtosRevendedores", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({filters: {
+        produto: document.getElementById("filtroProduto").value.trim() || null,
+        revendedor: document.getElementById("filtroRevendedor").value.trim() || null
+      }, pagination: {page, limit}})
     });
-
-    const dados = await response.json();
-    produtosCache = page === 1 ? dados : produtosCache.concat(dados);
-
-    if (dados.length < limit) {
-      acabou = true;
+    if (version !== versaoLista) return;
+    const dados = resultado.produtos;
+    if (!Array.isArray(dados) || typeof resultado.pagination?.has_more !== "boolean") {
+      throw new Error("Não foi possível carregar os produtos.");
     }
-
+    produtosCache = page === 1 ? dados : produtosCache.concat(dados);
+    acabou = !resultado.pagination.has_more;
     renderizarTabela(dados, true);
     page++;
-
-  } catch (e) {
-    console.error(e);
+    atualizarSelecao();
+  } catch (error) {
+    console.error(error);
+    document.getElementById("resumoSelecao").hidden = false;
+    document.getElementById("resumoSelecao").textContent = error.message;
+  } finally {
+    loading = false;
+    if (version !== versaoLista) carregarProdutos();
   }
-
-  loading = false;
 }
 
 function formatarData(data) {
@@ -120,10 +112,11 @@ function renderizarTabela(dados, append = false) {
 
       tr.addEventListener("click", (e) => {
 
-        if (e.target.closest(".acoes")) return;
+        if (e.target.closest(".acoes") || processandoAcao) return;
 
         const checkbox = tr.querySelector('input[type="checkbox"]');
 
+        if (!checkbox || checkbox.disabled) return;
         const td = checkbox.closest(".selecao");
         if (!td || td.style.display === "none") return;
 
@@ -158,6 +151,7 @@ function renderizarTabela(dados, append = false) {
         </td>
       `;
 
+      tr.style.display = "none";
       tbody.appendChild(tr);
     });
   });
@@ -184,240 +178,174 @@ function toggleMaleta(headerRow) {
   }
 }
 
+let processandoAcao = false;
+const selecionados = new Set();
+const modalMaleta = document.getElementById("modalMaleta");
+const destinoSelect = document.getElementById("revendedoraDestino");
+let revendedorasDestino = [];
+let versaoMaletas = 0;
+
 function ativarMaletaClick() {
+  if (processandoAcao) return;
+  if (tipoClick === "maleta") { abrirModalMaleta(); return; }
   tipoClick = "maleta";
-
-  mostrarCheckboxes();
-
-  const btn = document.getElementById("prosseguirBtn");
-  btn.style.display = "inline-block";
-
-  const cancelar = document.getElementById("cancelarBtn");
-  cancelar.style.display = "inline-block";
-
-  btn.classList.remove("prosseguir-excluir");
-  btn.classList.add("prosseguir-maleta");
+  atualizarSelecao();
 }
 
 function ativarExcluirClick() {
+  if (processandoAcao) return;
+  if (tipoClick === "excluir") { excluirEmMassa(); return; }
   tipoClick = "excluir";
+  atualizarSelecao();
+}
 
-  mostrarCheckboxes();
-
-  const btn = document.getElementById("prosseguirBtn");
-  btn.style.display = "inline-block";
-
+function atualizarSelecao() {
+  const ativo = tipoClick !== null;
+  const quantidade = selecionados.size;
+  document.querySelectorAll(".col-selecao, .selecao").forEach(td => { td.style.display = ativo ? "" : "none"; });
+  const mover = document.getElementById("maletaClick");
+  const remover = document.getElementById("excluirEmMassa");
+  mover.hidden = tipoClick === "excluir";
+  remover.hidden = tipoClick === "maleta";
+  mover.textContent = tipoClick === "maleta" ? `Mover selecionados (${quantidade})` : "Mover para maleta";
+  remover.textContent = tipoClick === "excluir" ? `Remover selecionados (${quantidade})` : "Remover em massa";
+  mover.disabled = processandoAcao || (tipoClick === "maleta" && quantidade === 0);
+  remover.disabled = processandoAcao || (tipoClick === "excluir" && quantidade === 0);
   const cancelar = document.getElementById("cancelarBtn");
-  cancelar.style.display = "inline-block";
-
-  btn.classList.remove("prosseguir-maleta");
-  btn.classList.add("prosseguir-excluir");
+  cancelar.hidden = !ativo;
+  cancelar.disabled = processandoAcao;
+  const resumo = document.getElementById("resumoSelecao");
+  resumo.hidden = !ativo;
+  resumo.textContent = quantidade ? `${quantidade} produto(s) selecionado(s).` : "Marque os produtos na tabela para continuar.";
+  document.querySelectorAll("tr[data-prod-id]").forEach(row => {
+    const key = `${row.dataset.prodId}-${row.dataset.revId}-${row.dataset.caseId}`;
+    const checked = selecionados.has(key);
+    row.classList.toggle("selecionado", checked);
+    const checkbox = row.querySelector('input[type="checkbox"]');
+    checkbox.checked = checked;
+    checkbox.disabled = processandoAcao || Number(row.dataset.quantidade) <= 0;
+  });
 }
 
 function cancelarSelecao() {
+  if (processandoAcao) return;
   selecionados.clear();
-
-  document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-    cb.checked = false;
-  });
-
-  document.querySelectorAll(".selecao").forEach(td => {
-    td.style.display = "none";
-  });
-
-  document.querySelector(".col-selecao").style.display = "none";
-
-  document.getElementById("cancelarBtn").style.display = "none";
-  document.getElementById("prosseguirBtn").style.display = "none";
-  document.getElementById("prosseguirBtn").classList.remove(
-    "prosseguir-maleta",
-    "prosseguir-excluir"
-  );
-
   tipoClick = null;
+  atualizarSelecao();
 }
-
-function mostrarCheckboxes() {
-
-  document.querySelector(".col-selecao").style.display = "";
-
-  document.querySelectorAll(".selecao").forEach(td => {
-      td.style.display = "";
-    });
-}
-
-const selecionados = new Set();
 
 function toggleCheckbox(checkbox, prodId, revId, caseId) {
+  if (processandoAcao) return;
   const key = `${prodId}-${revId}-${caseId}`;
+  if (checkbox.checked) selecionados.add(key);
+  else selecionados.delete(key);
+  atualizarSelecao();
+}
 
-  if (checkbox.checked) {
-    selecionados.add(key);
-  } else {
-    selecionados.delete(key);
-  }
+async function api(url, options = {}) {
+  const headers = new Headers(options.headers);
+  headers.set("X-CSRF-Token", csrfToken);
+  const response = await fetch(url, {...options, headers});
+  const data = await response.json();
+  if (!response.ok || data.success === false) throw new Error(data.message || data.error || "Não foi possível concluir a operação.");
+  return data;
+}
+
+async function abrirModalMaleta() {
+  if (!selecionados.size || processandoAcao) return;
+  modalMaleta.hidden = false;
+  document.getElementById("feedbackMaleta").textContent = "";
+  document.getElementById("resumoMovimentacao").textContent = `${selecionados.size} produto(s) selecionado(s). Escolha a destinatária e a maleta.`;
+  const users = new Set([...selecionados].map(key => key.split("-")[1]));
+  document.getElementById("confirmarMovimentacao").disabled = true;
+  try {
+    if (!revendedorasDestino.length) revendedorasDestino = await api("/api/produtos/revendedoras");
+    destinoSelect.replaceChildren(new Option("Selecione a revendedora", ""));
+    revendedorasDestino.forEach(user => destinoSelect.add(new Option(user.nome, user.id)));
+    destinoSelect.value = users.size === 1 ? [...users][0] : "";
+    await trocarModoMaleta();
+  } catch (error) { document.getElementById("feedbackMaleta").textContent = error.message; }
+  finally { document.getElementById("confirmarMovimentacao").disabled = false; }
+  destinoSelect.focus();
 }
 
 function fecharModalMaleta() {
-    document.getElementById("modalMaleta").style.display = "none";
+  if (processandoAcao) return;
+  modalMaleta.hidden = true;
+  document.getElementById("maletaClick").focus();
 }
-
-document.querySelectorAll(".modal").forEach(modal => {
-    modal.addEventListener("click", (e) => {
-        if (e.target === modal) {
-            fecharModalMaleta();
-        };
-    });
+modalMaleta.addEventListener("click", event => { if (event.target === modalMaleta) fecharModalMaleta(); });
+document.addEventListener("keydown", event => {
+  if (modalMaleta.hidden) return;
+  if (event.key === "Escape") fecharModalMaleta();
+  if (event.key === "Tab") {
+    const focusable = [...modalMaleta.querySelectorAll('button, select, input')].filter(el => !el.disabled && el.getClientRects().length);
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
 });
 
-function prosseguirAcao() {
-
-  if (selecionados.size === 0) {
-    alert("Selecione pelo menos um produto.");
-    return;
-  }
-
-  if (tipoClick === "maleta") {
-    document.getElementById("modalMaleta").style.display = "block";
-  }
-
-  if (tipoClick === "excluir") {
-    excluirEmMassa();
-  }
-}
-
-document.querySelector("#prosseguirBtn").addEventListener("click", prosseguirAcao);
-
 async function excluirEmMassa() {
-
-  const quantidade = selecionados.size;
-
-  const confirmar = confirm(
-    `Deseja excluir ${quantidade} produto(s)?`
-  );
-
-  if (!confirmar) return;
-
-  const itens = [];
-
-  selecionados.forEach(key => {
-    const [prodId, revId, caseId] = key.split("-");
-
-    itens.push({
-      prodId: Number(prodId),
-      revId: Number(revId),
-      caseId: caseId === "sem" ? null : Number(caseId)
-    });
+  if (processandoAcao || !selecionados.size) return;
+  if (!confirm(`Remover ${selecionados.size} produto(s) das revendedoras?`)) return;
+  const itens = [...selecionados].map(key => {
+    const [prodId, revId, caseId] = key.split("-").map(Number);
+    return {prodId, revId, caseId};
   });
-
+  processandoAcao = true;
+  atualizarSelecao();
   try {
-
-    const response = await fetch(
-      "/api/produtosRevendedores/deletarEmMassa",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json", "X-CSRF-Token": csrfToken
-        },
-        body: JSON.stringify({ itens })
-      }
-    );
-
-    const result = await response.json();
-
-    if (result.success) {
-
-      selecionados.forEach(key => {
-
-        const [prodId, revId, caseId] = key.split("-");
-
-        const linha = document.querySelector(
-          `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"][data-case-id="${caseId}"]`
-        );
-
-        linha?.remove();
-      });
-
-      selecionados.clear();
-
-    } else {
-      alert("Erro ao excluir.");
-    }
-
-  } catch (erro) {
-    console.error(erro);
-  }
-}
-  
-async function confirmarMaleta() {
-  const modo =
-    document.getElementById("selectMaleta").value;
-
-  let nomeNova = null;
-  let caseId = null;
-
-  if (modo === "nova") {
-
-    nomeNova =
-      document.getElementById("nomeNovaMaleta")
-      .value
-      .trim();
-
-    if (!nomeNova) {
-      alert("Digite o nome da maleta.");
-      return;
-    }
-
-  } else {
-
-    caseId = Number(
-      document.getElementById(
-        "selectMaletaExistente"
-      ).value
-    );
-
-  }
-
-  const produtos = [];
-
-  selecionados.forEach(key => {
-
-    const [prodId, revId, oldCaseId] = key.split("-");
-
-    const linha = document.querySelector(
-      `tr[data-prod-id="${prodId}"][data-rev-id="${revId}"][data-case-id="${oldCaseId}"]`
-    );
-
-    produtos.push({
-      produto_id: Number(prodId),
-      revendedor_id: Number(revId),
-      case_id_atual: oldCaseId === "sem" ? null : Number(oldCaseId),
-      quantidade: Number(linha.dataset.quantidade)
+    await api("/api/produtosRevendedores/deletarEmMassa", {
+      method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify({itens})
     });
-
-  });
-
-  const payload = {
-    produtos,
-    nome_maleta: nomeNova,
-    case_id: caseId
-  };
-
-  const res = await fetch("/api/maleta/adicionar", {
-    method: "POST",
-    headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken },
-    body: JSON.stringify(payload)
-  });
-
-  const data = await res.json();
-
-  if (data.success) {
     selecionados.clear();
-    location.reload();
-  } else {
-    alert(data.message || "Erro ao processar");
+    tipoClick = null;
+    resetarLista();
+    await carregarProdutos();
+  } catch (error) { alert(error.message); }
+  finally { processandoAcao = false; atualizarSelecao(); }
+}
+
+async function confirmarMaleta(event) {
+  event.preventDefault();
+  if (processandoAcao || !selecionados.size) return;
+  const nova = document.getElementById("selectMaleta").value === "nova";
+  const target = Number(destinoSelect.value);
+  const caseId = nova ? null : Number(document.getElementById("selectMaletaExistente").value);
+  const name = document.getElementById("nomeNovaMaleta").value.trim();
+  const feedback = document.getElementById("feedbackMaleta");
+  if (!target || (nova ? !name : !caseId)) { feedback.textContent = "Escolha a revendedora e a maleta de destino."; return; }
+  const produtos = [];
+  for (const key of selecionados) {
+    const [product, user, oldCase] = key.split("-").map(Number);
+    const row = document.querySelector(`tr[data-prod-id="${product}"][data-rev-id="${user}"][data-case-id="${oldCase}"]`);
+    if (!row) { feedback.textContent = "Atualize a lista e selecione novamente os produtos."; return; }
+    produtos.push({produto_id: product, revendedor_id: user, case_id_atual: oldCase, quantidade: Number(row.dataset.quantidade)});
+  }
+  processandoAcao = true;
+  atualizarSelecao();
+  const controls = [...document.getElementById("formMoverMaleta").querySelectorAll("input, select, button")];
+  const disabled = controls.map(control => control.disabled);
+  controls.forEach(control => { control.disabled = true; });
+  feedback.textContent = "Movendo produtos...";
+  try {
+    await api("/api/maleta/adicionar", {method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({produtos, revendedora_destino_id: target, nome_maleta: nova ? name : null, case_id: caseId})});
+    modalMaleta.hidden = true;
+    selecionados.clear();
+    tipoClick = null;
+    resetarLista();
+    await carregarProdutos();
+    document.getElementById("maletaClick").focus();
+  } catch (error) { feedback.textContent = error.message; }
+  finally {
+    processandoAcao = false;
+    controls.forEach((control, index) => { control.disabled = disabled[index]; });
+    atualizarSelecao();
   }
 }
+document.getElementById("formMoverMaleta").addEventListener("submit", confirmarMaleta);
 
 window.addEventListener("scroll", () => {
   if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 200) {
@@ -426,10 +354,13 @@ window.addEventListener("scroll", () => {
 });
 
 function resetarLista() {
+  versaoLista++;
+  selecionados.clear();
   page = 1;
   acabou = false;
   produtosCache = [];
   document.querySelector("#tabelaRevendedores tbody").innerHTML = "";
+  atualizarSelecao();
 }
 
 document.getElementById("filtroProduto").addEventListener("input", () => {
@@ -458,6 +389,7 @@ observer.observe(sentinela);
 
 
 async function excluirLinha(botao) {
+  if (processandoAcao) return;
   const linha = botao.closest("tr");
   const prodId = linha.dataset.prodId;
   const revId = linha.dataset.revId;
@@ -494,6 +426,7 @@ async function excluirLinha(botao) {
 }
 
 async function editarQuantidade(botao) {
+  if (processandoAcao) return;
   const linha = botao.closest("tr");
   const tdQuantidade = linha.children[3];
   const prodId = linha.dataset.prodId;
@@ -538,57 +471,32 @@ async function editarQuantidade(botao) {
 }
 
 document.getElementById("selectMaleta").addEventListener("change", trocarModoMaleta);
-
+destinoSelect.addEventListener("change", trocarModoMaleta);
 
 async function trocarModoMaleta() {
-
-  const modo = document.getElementById("selectMaleta").value;
-
-  const inputNova = document.getElementById("nomeNovaMaleta");
-  const selectExistente = document.getElementById("selectMaletaExistente");
-
-  if (modo === "nova") {
-
-    inputNova.style.display = "";
-    selectExistente.style.display = "none";
-
-    return;
+  const nova = document.getElementById("selectMaleta").value === "nova";
+  document.getElementById("campoNovaMaleta").hidden = !nova;
+  document.getElementById("campoMaletaExistente").hidden = nova;
+  document.getElementById("nomeNovaMaleta").required = nova;
+  document.getElementById("selectMaletaExistente").required = !nova;
+  const version = ++versaoMaletas;
+  if (nova) return;
+  const select = document.getElementById("selectMaletaExistente");
+  const user = destinoSelect.value;
+  select.disabled = true;
+  select.replaceChildren(new Option(user ? "Carregando maletas..." : "Escolha a revendedora primeiro", ""));
+  if (!user) return;
+  try {
+    const maletas = await api(`/api/maletas?revendedora_id=${encodeURIComponent(user)}`);
+    if (version !== versaoMaletas) return;
+    select.replaceChildren(new Option(maletas.length ? "Selecione uma maleta" : "Nenhuma maleta. Escolha criar nova.", ""));
+    maletas.forEach(maleta => select.add(new Option(maleta.CaseName + (maleta.UserID === null ? " — atribuir à destinatária" : ""), maleta.CaseID)));
+    select.disabled = false;
+  } catch (error) {
+    if (version !== versaoMaletas) return;
+    select.replaceChildren(new Option("Não foi possível carregar as maletas", ""));
+    document.getElementById("feedbackMaleta").textContent = error.message;
   }
-
-  inputNova.style.display = "none";
-  selectExistente.style.display = "";
-
-  await carregarMaletas();
-}
-
-
-
-async function carregarMaletas() {
-  const select = document.getElementById(
-    "selectMaletaExistente"
-  );
-
-  if (select.dataset.loaded === "true") {
-    return;
-  }
-
-  const response = await fetch("/api/maletas");
-
-  const maletas = await response.json();
-
-  select.innerHTML = "";
-
-  maletas.forEach(maleta => {
-
-    select.innerHTML += `
-      <option value="${maleta.CaseID}">
-        ${esc(maleta.CaseName)}
-      </option>
-    `;
-
-  });
-
-  select.dataset.loaded = "true";
 }
 
 carregarProdutos();

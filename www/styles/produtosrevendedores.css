@@ -17,7 +17,35 @@
   gap: 10px;
   margin-bottom: 20px;
   justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
 }
+
+.faixa-topo .filtros { margin-bottom: 0; flex-wrap: wrap; }
+
+.acoes-em-massa { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.acoes-em-massa [hidden], .modal[hidden], .modal-real [hidden], .resumo-selecao[hidden] { display: none !important; }
+
+.acoes-em-massa button {
+  min-height: 40px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.acoes-em-massa #excluirEmMassa {
+  color: #a6202d;
+  border: 1px solid #e8c6ca;
+  background: #fff;
+}
+
+.btn-cancelar-selecao { color: #69566d; border: 1px solid transparent; background: transparent; }
+.btn-cancelar-selecao:hover { background: #eee8f0; }
+.resumo-selecao { margin: -6px 0 16px; font-size: 13px; color: #6c5271; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 2px solid #8a5993; outline-offset: 3px; }
 
 .filtros input {
   padding: 10px;
@@ -145,8 +173,8 @@ tr.selecionado:hover {
     background: rgba(13, 2, 15, .60);
 
     display: flex;
-    align-content: center;
-    justify-items: center;
+    align-items: center;
+    justify-content: center;
 
     padding: 18px;
     z-index: 9999;    
@@ -165,6 +193,21 @@ tr.selecionado:hover {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    max-height: calc(100dvh - 36px);
+    overflow-y: auto;
+}
+
+.modal-real form { display: flex; flex-direction: column; gap: 10px; }
+.modal-real label { display: block; font-size: 13px; font-weight: 600; color: #4b0d4f; margin: 4px 0 6px; }
+.modal-descricao { color: #756579; font-size: 13px; line-height: 1.5; }
+.modal-feedback { color: #a6202d; font-size: 13px; }
+.modal-botoes button, .modal-fechar { cursor: pointer; }
+
+@media (max-width: 700px) {
+  .filtros, .filtros input { flex: 1; min-width: 0; }
+  .faixa-topo { align-items: stretch; }
+  .acoes-em-massa { width: 100%; }
+  .tabela-container { overflow-x: auto; }
 }
 
 .modal-real h2 {

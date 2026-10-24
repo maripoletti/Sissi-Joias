@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="<?= htmlspecialchars($_SESSION['csrf_token'], ENT_QUOTES, 'UTF-8') ?>">
   <title>Produtos dos Revendedores</title>
 
@@ -24,16 +25,13 @@
             <input type="text" id="filtroRevendedor" placeholder="Buscar revendedor...">
           </div>
 
-          <div>
-            <button class="btn-primary" id="prosseguirBtn" style="display: none;">Prosseguir</button>
-            <button type="button" class="btn-secondary" id="cancelarBtn" onclick="cancelarSelecao()" style="display: none;">Cancelar</button>
-          </div>
-
-          <div class="emMassa">
-            <button type="button" class="btn-primary" id="maletaClick" onclick="ativarMaletaClick()">Adicionar em Maleta</button>
-            <button type="button" class="btn-primary" id="excluirEmMassa" onclick="ativarExcluirClick()">Remover em Massa</button>
+          <div class="acoes-em-massa" aria-label="Ações nos produtos">
+            <button type="button" class="btn-primary" id="maletaClick" onclick="ativarMaletaClick()">Mover para maleta</button>
+            <button type="button" class="btn-remover" id="excluirEmMassa" onclick="ativarExcluirClick()">Remover em massa</button>
+            <button type="button" class="btn-cancelar-selecao" id="cancelarBtn" onclick="cancelarSelecao()" hidden>Sair da seleção</button>
           </div>
         </div>
+        <p id="resumoSelecao" class="resumo-selecao" role="status" aria-live="polite" hidden></p>
 
         <div class="tabela-container">
           <table id="tabelaRevendedores">
@@ -54,41 +52,42 @@
           <div id="sentinela"></div>
         </div>
 
-        <div id="modalMaleta" class="modal" style="display:none;">
-          <div class="modal-real">
-              <div class="form-cabecalho">
-                  <h2>Adicionar em Maleta</h2>
+        <div id="modalMaleta" class="modal" hidden>
+          <div class="modal-real" role="dialog" aria-modal="true" aria-labelledby="tituloModalMaleta" tabindex="-1">
+            <div class="form-cabecalho">
+              <h2 id="tituloModalMaleta">Mover produtos</h2>
+              <button type="button" class="modal-fechar" onclick="fecharModalMaleta()" aria-label="Fechar">×</button>
+            </div>
+            <p id="resumoMovimentacao" class="modal-descricao"></p>
+            <form id="formMoverMaleta">
+              <label for="revendedoraDestino">Revendedora de destino</label>
+              <select id="revendedoraDestino" required>
+                <option value="">Selecione a revendedora</option>
+              </select>
 
-                  <button
-                      class="modal-fechar"
-                      onclick="fecharModalMaleta()">
-                      ×
-                  </button>
-              </div>
-
+              <label for="selectMaleta">Maleta de destino</label>
               <select id="selectMaleta">
-                  <option value="nova">Criar nova maleta</option>
-                  <option value="outra">Adicionar em maleta já existente</option>
+                <option value="outra">Escolher maleta existente</option>
+                <option value="nova">Criar nova maleta</option>
               </select>
 
-              <input type="text" id="nomeNovaMaleta" placeholder="Nome da nova maleta">
-              <select id="selectMaletaExistente" style="display:none;">
-                
-              </select>
-
-              <div class="modal-botoes">
-                  <button
-                      class="modal-cancelar"
-                      onclick="fecharModalMaleta()">
-                      Cancelar
-                  </button>
-
-                  <button
-                      class="modal-confirmar"
-                      onclick="confirmarMaleta()">
-                      Confirmar
-                  </button>
+              <div id="campoMaletaExistente">
+                <label for="selectMaletaExistente">Escolha a maleta</label>
+                <select id="selectMaletaExistente" required disabled>
+                  <option value="">Escolha a revendedora primeiro</option>
+                </select>
               </div>
+              <div id="campoNovaMaleta" hidden>
+                <label for="nomeNovaMaleta">Nome da nova maleta</label>
+                <input type="text" id="nomeNovaMaleta" placeholder="Ex.: Maleta de novembro" maxlength="100">
+              </div>
+              <p class="modal-descricao">Os produtos sairão da origem e passarão para a revendedora e maleta escolhidas, mantendo seus preços e descontos.</p>
+              <p class="modal-feedback" id="feedbackMaleta" role="alert"></p>
+              <div class="modal-botoes">
+                <button type="button" class="modal-cancelar" onclick="fecharModalMaleta()">Cancelar</button>
+                <button type="submit" class="modal-confirmar" id="confirmarMovimentacao">Mover produtos</button>
+              </div>
+            </form>
           </div>
         </div>
       </main>

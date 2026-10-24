@@ -56,8 +56,8 @@ class Maletas_model extends Dbh {
                 $pdo->commit();
                 return ['success' => true, 'case_id' => (int)$previous['CaseID'], 'mensagem' => 'Maleta já enviada.'];
             }
-            $stmt = $pdo->prepare('INSERT INTO Sales_Cases (Name, RequestKey, RequestHash) VALUES (?, ?, ?)');
-            $stmt->execute([$data['nome_maleta'], $data['request_key'], $hash]);
+            $stmt = $pdo->prepare('INSERT INTO Sales_Cases (Name, UserID, RequestKey, RequestHash) VALUES (?, ?, ?, ?)');
+            $stmt->execute([$data['nome_maleta'], $data['revendedora_id'], $data['request_key'], $hash]);
             $case = (int)$pdo->lastInsertId();
             $document = ['nome' => $data['nome_maleta'], 'revendedora' => $employee, 'data' => date('d/m/Y H:i'), 'itens' => []];
             foreach ($data['produtos'] as $item) {
@@ -165,64 +165,131 @@ class Maletas_model extends Dbh {
         }
     }
 
-    public function reagrupar(array $input): void {
+    public function listar(?int $user = null): array {
+        $query = 'SELECT CaseID, Name AS CaseName, UserID FROM Sales_Cases';
+        if ($user !== null) $query .= ' WHERE UserID = ? OR UserID IS NULL';
+        $query .= ' ORDER BY UserID IS NULL, Name, CaseID';
+        $stmt = $this->connect()->prepare($query);
+        $stmt->execute($user === null ? [] : [$user]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public static function validarMovimentacao(array $input): array {
         $items = $input['produtos'] ?? [];
-        if (!is_array($items) || !$items || count($items) > 500) throw new InvalidArgumentException('Selecione os produtos.');
+        if (!is_array($items) || !$items || count($items) > 500) throw new InvalidArgumentException('Selecione de 1 a 500 produtos.');
         $case = feature_int($input['case_id'] ?? 0, 0);
+        $user = feature_int($input['revendedora_destino_id'] ?? null);
         $name = $input['nome_maleta'] ?? '';
         if (!$case && (!is_string($name) || trim($name) === '' || mb_strlen(trim($name)) > 100)) {
             throw new InvalidArgumentException('Informe o nome da maleta com até 100 caracteres.');
         }
+        $normalized = [];
+        foreach ($items as $item) {
+            if (!is_array($item)) throw new InvalidArgumentException('Produto inválido.');
+            $product = feature_int($item['produto_id'] ?? null);
+            $sourceUser = feature_int($item['revendedor_id'] ?? null);
+            $sourceCase = feature_int($item['case_id_atual'] ?? 0, 0);
+            $key = "$sourceUser-$product-$sourceCase";
+            if (isset($normalized[$key])) throw new InvalidArgumentException('Produto repetido.');
+            $normalized[$key] = ['produto_id' => $product, 'revendedor_id' => $sourceUser,
+                'case_id_atual' => $sourceCase, 'quantidade' => feature_int($item['quantidade'] ?? null, 1)];
+        }
+        return ['case_id' => $case, 'revendedora_destino_id' => $user,
+            'nome_maleta' => $case ? '' : trim($name), 'produtos' => array_values($normalized)];
+    }
+
+    private function atualizarQuantidadeMaleta(PDO $pdo, int $case, int $product): void {
+        if (!$case) return;
+        $stmt = $pdo->prepare('INSERT INTO Sales_CasesProducts (CaseID, ProductID, Quantity)
+            SELECT ?, ?, COALESCE(SUM(UsableStock), 0) FROM Sales_EmployeeProducts WHERE CaseID = ? AND ProductID = ?
+            ON DUPLICATE KEY UPDATE Quantity = VALUES(Quantity)');
+        $stmt->execute([$case, $product, $case, $product]);
+    }
+
+    public function reagrupar(array $input): void {
+        $data = self::validarMovimentacao($input);
+        $items = $data['produtos'];
+        $case = $data['case_id'];
+        $targetUser = $data['revendedora_destino_id'];
         $pdo = $this->connect();
         $pdo->beginTransaction();
         try {
-            if (!$case) {
-                $stmt = $pdo->prepare('INSERT INTO Sales_Cases (Name) VALUES (?)');
-                $stmt->execute([trim($name)]);
-                $case = (int)$pdo->lastInsertId();
-            } else {
-                $stmt = $pdo->prepare('SELECT CaseID FROM Sales_Cases WHERE CaseID = ? FOR UPDATE');
-                $stmt->execute([$case]);
-                if (!$stmt->fetchColumn()) throw new InvalidArgumentException('Maleta não encontrada.');
+            // Mesma ordem de travas do envio: revendedoras, produtos e seus vínculos.
+            $users = array_unique(array_merge([$targetUser], array_column($items, 'revendedor_id')));
+            sort($users, SORT_NUMERIC);
+            $stmt = $pdo->prepare('SELECT UserID FROM Sales_Employees WHERE UserID = ? FOR UPDATE');
+            foreach ($users as $user) {
+                $stmt->execute([$user]);
+                if (!$stmt->fetchColumn()) throw new InvalidArgumentException('Revendedora não encontrada.');
             }
-            $seen = [];
+            $products = array_unique(array_column($items, 'produto_id'));
+            sort($products, SORT_NUMERIC);
+            $stmt = $pdo->prepare('SELECT ProductID FROM Sales_Products WHERE ProductID = ? FOR UPDATE');
+            foreach ($products as $product) {
+                $stmt->execute([$product]);
+                if (!$stmt->fetchColumn()) throw new InvalidArgumentException('Produto não encontrado.');
+            }
+            $cases = array_unique(array_merge([$case], array_column($items, 'case_id_atual')));
+            sort($cases, SORT_NUMERIC);
+            $owners = [];
+            $stmt = $pdo->prepare('SELECT UserID FROM Sales_Cases WHERE CaseID = ? FOR UPDATE');
+            foreach ($cases as $id) {
+                if (!$id) continue;
+                $stmt->execute([$id]);
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (!$row) throw new InvalidArgumentException('Maleta não encontrada.');
+                $owners[$id] = $row['UserID'] === null ? null : (int)$row['UserID'];
+            }
+            if (!$case) {
+                $stmt = $pdo->prepare('INSERT INTO Sales_Cases (Name, UserID) VALUES (?, ?)');
+                $stmt->execute([$data['nome_maleta'], $targetUser]);
+                $case = (int)$pdo->lastInsertId();
+            } elseif ($owners[$case] === null) {
+                // Permite atribuir uma maleta histórica vazia cuja dona não pôde ser inferida.
+                $stmt = $pdo->prepare('UPDATE Sales_Cases SET UserID = ? WHERE CaseID = ? AND UserID IS NULL');
+                $stmt->execute([$targetUser, $case]);
+            } elseif ($owners[$case] !== $targetUser) {
+                throw new DomainException('A maleta escolhida pertence a outra revendedora. Atualize o destino.');
+            }
             foreach ($items as $item) {
-                $product = feature_int($item['produto_id'] ?? null);
-                $user = feature_int($item['revendedor_id'] ?? null);
-                $oldCase = feature_int($item['case_id_atual'] ?? 0, 0);
-                $key = "$user-$product-$oldCase";
-                if (isset($seen[$key])) throw new InvalidArgumentException('Produto repetido.');
-                $seen[$key] = true;
-                if ($oldCase === $case) continue;
-                $stmt = $pdo->prepare('SELECT * FROM Sales_EmployeeProducts WHERE UserID = ? AND ProductID = ? AND CaseID = ? FOR UPDATE');
+                $product = $item['produto_id'];
+                $user = $item['revendedor_id'];
+                $oldCase = $item['case_id_atual'];
+                if ($oldCase && ($owners[$oldCase] ?? null) !== $user) {
+                    throw new DomainException('A maleta de origem não pertence à revendedora informada. Atualize a lista.');
+                }
+                $stmt = $pdo->prepare('SELECT ep.*, p.Price AS CatalogPrice FROM Sales_EmployeeProducts ep
+                    JOIN Sales_Products p ON p.ProductID = ep.ProductID
+                    WHERE ep.UserID = ? AND ep.ProductID = ? AND ep.CaseID = ? FOR UPDATE');
                 $stmt->execute([$user, $product, $oldCase]);
                 $source = $stmt->fetch(PDO::FETCH_ASSOC);
-                if (!$source || (int)$source['UsableStock'] !== feature_int($item['quantidade'] ?? null, 0, 10000)) {
+                if (!$source || (int)$source['UsableStock'] !== $item['quantidade']) {
                     throw new DomainException('A quantidade mudou. Atualize a lista antes de mover os produtos.');
                 }
-                $stmt->execute([$user, $product, $case]);
+                if ($oldCase === $case && $user === $targetUser) continue;
+                // Congela também os preços dos itens antigos que ainda usavam o catálogo.
+                $original = $source['OriginalPrice'] ?? $source['CatalogPrice'];
+                $price = $source['UnitPrice'] ?? $source['CatalogPrice'];
+                $stmt->execute([$targetUser, $product, $case]);
                 $destination = $stmt->fetch(PDO::FETCH_ASSOC);
                 if ($destination) {
-                    foreach (['OriginalPrice', 'UnitPrice', 'CouponPercent'] as $field) {
-                        if ((string)$source[$field] !== (string)$destination[$field]) {
-                            throw new DomainException('Este produto tem preços diferentes nas maletas. Escolha outra maleta para preservar os descontos.');
-                        }
+                    if (MaletaPdf::centavos((string)$original) !== MaletaPdf::centavos((string)($destination['OriginalPrice'] ?? $destination['CatalogPrice']))
+                        || MaletaPdf::centavos((string)$price) !== MaletaPdf::centavos((string)($destination['UnitPrice'] ?? $destination['CatalogPrice']))
+                        || (int)$source['CouponPercent'] !== (int)$destination['CouponPercent']) {
+                        throw new DomainException('Este produto tem preços ou cupons diferentes no destino. Escolha outra maleta para preservar os valores.');
                     }
-                    $stmt = $pdo->prepare('UPDATE Sales_EmployeeProducts SET UsableStock = UsableStock + ? WHERE UserID = ? AND ProductID = ? AND CaseID = ?');
-                    $stmt->execute([$source['UsableStock'], $user, $product, $case]);
+                    $stmt = $pdo->prepare('UPDATE Sales_EmployeeProducts SET UsableStock = UsableStock + ?, OriginalPrice = ?, UnitPrice = ?
+                        WHERE UserID = ? AND ProductID = ? AND CaseID = ?');
+                    $stmt->execute([$source['UsableStock'], $original, $price, $targetUser, $product, $case]);
                     $stmt = $pdo->prepare('DELETE FROM Sales_EmployeeProducts WHERE UserID = ? AND ProductID = ? AND CaseID = ?');
                     $stmt->execute([$user, $product, $oldCase]);
                 } else {
-                    $stmt = $pdo->prepare('UPDATE Sales_EmployeeProducts SET CaseID = ? WHERE UserID = ? AND ProductID = ? AND CaseID = ?');
-                    $stmt->execute([$case, $user, $product, $oldCase]);
+                    $stmt = $pdo->prepare('UPDATE Sales_EmployeeProducts SET UserID = ?, CaseID = ?, OriginalPrice = ?, UnitPrice = ?
+                        WHERE UserID = ? AND ProductID = ? AND CaseID = ?');
+                    $stmt->execute([$targetUser, $case, $original, $price, $user, $product, $oldCase]);
                 }
-                foreach ([$oldCase, $case] as $affected) {
-                    if (!$affected) continue;
-                    $stmt = $pdo->prepare('INSERT INTO Sales_CasesProducts (CaseID, ProductID, Quantity)
-                        SELECT ?, ?, COALESCE(SUM(UsableStock), 0) FROM Sales_EmployeeProducts WHERE CaseID = ? AND ProductID = ?
-                        ON DUPLICATE KEY UPDATE Quantity = VALUES(Quantity)');
-                    $stmt->execute([$affected, $product, $affected, $product]);
-                }
+                $this->atualizarQuantidadeMaleta($pdo, $oldCase, $product);
+                $this->atualizarQuantidadeMaleta($pdo, $case, $product);
             }
             $pdo->commit();
         } catch (Throwable $e) {
